@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 15:53
 # @name    : RC4.py
 # @author  : azwpayne
@@ -31,8 +29,8 @@ def rc4_encrypt_decrypt(data: bytes, key: bytes) -> bytes:
 
 
 if __name__ == "__main__":
-    plaintext = 'azwpayne'.encode()
-    key = 'azwpayne'.encode()
+    plaintext = b"azwpayne"
+    key = b"azwpayne"
     print(f"明文: {plaintext.hex()}")
 
     # 加密

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 16:51
 # @name    : sha3_512.py.py
 # @author  : azwpayne
@@ -231,19 +229,19 @@ def test_known_vectors():
     test_cases = [
         # (消息, 期望的SHA3-512哈希值)
         (b"",
-         "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a6" +
+         "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a6"
          "15b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26"),
 
         (b"abc",
-         "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e" +
+         "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e"
          "10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0"),
 
         (b"The quick brown fox jumps over the lazy dog",
-         "01dedd5de4ef14642445ba5f5b97c15e47b9ad931326e4b0727cd94cefc44fff" +
+         "01dedd5de4ef14642445ba5f5b97c15e47b9ad931326e4b0727cd94cefc44fff"
          "23f07bf543139939b49128caf436dc1bdee54fcb24023a08d9403f9b4bf0d450"),
 
         (b"The quick brown fox jumps over the lazy dog.",
-         "18f4f4bd419603f95538837003d9d254c26c23765565162247483f65c50303597" +
+         "18f4f4bd419603f95538837003d9d254c26c23765565162247483f65c50303597"
          "bc9ce4d289f21d1c2f1f458828e33dc442100331b35e7eb031b5d38ba6460f8"),
 
     ]
@@ -340,7 +338,7 @@ def test_edge_cases():
 
         print(f"{description:30s}: {our_hash[:16]}...{verify}")
 
-        if 'passed' in locals():
+        if "passed" in locals():
             all_passed = all_passed and passed
 
     return all_passed
@@ -372,9 +370,8 @@ def run_comprehensive_test():
     if test1_passed and test2_passed and test3_passed:
         print("所有测试通过！实现完全正确。✓")
         return True
-    else:
-        print("测试失败！实现有问题。✗")
-        return False
+    print("测试失败！实现有问题。✗")
+    return False
 
 
 # 简单的自包含测试，不依赖hashlib
@@ -385,7 +382,7 @@ def self_contained_test():
 
     # 测试空字符串
     empty_hash = sha3_512_hex(b"")
-    expected_empty = "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a6" + \
+    expected_empty = "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a6" \
                      "15b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26"
 
     print(f"空字符串测试: {'✓' if empty_hash == expected_empty else '✗'}")
@@ -395,7 +392,7 @@ def self_contained_test():
 
     # 测试"abc"
     abc_hash = sha3_512_hex(b"abc")
-    expected_abc = "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e" + \
+    expected_abc = "b751850b1a57168a5693cd924b6b096e08f621827444f70d884f5d0240d2712e" \
                    "10e116e9192af3c91a7ec57647e3934057340b4cf408d5a56592f8274eec53f0"
 
     print(f"'abc'测试: {'✓' if abc_hash == expected_abc else '✗'}")
@@ -412,7 +409,7 @@ def example_usage():
 
     # 示例1: 哈希字符串
     message = "Hello, SHA3-512!"
-    hash_hex = sha3_512_hex(message.encode('utf-8'))
+    hash_hex = sha3_512_hex(message.encode("utf-8"))
     print(f"消息: '{message}'")
     print(f"SHA3-512: {hash_hex}")
     print()

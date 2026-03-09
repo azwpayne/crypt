@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:28
 # @name    : Chacha20.py
 # @author  : azwpayne
@@ -81,12 +79,12 @@ def chacha20_encrypt(key, nonce, counter, plaintext):
 # 明文: 30313233343536373839
 # 密文 (hex): a3e365d72defcc690ef2
 # 解密后明文: 30313233343536373839
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 示例密钥（32字节）和 nonce（12字节）
-    key = bytes.fromhex('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f')
-    nonce = bytes.fromhex('202122232425262728292a2b')
+    key = bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
+    nonce = bytes.fromhex("202122232425262728292a2b")
     counter = 0  # 一直都是
-    plaintext = bytes.fromhex('30313233343536373839')
+    plaintext = bytes.fromhex("30313233343536373839")
     print("明文:", plaintext.hex())
 
     # 加密
@@ -94,5 +92,5 @@ if __name__ == '__main__':
     print("密文 (hex):", ciphertext.hex())
 
     # 解密：对密文再次使用同样的 keystream 异或即可还原明文
-    decrypted = chacha20_encrypt(key, nonce, counter, ciphertext)  #
+    decrypted = chacha20_encrypt(key, nonce, counter, ciphertext)
     print("解密后明文:", decrypted.hex())

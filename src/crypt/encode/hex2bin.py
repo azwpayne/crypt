@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/10 07:30
 # @name    : hex2bin.py
 # @author  : azwpayne
@@ -174,7 +172,7 @@ def bin_to_hex(bin_str: str, min_digits: int = 0) -> str:
         raise ValueError("输入不能为空")
 
     # 验证二进制有效性
-    if not all(c in '01' for c in clean_bin):
+    if not all(c in "01" for c in clean_bin):
         raise ValueError(f"无效的二进制字符串: {bin_str}")
 
     # 如果长度不是4的倍数，左侧补零
@@ -267,7 +265,7 @@ def is_valid_bin(bin_str: str) -> bool:
         clean_bin = bin_str.replace("0b", "").replace(" ", "").strip()
         if not clean_bin:
             return False
-        return all(c in '01' for c in clean_bin)
+        return all(c in "01" for c in clean_bin)
     except (ValueError, TypeError):
         return False
 

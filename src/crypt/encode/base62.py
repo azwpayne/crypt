@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/10 08:02
 # @name    : base62.py
 # @author  : azwpayne
@@ -30,7 +28,7 @@ def encode(num: int) -> str:
         num, remainder = divmod(num, BASE)
         result.append(BASE62_ALPHABET[remainder])
 
-    return ''.join(reversed(result))
+    return "".join(reversed(result))
 
 
 def decode(base62_str: str) -> int:

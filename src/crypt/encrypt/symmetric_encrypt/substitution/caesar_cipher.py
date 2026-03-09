@@ -19,10 +19,10 @@ def encrypt(text: str, shift: int) -> str:
     返回:
         加密后的字符串
     """
-    result = ''
+    result = ""
     for char in text:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
+            base = ord("A") if char.isupper() else ord("a")
             encrypted_char = chr((ord(char) - base + shift) % 26 + base)
             result += encrypted_char
         else:
@@ -60,7 +60,7 @@ def encrypt_with_custom_alphabet(
     返回:
         加密后的字符串
     """
-    result = ''
+    result = ""
     alphabet_len = len(alphabet)
     alphabet_map = {char: idx for idx, char in enumerate(alphabet)}
 
@@ -114,12 +114,12 @@ def brute_force_decrypt(
     # return results
     return {
         shift: decrypt_with_custom_alphabet(text, shift, alphabet)
-        for shift in range(0, len(alphabet))
+        for shift in range(len(alphabet))
     }
 
 
-if __name__ == '__main__':
-    source_text = 'azwpayne'
+if __name__ == "__main__":
+    source_text = "azwpayne"
     source_shift = 3
     print(f"Source Text: {source_text}")
     print(f"Source Shift: {source_shift}")

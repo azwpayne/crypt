@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:30
 # @name    : sha2_512_224.py
 # @author  : azwpayne
@@ -8,7 +6,6 @@
 import hashlib
 import random
 from string import printable
-from typing import Tuple
 
 # 初始哈希值 (FIPS 180-4 第 5.3.4.2 节)
 INITIAL_HASH = (
@@ -96,14 +93,14 @@ def pad_message(message: bytes) -> bytes:
     bit_len = (msg_len * 8) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 
     # 添加1位
-    padded = message + b'\x80'
+    padded = message + b"\x80"
 
     # 填充0直到长度 ≡ 112 mod 128
     while len(padded) % 128 != 112:
-        padded += b'\x00'
+        padded += b"\x00"
 
     # 附加128位长度 (大端序)
-    padded += bit_len.to_bytes(16, 'big')
+    padded += bit_len.to_bytes(16, "big")
 
     return padded
 
@@ -115,7 +112,7 @@ def chunk_message(padded: bytes) -> tuple[tuple[int, ...], ...]:
     """
     return tuple(
         tuple(
-            int.from_bytes(padded[i + j:i + j + 8], 'big')
+            int.from_bytes(padded[i + j:i + j + 8], "big")
             for j in range(0, 128, 8)
         )
         for i in range(0, len(padded), 128)
@@ -126,7 +123,7 @@ def chunk_message(padded: bytes) -> tuple[tuple[int, ...], ...]:
 # 消息调度
 # ============================================================================
 
-def message_schedule(block: Tuple[int, ...]) -> Tuple[int, ...]:
+def message_schedule(block: tuple[int, ...]) -> tuple[int, ...]:
     """
     消息扩展 (FIPS 180-4 第 6.4.2 节)
     将16个消息字扩展为80个
@@ -179,10 +176,10 @@ def message_schedule(block: Tuple[int, ...]) -> Tuple[int, ...]:
 #     return (a, b, c, d, e, f, g, h_val)
 
 def compress_block(
-        h: Tuple[int, ...],
-        w: Tuple[int, ...],
-        k: Tuple[int, ...],
-) -> Tuple[int, ...]:
+        h: tuple[int, ...],
+        w: tuple[int, ...],
+        k: tuple[int, ...],
+) -> tuple[int, ...]:
     """
     块压缩函数 (FIPS 180-4 第 6.4.2 节)
     """
@@ -277,8 +274,8 @@ def sha512_224(message: bytes) -> bytes:
         )
 
     # 提取前224位 (28字节)
-    full_digest = b''.join(
-        word.to_bytes(8, 'big')
+    full_digest = b"".join(
+        word.to_bytes(8, "big")
         for word in h
     )
 
@@ -299,13 +296,13 @@ def sha512_224_hex(message: bytes) -> str:
 # 测试
 # ============================================================================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for _ in range(0x10):
-        example_str = ''.join(random.sample(printable, random.randint(0, 0x10)))
+        example_str = "".join(random.sample(printable, random.randint(0, 0x10)))
         print(f"输入字符串: {example_str}")
         result = sha512_224_hex(example_str.encode())
 
-        status = "✓" if result == hashlib.new('sha512_224',
+        status = "✓" if result == hashlib.new("sha512_224",
                                               example_str.encode()).hexdigest() else "✗"
         print(f"输出结果: {result}")
         print(f"验证结果: {status}")

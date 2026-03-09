@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:21
 # @name    : crc32.py
 # @author  : azwpayne
@@ -22,11 +20,11 @@ def calculate_crc32(data):
 
 
 # 示例数据
-data = 'azwpayne'.encode()
+data = b"azwpayne"
 
 crc32 = calculate_crc32(data)
 # 打印结果
-print("CRC32:", format(crc32, '08x'))
+print("CRC32:", format(crc32, "08x"))
 
 
 # 正式
@@ -50,7 +48,7 @@ def getCrc32(bytes_arr):
     length = len(bytes_arr)
     if bytes_arr is not None:
         crc = 0xffffffff
-        for i in range(0, length):
+        for i in range(length):
             crc = (crc << 8) ^ origin_crc32_table[
                 (getReverse(bytes_arr[i], 8) ^ (crc >> 24)) & 0xff]
     else:
@@ -61,12 +59,12 @@ def getCrc32(bytes_arr):
 
 def getReverse(tempData, byte_length):
     reverseData = 0
-    for i in range(0, byte_length):
+    for i in range(byte_length):
         reverseData += ((tempData >> i) & 1) << (byte_length - 1 - i)
     return reverseData
 
 
-data = 'azwpayne'.encode()
+data = b"azwpayne"
 
 crc32 = getCrc32(data)
-print("CRC32:", format(crc32, '0x'))
+print("CRC32:", format(crc32, "0x"))

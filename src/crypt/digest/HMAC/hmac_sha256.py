@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 16:07
 # @name    : hmac_sha256.py
 # @author  : azwpayne

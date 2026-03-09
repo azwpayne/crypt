@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 13:28
 # @name    : base64.py
 # @author  : azwpayne
@@ -24,7 +22,7 @@ def base64_encode(data: bytes) -> str:
         return ""
 
     # 将输入转换为二进制字符串
-    binary_str = ''.join(f'{byte:08b}' for byte in data)
+    binary_str = "".join(f"{byte:08b}" for byte in data)
 
     # 按6位分组
     groups = [binary_str[i:i + 6] for i in range(0, len(binary_str), 6)]
@@ -39,13 +37,13 @@ def base64_encode(data: bytes) -> str:
     #     result.append(B64_CHARS[index])
 
     # 将6位二进制组转换为字符
-    result = [B64_CHARS[int(group.ljust(6, '0'), 2)] for group in groups]
+    result = [B64_CHARS[int(group.ljust(6, "0"), 2)] for group in groups]
 
     # 计算需要填充的等号数量
     padding = (3 - len(data) % 3) % 3
-    result.extend(['='] * padding)
+    result.extend(["="] * padding)
 
-    return ''.join(result)
+    return "".join(result)
 
 
 def base64_decode(b64_str: str) -> bytes:
@@ -54,7 +52,7 @@ def base64_decode(b64_str: str) -> bytes:
         return b""
 
     # 移除填充字符
-    b64_str = b64_str.rstrip('=')
+    b64_str = b64_str.rstrip("=")
 
     # 将base64字符转为索引值
     try:
@@ -63,7 +61,7 @@ def base64_decode(b64_str: str) -> bytes:
         raise ValueError("包含非法base64字符")
 
     # 将索引转为6位二进制
-    binary_str = ''.join(f'{idx:06b}' for idx in indices)
+    binary_str = "".join(f"{idx:06b}" for idx in indices)
 
     # 按8位分组（字节）
     byte_groups = [binary_str[i:i + 8] for i in range(0, len(binary_str), 8)]
@@ -90,7 +88,7 @@ if __name__ == "__main__":
         b"a" * 100
     ]
 
-    B64_CHARS = ''.join(random.sample(B64_SOURCE_CHARS, len(B64_SOURCE_CHARS))) \
+    B64_CHARS = "".join(random.sample(B64_SOURCE_CHARS, len(B64_SOURCE_CHARS))) \
         if random.randint(0, 1) \
         else B64_SOURCE_CHARS
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:32
 # @name    : Salsa20.py
 # @author  : azwpayne
@@ -79,11 +77,11 @@ def salsa20_encrypt(k, n, c, p):
     return bytes(ciphertext)
 
 
-if __name__ == '__main__':
-    key = bytes.fromhex('0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22')
-    nonce = bytes.fromhex('9565542946c322be')
+if __name__ == "__main__":
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
+    nonce = bytes.fromhex("9565542946c322be")
     counter = 0
-    plaintext = bytes.fromhex('0000000001000200cdb87f280000000001000200cdb87f28')
+    plaintext = bytes.fromhex("0000000001000200cdb87f280000000001000200cdb87f28")
     print("明文:", plaintext.hex())
 
     ciphertext = salsa20_encrypt(key, nonce, counter, plaintext)

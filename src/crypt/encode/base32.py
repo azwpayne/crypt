@@ -159,9 +159,9 @@ def test_base32():
   encoded = base32_encode(random_data)
   decoded = base32_decode(encoded)
   if decoded == random_data:
-    print(f"随机数据测试 (100字节): ✓")
+    print("随机数据测试 (100字节): ✓")
   else:
-    print(f"随机数据测试 (100字节): ✗")
+    print("随机数据测试 (100字节): ✗")
     all_passed = False
 
   print("-" * 50)
@@ -187,7 +187,7 @@ if __name__ == "__main__":
   decoded = base32_decode(encoded)
   decoded_text = decoded.decode("utf-8")
 
-  print(f"示例1 - 文本编码解码:")
+  print("示例1 - 文本编码解码:")
   print(f"  原始文本: {text}")
   print(f"  Base32编码: {encoded}")
   print(f"  解码文本: {decoded_text}")
@@ -197,7 +197,7 @@ if __name__ == "__main__":
   encoded_binary = base32_encode(binary_data)
   decoded_binary = base32_decode(encoded_binary)
 
-  print(f"\n示例2 - 二进制数据编码解码:")
+  print("\n示例2 - 二进制数据编码解码:")
   print(f"  原始数据: {binary_data.hex()}")
   print(f"  Base32编码: {encoded_binary}")
   print(f"  解码数据: {decoded_binary.hex()}")

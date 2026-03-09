@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:32
 # @name    : md5.py
 # @author  : azwpayne
@@ -59,10 +57,10 @@ def md5(inp: bytes | str) -> str:
 
     def pad_message(message):  # 填充
         original_length_bits = len(message) * 8
-        message += b'\x80'
+        message += b"\x80"
         while (len(message) + 8) % 64 != 0:
-            message += b'\x00'
-        message += struct.pack('<Q', original_length_bits)
+            message += b"\x00"
+        message += struct.pack("<Q", original_length_bits)
         return message
 
     a0 = 0x67452301
@@ -73,7 +71,7 @@ def md5(inp: bytes | str) -> str:
     message = pad_message(message)
     chunks = [message[i:i + 64] for i in range(0, len(message), 64)]
     for chunk in chunks:
-        words = struct.unpack('<16I', chunk)  # 将64字节数据切割16份,每份都按小端续展示. I是int的意思 对应4字节
+        words = struct.unpack("<16I", chunk)  # 将64字节数据切割16份,每份都按小端续展示. I是int的意思 对应4字节
 
         A, B, C, D = a0, b0, c0, d0
         # Round 1 都是 a d c b
@@ -150,13 +148,13 @@ def md5(inp: bytes | str) -> str:
         c0 = (c0 + C) & 0xFFFFFFFF
         d0 = (d0 + D) & 0xFFFFFFFF
 
-    result = struct.pack('<4I', a0, b0, c0, d0)
+    result = struct.pack("<4I", a0, b0, c0, d0)
     return result.hex()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # print(bytes.fromhex('31'))
-    print(md5('yangruhua'))
+    print(md5("yangruhua"))
     # print(md5(bytes.fromhex('31')))
 
 

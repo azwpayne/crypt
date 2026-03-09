@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/10 07:41
 # @name    : base16.py
 # @author  : azwpayne

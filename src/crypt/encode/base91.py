@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/10 08:03
 # @name    : base91.py
 # @author  : azwpayne
@@ -43,7 +41,7 @@ def base91_encode(inp: bytes) -> str:
         if n > 7 or b > 90:
             out.append(BASE91_ALPHABET[b // 91])
 
-    return ''.join(out)
+    return "".join(out)
 
 
 def base91_decode(inp: str) -> bytes:
@@ -84,7 +82,7 @@ def base91_decode(inp: str) -> bytes:
     return bytes(out)
 
 
-def base91_encode_str(inp: str, encoding: str = 'utf-8') -> str:
+def base91_encode_str(inp: str, encoding: str = "utf-8") -> str:
     """
     将字符串编码为 base91 字符串
 
@@ -98,7 +96,7 @@ def base91_encode_str(inp: str, encoding: str = 'utf-8') -> str:
     return base91_encode(inp.encode(encoding))
 
 
-def base91_decode_str(inp: str, encoding: str = 'utf-8') -> str:
+def base91_decode_str(inp: str, encoding: str = "utf-8") -> str:
     """
     将 base91 字符串解码为原始字符串
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/10 08:03
 # @name    : base85.py
 # @author  : azwpayne
@@ -29,10 +27,10 @@ def b85encode(data: bytes) -> str:
         if len(chunk) < 4:
             padding = 4 - len(chunk)
             # 填充0使成为4字节
-            chunk = chunk + b'\x00' * padding
+            chunk = chunk + b"\x00" * padding
 
         # 将4字节转换为32位整数
-        value = struct.unpack('>I', chunk)[0]
+        value = struct.unpack(">I", chunk)[0]
 
         # 转换为5个Base85字符
         encoded_chars = []
@@ -47,7 +45,7 @@ def b85encode(data: bytes) -> str:
 
         result.extend(encoded_chars)
 
-    return ''.join(result)
+    return "".join(result)
 
 
 def b85decode(encoded: str) -> bytes:
@@ -61,8 +59,7 @@ def b85decode(encoded: str) -> bytes:
     encoded = encoded.strip()
 
     # 处理Adobe ASCII85的结束标记
-    if encoded.endswith('~>'):
-        encoded = encoded[:-2]
+    encoded = encoded.removesuffix("~>")
 
     result = bytearray()
     padding = 0
@@ -74,7 +71,7 @@ def b85decode(encoded: str) -> bytes:
         if len(chunk) < 5:
             padding = 5 - len(chunk)
             # 填充'u'使成为5字符
-            chunk = chunk + 'u' * padding
+            chunk = chunk + "u" * padding
 
         # 将5个Base85字符转换为32位整数
         value = 0
@@ -85,7 +82,7 @@ def b85decode(encoded: str) -> bytes:
 
         # 将32位整数转换为4字节
         try:
-            decoded_bytes = struct.pack('>I', value)
+            decoded_bytes = struct.pack(">I", value)
         except struct.error:
             raise ValueError("Invalid Base85 data")
 
@@ -111,7 +108,7 @@ def b85decode_ascii85(encoded: str) -> bytes:
     Adobe ASCII85解码（处理<~ ~>分隔符）
     """
     encoded = encoded.strip()
-    if encoded.startswith('<~') and encoded.endswith('~>'):
+    if encoded.startswith("<~") and encoded.endswith("~>"):
         encoded = encoded[2:-2]
     return b85decode(encoded)
 
@@ -166,7 +163,7 @@ if __name__ == "__main__":
     data = b"Hello, Base85!"
     encoded = b85encode(data)
     decoded = b85decode(encoded)
-    print(f"Example 1 - Basic:")
+    print("Example 1 - Basic:")
     print(f"  Data: {data}")
     print(f"  Encoded: {encoded}")
     print(f"  Decoded: {decoded}")
@@ -176,7 +173,7 @@ if __name__ == "__main__":
     # 示例2: ASCII85格式
     ascii85_encoded = b85encode_ascii85(data)
     ascii85_decoded = b85decode_ascii85(ascii85_encoded)
-    print(f"Example 2 - ASCII85:")
+    print("Example 2 - ASCII85:")
     print(f"  Data: {data}")
     print(f"  ASCII85: {ascii85_encoded}")
     print(f"  Decoded: {ascii85_decoded}")
@@ -186,5 +183,5 @@ if __name__ == "__main__":
     # 示例3: 二进制数据
     binary_data = bytes(range(256))
     encoded_binary = b85encode(binary_data[:20])  # 只编码前20字节
-    print(f"Example 3 - Binary data (first 20 bytes):")
+    print("Example 3 - Binary data (first 20 bytes):")
     print(f"  Encoded: {encoded_binary}")

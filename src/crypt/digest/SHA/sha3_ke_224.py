@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/11 19:56
 # @name    : sha3_ke_224.py
 # @author  : azwpayne
@@ -60,7 +58,7 @@ def rotate_left_64(x, n):
 def hex_to_bytes(hex_str):
     """16进制字符串转字节"""
     if len(hex_str) % 2 != 0:
-        hex_str = '0' + hex_str
+        hex_str = "0" + hex_str
     return bytes.fromhex(hex_str)
 
 
@@ -194,7 +192,7 @@ def keccak_sponge(input_bytes, rate_bits, output_bits):
     # 3. 吸收阶段
     for i in range(0, len(padded), rate_bytes):
         block = padded[i:i + rate_bytes]
-        block_bytes = block.ljust(200, b'\x00')  # 填充到200字节
+        block_bytes = block.ljust(200, b"\x00")  # 填充到200字节
 
         # 将块转换为通道
         block_lanes = bytes_to_lanes(block_bytes)
@@ -319,7 +317,7 @@ def benchmark():
     elapsed = end - start
     speed = (len(test_data) * iterations) / elapsed / (1024 * 1024)  # MB/s
 
-    print(f"\n性能测试:")
+    print("\n性能测试:")
     print(f"  处理 {len(test_data)} 字节数据 {iterations} 次")
     print(f"  总时间: {elapsed:.2f} 秒")
     print(f"  速度: {speed:.2f} MB/秒")

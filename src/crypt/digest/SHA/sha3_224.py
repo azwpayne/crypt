@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 16:50
 # @name    : sha3_224.py
 # @author  : azwpayne

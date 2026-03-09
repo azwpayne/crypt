@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 16:51
 # @name    : sha3_384.py
 # @author  : azwpayne
@@ -106,7 +104,7 @@ def keccak_pad(message, rate_bits):
     """Keccak填充函数 - 修正版本"""
     # 转换为字节数组
     if isinstance(message, str):
-        message = message.encode('utf-8')
+        message = message.encode("utf-8")
     elif isinstance(message, bytes):
         pass
     else:
@@ -186,7 +184,7 @@ def test_sha3_384():
     test1 = ""
     result1 = sha3_384_hex(test1)
     expected1 = "0c63a75b845e4f7d01107d852e4c2485c51a50aaaa94fc61995e71bbee983a2ac3713831264adb47fb6bd1e058d5f004"
-    print(f"测试1 - 空字符串:")
+    print("测试1 - 空字符串:")
     print(f"  期望: {expected1}")
     print(f"  实际: {result1}")
     print(f"  结果: {'✓ 通过' if result1 == expected1 else '✗ 失败'}")
@@ -196,7 +194,7 @@ def test_sha3_384():
     test2 = "abc"
     result2 = sha3_384_hex(test2)
     expected2 = "ec01498288516fc926459f58e2c6ad8df9b473cb0fc08c2596da7cf0e49be4b298d88cea927ac7f539f1edf228376d25"
-    print(f"测试2 - 'abc':")
+    print("测试2 - 'abc':")
     print(f"  期望: {expected2}")
     print(f"  实际: {result2}")
     print(f"  结果: {'✓ 通过' if result2 == expected2 else '✗ 失败'}")
@@ -206,7 +204,7 @@ def test_sha3_384():
     test3 = "The quick brown fox jumps over the lazy dog"
     result3 = sha3_384_hex(test3)
     expected3 = "7063465e08a93bce31cd89d2e3ca8f602498696e253592ed26f07bf7e703cf328581e1471a7ba7ab119b1a9ebdf8be41"
-    print(f"测试3 - 'The quick brown fox jumps over the lazy dog':")
+    print("测试3 - 'The quick brown fox jumps over the lazy dog':")
     print(f"  期望: {expected3}")
     print(f"  实际: {result3}")
     print(f"  结果: {'✓ 通过' if result3 == expected3 else '✗ 失败'}")
@@ -216,7 +214,7 @@ def test_sha3_384():
     test4 = "The quick brown fox jumps over the lazy dog."
     result4 = sha3_384_hex(test4)
     expected4 = "1a34d81695b622df178bc74df7124fe12fac0f64ba5250b78b99c1273d4b080168e10652894ecad5f1f4d5b965437fb9"
-    print(f"测试4 - 'The quick brown fox jumps over the lazy dog.':")
+    print("测试4 - 'The quick brown fox jumps over the lazy dog.':")
     print(f"  期望: {expected4}")
     print(f"  实际: {result4}")
     print(f"  结果: {'✓ 通过' if result4 == expected4 else '✗ 失败'}")
@@ -229,12 +227,12 @@ def test_sha3_384():
     # 由于长消息的标准结果太长，这里我们用Python的hashlib验证
     import hashlib
     hashlib_result = hashlib.sha3_384(test5.encode()).hexdigest()
-    print(f"测试5 - 1000个'a':")
+    print("测试5 - 1000个'a':")
     print(f"  hashlib: {hashlib_result}")
     print(f"  我们的实现: {result5}")
     print(f"  结果: {'✓ 通过' if result5 == hashlib_result else '✗ 失败'}")
     print()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_sha3_384()

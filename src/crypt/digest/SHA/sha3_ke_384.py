@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/11 19:57
 # @name    : sha3_ke_384.py
 # @author  : azwpayne

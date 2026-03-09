@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2025/12/24 13:29
 # @name    : sm3.py
 # @author  : azwpayne
@@ -53,16 +51,16 @@ def P1(X):
 # 填充消息，使得消息长度是 512 位的倍数
 def padding(message):
     l = len(message) * 8
-    message += b'\x80'
+    message += b"\x80"
     while (len(message) + 8) % 64 != 0:
-        message += b'\x00'
-    message += l.to_bytes(8, 'big')
+        message += b"\x00"
+    message += l.to_bytes(8, "big")
     return message
 
 
 # 消息扩展函数
 def message_expand(block):
-    W = [int.from_bytes(block[i:i + 4], 'big') for i in range(0, 64, 4)]
+    W = [int.from_bytes(block[i:i + 4], "big") for i in range(0, 64, 4)]
     for j in range(16, 68):  # 52轮
         W.append(
             P1(W[j - 16] ^ W[j - 9] ^ left_rotate(W[j - 3], 15)) ^ left_rotate(W[j - 13], 7) ^ W[
@@ -110,11 +108,11 @@ def sm3(message):
     for block in blocks:
         V = CF(V, block)
 
-    res = ''.join(f'{x:08x}' for x in V)
+    res = "".join(f"{x:08x}" for x in V)
     print(res)
 
 
 # 1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b
 
-msg = "".encode()
+msg = b""
 sm3(msg)

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # @time    : 2026/1/6 16:51
 # @name    : sha3_ke_128.py.py
 # @author  : azwpayne
@@ -63,7 +61,7 @@ def bytes_to_lanes(data):
     每个 lane 是 64 位整数
     """
     if len(data) < 200:  # 200 bytes = 1600 bits
-        data = data.ljust(200, b'\x00')
+        data = data.ljust(200, b"\x00")
 
     lanes = [[0] * 5 for _ in range(5)]
     for y in range(5):
@@ -298,7 +296,7 @@ def test_sha3_256():
         print(f"  Got:      {result}")
 
         if not passed:
-            print(f"  MISMATCH!")
+            print("  MISMATCH!")
         print()
 
     if all_passed:

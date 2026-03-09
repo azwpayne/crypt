@@ -71,12 +71,12 @@ def sha1(data):
     return ''.join(f'{x:08x}' for x in [h0, h1, h2, h3, h4])
 
 
-message = "yangruhua"
-
-data = message.encode()
-data = b'yangruhua'
-
-data = bytes.fromhex('79616e677275687561')
-
-hash_value = sha1(data)
-print(hash_value)
+# message = "yangruhua"
+#
+# data = message.encode()
+# data = b'yangruhua'
+#
+# data = bytes.fromhex('79616e677275687561')
+#
+# hash_value = sha1(data)
+# print(hash_value)

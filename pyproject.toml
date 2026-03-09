@@ -3,11 +3,49 @@ name = "crypt"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "pycryptodome>=3.23.0",
+    "respx>=0.21.1",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+asyncio_mode = "auto"              # 自动识别异步测试
+timeout = 30                       # 默认 30 秒超时
+addopts = "-v --tb=short"         # 详细输出和简洁的错误追踪
+
+[dependency-groups]
+dev-kit = [
+    "pyrefly>=0.53.0",
+    "pyright>=1.1.408",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
+    "uv>=0.10.4",
+]
+test = [
+    ## http 请求模拟
+    "aioresponses>=0.7.8", # 异步 HTTP 请求模拟库, 用于 mock aiohttp 的 HTTP 请求，测试异步 HTTP 代码
+    "pytest-httpx>=0.22.0", # 用于测试 HTTP 客户端和服务器
+    "respx>=0.22.0", # 用于模拟 HTTP 请求, 支持 httpx 和 requests，提供简洁的 API 来 mock HTTP 请求
+    ## 测试数据
+    "factory-boy>=3.3.3", # 测试 fixture 替代工具, 用于创建测试数据对象，比直接构造更灵活
+    "faker>=35.2.2", # 伪造数据生成器, 生成假的姓名、地址、文本等测试数据
+    "hypothesis>=6.113.0", # 属性测试库, 根据类型注解自动生成测试数据，支持 pydantic 等
+    "polyfactory>=2.22.5", # 测试数据生成器, 创建测试数据对象，比 factory-boy 更简单
+    ## 测试工具
+    "pytest>=7.4.4", # Python 最流行的测试框架，用于编写和运行单元测试、集成测试.支持 fixtures、参数化测试、插件扩展等特性
+    "pytest-asyncio>=0.23.8", # 用于编写和运行异步测试, 允许使用 @pytest.mark.asyncio 装饰器测试 async/await 代码
+    "pytest-cov>=5.0.0", # 用于测量测试覆盖率, 生成测试覆盖率报告，显示哪些代码被测试覆盖
+    "pytest-xdist>=3.6.1", # 用于并行运行测试, 支持多 CPU 核心并行运行测试，加快测试速度
+    "pytest-mock>=3.11.1", # 用于测试 mocking, 提供简洁的 API 来 mock 函数、方法和属性
+    "pytest-benchmark>=5.0.0", # 用于测试性能, 提供简洁的 API 来测量代码的执行时间
+    "pytest-timeout>=2.1.0", # 用于测试超时, 提供简洁的 API 来测量代码的执行时间
+    "pytest-sugar>=1.0.5", # 用于测试时提供更丰富地输出和统计信息
+    ## 快照测试
+    "syrupy>=3.0.6", # 快照测试插件, 将测试结果与历史快照对比，检测意外变更
+    # 测试工作流管理
+    #    "nox>=2026.2.9",
+    #    "tox"
+]

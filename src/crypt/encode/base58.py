@@ -66,7 +66,8 @@ def decode_base58(encoded: str) -> bytes:
   num = 0
   for char in encoded:
     if char not in BASE58_MAP:
-      raise ValueError(f"无效的Base58字符: '{char}'")
+      msg = f"无效的Base58字符: '{char}'"
+      raise ValueError(msg)
     num = num * BASE58_BASE + BASE58_MAP[char]
 
   # 将大整数转换为字节
@@ -125,7 +126,8 @@ def decode_base58_check(encoded: str, checksum_len: int = 4) -> bytes:
   decoded = decode_base58(encoded)
 
   if len(decoded) < checksum_len:
-    raise ValueError("Base58Check数据太短")
+    msg = "Base58Check数据太短"
+    raise ValueError(msg)
 
   # 分离数据和校验和
   data = decoded[:-checksum_len]
@@ -138,7 +140,8 @@ def decode_base58_check(encoded: str, checksum_len: int = 4) -> bytes:
 
   # 验证校验和
   if checksum != expected_checksum:
-    raise ValueError("Base58Check校验和验证失败")
+    msg = "Base58Check校验和验证失败"
+    raise ValueError(msg)
 
   return data
 
@@ -174,19 +177,21 @@ def test_base58():
   print("-" * 60)
 
   data = b"Test data for checksum"
-  encoded_check = encode_base58_check(data)
-  decoded_check = decode_base58_check(encoded_check)
+  test_encoded_check = encode_base58_check(data)
+  test_decoded_check = decode_base58_check(test_encoded_check)
 
-  status = "✓" if decoded_check == data else "✗"
+  status = "✓" if test_decoded_check == data else "✗"
   print(f"Base58Check测试: {status}")
   print(f"  原始: {data.hex()}")
-  print(f"  编码: {encoded_check}")
-  print(f"  解码: {decoded_check.hex()}")
+  print(f"  编码: {test_encoded_check}")
+  print(f"  解码: {test_decoded_check.hex()}")
 
   # 测试错误校验和
   try:
     # 修改最后一个字符来破坏校验和
-    corrupted = encoded_check[:-1] + ("2" if encoded_check[-1] == "1" else "1")
+    corrupted = test_encoded_check[:-1] + (
+      "2" if test_encoded_check[-1] == "1" else "1"
+    )
     decode_base58_check(corrupted)
     print("\n校验和测试: ✗ (应该失败但没有失败)")
   except ValueError as e:
@@ -196,27 +201,27 @@ def test_base58():
 # 示例使用
 if __name__ == "__main__":
   # 基本用法示例
-  data = b"Hello Bitcoin!"
+  test_data = b"Hello Bitcoin!"
 
   # 基本Base58编码
-  encoded = encode_base58(data)
-  print(f"原始数据: {data}")
-  print(f"Base58编码: {encoded}")
+  test_encoded = encode_base58(test_data)
+  print(f"原始数据: {test_data}")
+  print(f"Base58编码: {test_encoded}")
 
   # 基本Base58解码
-  decoded = decode_base58(encoded)
-  print(f"Base58解码: {decoded}")
-  print(f"数据匹配: {data == decoded}")
+  test_decoded = decode_base58(test_encoded)
+  print(f"Base58解码: {test_decoded}")
+  print(f"数据匹配: {test_data == test_decoded}")
   print()
 
   # Base58Check编码（带校验和）
-  encoded_check = encode_base58_check(data)
+  encoded_check = encode_base58_check(test_data)
   print(f"Base58Check编码: {encoded_check}")
 
   # Base58Check解码
   decoded_check = decode_base58_check(encoded_check)
   print(f"Base58Check解码: {decoded_check}")
-  print(f"数据匹配: {data == decoded_check}")
+  print(f"数据匹配: {test_data == decoded_check}")
 
   # 运行完整测试
   test_base58()

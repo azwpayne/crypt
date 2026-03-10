@@ -26,7 +26,7 @@ def base32_encode(data: bytes) -> str:
     return ""
 
   # 将字节转换为二进制字符串
-  binary_str = "".join(format(byte, "08b") for byte in data)
+  binary_str = "".join(f"{byte:08b}" for byte in data)
 
   # 补零到5的倍数
   padding_len = (5 - len(binary_str) % 5) % 5
@@ -64,13 +64,14 @@ def base32_decode(encoded_str: str) -> bytes:
   # 验证输入字符
   for char in encoded_str:
     if char not in BASE32_ALPHABET:
-      raise ValueError(f"Invalid Base32 character: '{char}'")
+      msg = f"Invalid Base32 character: '{char}'"
+      raise ValueError(msg)
 
   # 将字符转换为索引
   indices = [BASE32_ALPHABET.index(char) for char in encoded_str]
 
   # 将索引转换为二进制字符串
-  binary_str = "".join(format(index, "05b") for index in indices)
+  binary_str = "".join(f"{index:05b}" for index in indices)
 
   # 移除可能的多余位（由填充产生）
   if len(indices) % 8 != 0:
@@ -91,13 +92,13 @@ def base32_decode(encoded_str: str) -> bytes:
 def test_base32():
   """测试 Base32 编码解码功能"""
   test_cases = [
-    b"",  # 空数据
-    b"f",  # 单字节
-    b"fo",  # 双字节
-    b"foo",  # 三字节
-    b"foob",  # 四字节
-    b"fooba",  # 五字节
-    b"foobar",  # 六字节
+    b"",
+    b"f",
+    b"fo",
+    b"foo",
+    b"foob",
+    b"fooba",
+    b"foobar",
     b"Hello, World!",  # 文本
     b"\x00\x01\x02\x03\x04\x05",  # 二进制数据
     b"A" * 10,  # 重复字符
@@ -135,7 +136,7 @@ def test_base32():
       if encode_match == "✗" or decode_match == "✗":
         all_passed = False
 
-    except Exception as e:
+    except ValueError as e:  # noqa: BLE001, PERF203
       print(f"测试 {i + 1} 失败: {e}")
       all_passed = False
       print()
@@ -172,32 +173,32 @@ def test_base32():
     sys.exit(1)
 
 
-if __name__ == "__main__":
-  # 运行测试
-  test_base32()
-
-  # 示例用法
-  print("\n示例用法:")
-  print("-" * 50)
-
-  # 示例1: 编码字符串
-  text = "Hello, Base32!"
-  data = text.encode("utf-8")
-  encoded = base32_encode(data)
-  decoded = base32_decode(encoded)
-  decoded_text = decoded.decode("utf-8")
-
-  print("示例1 - 文本编码解码:")
-  print(f"  原始文本: {text}")
-  print(f"  Base32编码: {encoded}")
-  print(f"  解码文本: {decoded_text}")
-
-  # 示例2: 编码二进制数据
-  binary_data = b"\xde\xad\xbe\xef\xca\xfe"
-  encoded_binary = base32_encode(binary_data)
-  decoded_binary = base32_decode(encoded_binary)
-
-  print("\n示例2 - 二进制数据编码解码:")
-  print(f"  原始数据: {binary_data.hex()}")
-  print(f"  Base32编码: {encoded_binary}")
-  print(f"  解码数据: {decoded_binary.hex()}")
+# if __name__ == "__main__":
+#   # 运行测试
+#   test_base32()
+#
+#   # 示例用法
+#   print("\n示例用法:")
+#   print("-" * 50)
+#
+#   # 示例1: 编码字符串
+#   text = "Hello, Base32!"
+#   data = text.encode("utf-8")
+#   encoded = base32_encode(data)
+#   decoded = base32_decode(encoded)
+#   decoded_text = decoded.decode("utf-8")
+#
+#   print("示例1 - 文本编码解码:")
+#   print(f"  原始文本: {text}")
+#   print(f"  Base32编码: {encoded}")
+#   print(f"  解码文本: {decoded_text}")
+#
+#   # 示例2: 编码二进制数据
+#   binary_data = b"\xde\xad\xbe\xef\xca\xfe"
+#   encoded_binary = base32_encode(binary_data)
+#   decoded_binary = base32_decode(encoded_binary)
+#
+#   print("\n示例2 - 二进制数据编码解码:")
+#   print(f"  原始数据: {binary_data.hex()}")
+#   print(f"  Base32编码: {encoded_binary}")
+#   print(f"  解码数据: {decoded_binary.hex()}")

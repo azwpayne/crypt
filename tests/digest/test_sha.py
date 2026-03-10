@@ -8,6 +8,7 @@ import hashlib
 
 import pytest
 from Crypto.Hash import *  # noqa: F403
+
 from tests import BYTE_TEST_CASES
 
 

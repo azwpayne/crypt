@@ -5,23 +5,10 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    :
 import hashlib
-import string
 
 import pytest
 from Crypto.Hash import *  # noqa: F403
-
-test_cases = [
-  "",
-  "a",
-  "abc",
-  "message digest",
-  string.ascii_lowercase,
-  string.ascii_uppercase,
-  string.digits,
-  string.hexdigits,
-  string.octdigits,
-  string.printable,
-]
+from tests import BYTE_TEST_CASES
 
 
 class TestSha:
@@ -41,7 +28,7 @@ class TestSha:
 
   @pytest.mark.parametrize(
     "msg",
-    [bytes(test_case, "utf-8") for test_case in test_cases],
+    BYTE_TEST_CASES,
   )
   def test_sha1(self, msg):
     from crypt.digest.SHA import sha1
@@ -56,7 +43,7 @@ class TestSha:
 
   @pytest.mark.parametrize(
     "msg",
-    [bytes(test_case, "utf-8") for test_case in test_cases],
+    BYTE_TEST_CASES,
   )
   def test_sha2_224(self, msg):
     from crypt.digest.SHA import sha2_224
@@ -66,7 +53,7 @@ class TestSha:
 
   @pytest.mark.parametrize(
     "msg",
-    [bytes(test_case, "utf-8") for test_case in test_cases],
+    BYTE_TEST_CASES,
   )
   def test_sha2_256(self, msg):
     from crypt.digest.SHA import sha2_256
@@ -76,7 +63,7 @@ class TestSha:
 
   @pytest.mark.parametrize(
     "msg",
-    [bytes(test_case, "utf-8") for test_case in test_cases],
+    BYTE_TEST_CASES,
   )
   def test_sha2_384(self, msg):
     from crypt.digest.SHA import sha2_384

@@ -24,6 +24,18 @@ def right_rotate(value, shift_bits):
   return ((value >> normalized_shift) | (value << (32 - normalized_shift))) & 0xFFFFFFFF
 
 
+# 初始哈希值
+IV = (
+  0x6A09E667,
+  0xBB67AE85,
+  0x3C6EF372,
+  0xA54FF53A,
+  0x510E527F,
+  0x9B05688C,
+  0x1F83D9AB,
+  0x5BE0CD19,
+)
+
 # 常量
 K = (
   0x428A2F98,
@@ -91,17 +103,6 @@ K = (
   0xBEF9A3F7,
   0xC67178F2,
 )
-# 初始哈希值
-H = (
-  0x6A09E667,
-  0xBB67AE85,
-  0x3C6EF372,
-  0xA54FF53A,
-  0x510E527F,
-  0x9B05688C,
-  0x1F83D9AB,
-  0x5BE0CD19,
-)
 
 
 def sha256(data: bytes):
@@ -116,7 +117,7 @@ def sha256(data: bytes):
   blocks = [data[i : i + 64] for i in range(0, len(data), 64)]
 
   # 步骤 3: 初始化工作变量
-  hash_pieces = H[:]
+  hash_pieces = IV[:]
 
   # 步骤 4: 处理每一个块
   for block in blocks:

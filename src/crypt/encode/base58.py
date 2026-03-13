@@ -41,7 +41,7 @@ def encode_base58(data: bytes) -> str:
   # 反转结果并添加前导'1'（对应零字节）
   encoded_str = "".join(reversed(encoded))
 
-  return "1" * leading_zeros + encoded_str or "1"  # 空数据返回单个'1'
+  return "1" * leading_zeros + encoded_str  # Empty input returns empty string
 
 
 def decode_base58(encoded: str) -> bytes:

@@ -10,13 +10,16 @@ dependencies = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 asyncio_mode = "auto"              # 自动识别异步测试
 timeout = 30                       # 默认 30 秒超时
 addopts = "-v --tb=short"         # 详细输出和简洁的错误追踪
 
 [dependency-groups]
+dev = [
+    "base58>=2.1.1",
+]
 dev-kit = [
     "pyrefly>=0.53.0",
     "pyright>=1.1.408",

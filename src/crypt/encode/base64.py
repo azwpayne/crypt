@@ -4,7 +4,7 @@
 # @desc    :
 import random
 
-B64_SOURCE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 
 def base64_encode(data: bytes) -> str:
@@ -91,14 +91,8 @@ if __name__ == "__main__":
     b"a" * 100,
   ]
 
-  B64_CHARS = (
-    "".join(random.sample(B64_SOURCE_CHARS, len(B64_SOURCE_CHARS)))
-    if random.randint(0, 1)  # noqa: S311
-    else B64_SOURCE_CHARS
-  )
-
   print(
-    f"是否使用原始的字符表: {B64_CHARS == B64_SOURCE_CHARS}, 当前字符串表: {B64_CHARS}"
+    f"当前字符串表: {B64_CHARS}"
   )
 
   for test in test_cases:

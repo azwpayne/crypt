@@ -1,248 +1,481 @@
-# @time    : 2025/12/24 13:32
-# @name    : md5.py
-# @author  : azwpayne
-# @desc    :
+"""Pure Python implementation of the MD5 hash algorithm.
 
+MD5 (Message-Digest Algorithm 5) produces a 128-bit hash value from input data.
+Note: MD5 is cryptographically broken and should not be used for security purposes.
+This implementation is for educational purposes only.
+
+Reference: RFC 1321
+"""
+
+from __future__ import annotations
 
 import struct
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+  from collections.abc import Callable
+
+# MD5 initial hash values (IV) - little-endian
+_INITIAL_A: Final = 0x67452301
+_INITIAL_B: Final = 0xEFCDAB89
+_INITIAL_C: Final = 0x98BADCFE
+_INITIAL_D: Final = 0x10325476
+
+# MD5 round constants (K values) - integer part of abs(sin(i+1)) * 2^32
+_K: Final[tuple[int, ...]] = (
+  0xD76AA478,
+  0xE8C7B756,
+  0x242070DB,
+  0xC1BDCEEE,
+  0xF57C0FAF,
+  0x4787C62A,
+  0xA8304613,
+  0xFD469501,
+  0x698098D8,
+  0x8B44F7AF,
+  0xFFFF5BB1,
+  0x895CD7BE,
+  0x6B901122,
+  0xFD987193,
+  0xA679438E,
+  0x49B40821,
+  0xF61E2562,
+  0xC040B340,
+  0x265E5A51,
+  0xE9B6C7AA,
+  0xD62F105D,
+  0x02441453,
+  0xD8A1E681,
+  0xE7D3FBC8,
+  0x21E1CDE6,
+  0xC33707D6,
+  0xF4D50D87,
+  0x455A14ED,
+  0xA9E3E905,
+  0xFCEFA3F8,
+  0x676F02D9,
+  0x8D2A4C8A,
+  0xFFFA3942,
+  0x8771F681,
+  0x6D9D6122,
+  0xFDE5380C,
+  0xA4BEEA44,
+  0x4BDECFA9,
+  0xF6BB4B60,
+  0xBEBFBC70,
+  0x289B7EC6,
+  0xEAA127FA,
+  0xD4EF3085,
+  0x04881D05,
+  0xD9D4D039,
+  0xE6DB99E5,
+  0x1FA27CF8,
+  0xC4AC5665,
+  0xF4292244,
+  0x432AFF97,
+  0xAB9423A7,
+  0xFC93A039,
+  0x655B59C3,
+  0x8F0CCC92,
+  0xFFEFF47D,
+  0x85845DD1,
+  0x6FA87E4F,
+  0xFE2CE6E0,
+  0xA3014314,
+  0x4E0811A1,
+  0xF7537E82,
+  0xBD3AF235,
+  0x2AD7D2BB,
+  0xEB86D391,
+)
+
+# Shift amounts for each round
+_SHIFTS: Final[tuple[int, ...]] = (
+  # Round 1
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  # Round 2
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  # Round 3
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  # Round 4
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+)
+
+# Word indices for each round
+_INDICES: Final[tuple[int, ...]] = (
+  # Round 1
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  # Round 2
+  1,
+  6,
+  11,
+  0,
+  5,
+  10,
+  15,
+  4,
+  9,
+  14,
+  3,
+  8,
+  13,
+  2,
+  7,
+  12,
+  # Round 3
+  5,
+  8,
+  11,
+  14,
+  1,
+  4,
+  7,
+  10,
+  13,
+  0,
+  3,
+  6,
+  9,
+  12,
+  15,
+  2,
+  # Round 4
+  0,
+  7,
+  14,
+  5,
+  12,
+  3,
+  10,
+  1,
+  8,
+  15,
+  6,
+  13,
+  4,
+  11,
+  2,
+  9,
+)
+
+# Round boundaries for function selection
+_ROUND1_END: Final = 16
+_ROUND2_END: Final = 32
+_ROUND3_END: Final = 48
 
 
-def left_rotate(x, amount):
-  """
-  对32位无符号整数执行左循环移位操作
+@dataclass(slots=True)
+class _MD5State:
+  """Internal MD5 state (4 32-bit registers)."""
 
-  :param Union[int, 'UInt32'] x: 输入的32位无符号整数 (0-0xFFFFFFFF 范围内)
-  :param Union[int, 'UInt32'] amount: 左移的位数 (通常为 0-31)
-  :return: 左循环移位后的32位无符号整数
-  :rtype: Union[int, 'UInt32']
+  a: int
+  b: int
+  c: int
+  d: int
+
+  def copy(self) -> _MD5State:
+    """Create a copy of the state."""
+    return _MD5State(self.a, self.b, self.c, self.d)
+
+  def add(self, other: _MD5State) -> None:
+    """Add another state to this one (mod 2^32)."""
+    self.a = (self.a + other.a) & 0xFFFFFFFF
+    self.b = (self.b + other.b) & 0xFFFFFFFF
+    self.c = (self.c + other.c) & 0xFFFFFFFF
+    self.d = (self.d + other.d) & 0xFFFFFFFF
+
+  def to_bytes(self) -> bytes:
+    """Convert state to little-endian bytes."""
+    return struct.pack("<4I", self.a, self.b, self.c, self.d)
+
+
+def _left_rotate(x: int, amount: int) -> int:
+  """Rotate a 32-bit value left by the specified amount.
+
+  Args:
+      x: 32-bit unsigned integer value
+      amount: Number of bits to rotate left (0-31)
+
+  Returns:
+      Rotated 32-bit value
   """
   return ((x << amount) | (x >> (32 - amount))) & 0xFFFFFFFF
 
 
-def bitwise_choice(mask: int, if_true: int, if_false: int) -> int:
-  """
-  位级多路选择器 (Bitwise Multiplexer).
+def _choice(mask: int, if_true: int, if_false: int) -> int:
+  """Bitwise choice/multiplexer function.
 
-  根据掩码 mask 的每一位，从 if_true 或 if_false 中选择对应的位。
-  对于每一位 i:
-  - 如果 mask 的第 i 位为 1, 结果的第 i 位取自 if_true。
-  - 如果 mask 的第 i 位为 0, 结果的第 i 位取自 if_false。
+  For each bit position, selects from if_true if mask bit is 1,
+  otherwise from if_false.
 
-  等价于逻辑表达式：(mask & if_true) | (~mask & if_false)
-  优化为异或表达式以避免 Python 中 ~ 运算符产生的负数混淆。
+  Equivalent to: (mask & if_true) | (~mask & if_false)
+  Optimized to: if_false ^ (mask & (if_true ^ if_false))
 
   Args:
-      mask (int): 选择掩码 (Selection mask).
-      if_true (int): 当掩码位为 1 时的源值.
-      if_false (int): 当掩码位为 0 时的源值.
+      mask: Selection mask
+      if_true: Value when mask bit is 1
+      if_false: Value when mask bit is 0
 
   Returns:
-      int: 选择后的结果.
+      Selected bits
   """
   return if_false ^ (mask & (if_true ^ if_false))
 
 
-def bitwise_majority(x, y, z):
-  """
-  位级多数函数 (Bitwise Majority Function).
+def _majority(x: int, y: int, z: int) -> int:
+  """Bitwise majority function.
 
-  对于输入的三个整数的每一位，计算多数位值。
-  对于每一位 i:
-  - 如果 x, y, z 中至少有两个的第 i 位为 1, 结果的第 i 位为 1。
-  - 否则，结果的第 i 位为 0。
-
-  逻辑表达式：(x & y) | (x & z) | (y & z)
-  该函数在 MD5 的 Round 2 (GG 函数) 中使用。
+  For each bit position, returns the majority value of the three inputs.
 
   Args:
-      x (int): 第一个输入值 (32 位无符号整数).
-      y (int): 第二个输入值 (32 位无符号整数).
-      z (int): 第三个输入值 (32 位无符号整数).
+      x: First input value
+      y: Second input value
+      z: Third input value
 
   Returns:
-      int: 多数运算的结果 (32 位无符号整数).
+      Majority result (32-bit unsigned)
   """
   return ((x & y) | (x & z) | (y & z)) & 0xFFFFFFFF
 
 
-def bitwise_xor3(x, y, z):
-  """
-  位级异或函数 (Bitwise XOR).
-
-  对于输入的三个整数的每一位，计算异或位值。
-  对于每一位 i:
-  - 如果 x, y, z 中有奇数个的第 i 位为 1, 结果的第 i 位为 1。
-  - 否则，结果的第 i 位为 0。
-
-  逻辑表达式：x ^ y ^ z
-  该函数在 MD5 的 Round 3 (HH 函数) 中使用。
+def _xor3(x: int, y: int, z: int) -> int:
+  """Triple XOR function.
 
   Args:
-      x (int): 第1个输入值 (32 位无符号整数).
-      y (int): 第2个输入值 (32 位无符号整数).
-      z (int): 第3个输入值 (32 位无符号整数).
+      x: First input value
+      y: Second input value
+      z: Third input value
 
   Returns:
-      int: 异或运算的结果 (32 位无符号整数).
+      x ^ y ^ z (32-bit unsigned)
   """
   return (x ^ y ^ z) & 0xFFFFFFFF
 
 
-def bitwise_nor_mix(x, y, z):
-  """
-  位级非异或函数 (Bitwise NOR-like).
-
-  对于输入的三个整数的每一位：
-  结果 = y ^ (x | ~z)
-
-  逻辑表达式：y ^ (x | ~z)
-  该函数在 MD5 的 Round 4 (II 函数) 中使用。
+def _nor_mix(x: int, y: int, z: int) -> int:
+  """Round 4 nonlinear function: y ^ (x | ~z).
 
   Args:
-      x (int): 第1个输入值 (32 位无符号整数).
-      y (int): 第2个输入值 (32 位无符号整数).
-      z (int): 第3个输入值 (32 位无符号整数).
+      x: First input value
+      y: Second input value
+      z: Third input value
 
   Returns:
-      int: 运算结果 (32 位无符号整数).
+      Result of y ^ (x | ~z) (32-bit unsigned)
   """
   return (y ^ (x | (0xFFFFFFFF ^ z))) & 0xFFFFFFFF
 
 
-def FF(a, b, c, d, x, s, ac):
-  a = (a + bitwise_choice(b, c, d) + x + ac) & 0xFFFFFFFF
-  return left_rotate(a, s) + b & 0xFFFFFFFF
+def _gg_func(b: int, c: int, d: int) -> int:
+  """Round 2 nonlinear function: (b & d) | (c & ~d)."""
+  return ((b & d) | (c & (0xFFFFFFFF ^ d))) & 0xFFFFFFFF
 
 
-def GG(a, b, c, d, x, s, ac):
-  # MD5 G function: G(X,Y,Z) = (X & Z) | (Y & ~Z)
-  g = ((b & d) | (c & (0xFFFFFFFF ^ d))) & 0xFFFFFFFF
-  a = (a + g + x + ac) & 0xFFFFFFFF
-  return left_rotate(a, s) + b & 0xFFFFFFFF
+def _apply_round(
+  state: _MD5State,
+  words: tuple[int, ...],
+  round_idx: int,
+  func: Callable[[int, int, int], int],
+) -> None:
+  """Apply one round of MD5 transformation.
+
+  Args:
+      state: Current MD5 state (modified in place)
+      words: Message words (16 x 32-bit values)
+      round_idx: Round index (0-63)
+      func: Nonlinear function to use
+  """
+  idx = _INDICES[round_idx]
+  shift = _SHIFTS[round_idx]
+  k_val = _K[round_idx]
+
+  temp = (state.a + func(state.b, state.c, state.d)) & 0xFFFFFFFF
+  temp = (temp + words[idx]) & 0xFFFFFFFF
+  temp = (temp + k_val) & 0xFFFFFFFF
+  temp = _left_rotate(temp, shift)
+  temp = (temp + state.b) & 0xFFFFFFFF
+
+  state.a, state.b, state.c, state.d = state.d, temp, state.b, state.c
 
 
-def HH(a, b, c, d, x, s, ac):
-  a = (a + bitwise_xor3(b, c, d) + x + ac) & 0xFFFFFFFF
-  return left_rotate(a, s) + b & 0xFFFFFFFF
+def _process_chunk(state: _MD5State, chunk: bytes) -> None:
+  """Process a single 64-byte chunk.
+
+  Args:
+      state: Current MD5 state (modified in place)
+      chunk: 64-byte data chunk
+  """
+  words = struct.unpack("<16I", chunk)
+  initial = state.copy()
+
+  funcs = (_choice, _gg_func, _xor3, _nor_mix)
+  for i in range(64):
+    func_idx = (i >= _ROUND1_END) + (i >= _ROUND2_END) + (i >= _ROUND3_END)
+    _apply_round(state, words, i, funcs[func_idx])
+
+  state.add(initial)
 
 
-def II(a, b, c, d, x, s, ac):
-  a = (a + bitwise_nor_mix(b, c, d) + x + ac) & 0xFFFFFFFF
-  return left_rotate(a, s) + b & 0xFFFFFFFF
+def pad_message(message: bytes) -> bytes:
+  """Pad message to multiple of 64 bytes.
 
+  MD5 padding: append 0x80, then 0x00 bytes until length ≡ 56 (mod 64),
+  then append original length as 64-bit little-endian integer.
 
-def pad_message(message):  # 填充
+  Args:
+      message: Raw input bytes
+
+  Returns:
+      Padded message
+  """
   original_length_bits = len(message) * 8
-  message += b"\x80"
-  while (len(message) + 8) % 64 != 0:
-    message += b"\x00"
-  message += struct.pack("<Q", original_length_bits)
-  return message
+  message = message + b"\x80"
+
+  # Pad with zeros until length ≡ 56 (mod 64)
+  padding_len = (56 - len(message)) % 64
+  message = message + b"\x00" * padding_len
+
+  # Append original length as 64-bit little-endian
+  return message + struct.pack("<Q", original_length_bits)
 
 
-def md5(inp: bytes | str) -> str:
+def md5(data: bytes | str) -> str:
+  """Compute MD5 hash of input data.
+
+  Args:
+      data: Input data (bytes or string)
+
+  Returns:
+      32-character hexadecimal hash string
+
+  Example:
+      >>> md5(b"hello")
+      '5d41402abc4b2a76b9719d911017c592'
+      >>> md5("hello")
+      '5d41402abc4b2a76b9719d911017c592'
   """
-  :param inp:
-  :return:
-  """
-  # ror   lsl | lsr
-  message = inp if isinstance(inp, bytes) else inp.encode()
+  message = data if isinstance(data, bytes) else data.encode()
 
-  a0 = 0x67452301
-  b0 = 0xEFCDAB89
-  c0 = 0x98BADCFE
-  d0 = 0x10325476
+  state = _MD5State(
+    a=_INITIAL_A,
+    b=_INITIAL_B,
+    c=_INITIAL_C,
+    d=_INITIAL_D,
+  )
 
-  message = pad_message(message)
-  chunks = [message[i : i + 64] for i in range(0, len(message), 64)]
-  for chunk in chunks:
-    words = struct.unpack(
-      "<16I", chunk
-    )  # 将64字节数据切割16份,每份都按小端续展示. I是int的意思 对应4字节
+  padded = pad_message(message)
 
-    A, B, C, D = a0, b0, c0, d0
-    # Round 1 都是 a d c b
-    A = FF(A, B, C, D, words[0], 7, 0xD76AA478)
-    D = FF(D, A, B, C, words[1], 12, 0xE8C7B756)
-    C = FF(C, D, A, B, words[2], 17, 0x242070DB)
-    B = FF(B, C, D, A, words[3], 22, 0xC1BDCEEE)
-    A = FF(A, B, C, D, words[4], 7, 0xF57C0FAF)
-    D = FF(D, A, B, C, words[5], 12, 0x4787C62A)
-    C = FF(C, D, A, B, words[6], 17, 0xA8304613)
-    B = FF(B, C, D, A, words[7], 22, 0xFD469501)
-    A = FF(A, B, C, D, words[8], 7, 0x698098D8)
-    D = FF(D, A, B, C, words[9], 12, 0x8B44F7AF)
-    C = FF(C, D, A, B, words[10], 17, 0xFFFF5BB1)
-    B = FF(B, C, D, A, words[11], 22, 0x895CD7BE)
-    A = FF(A, B, C, D, words[12], 7, 0x6B901122)
-    D = FF(D, A, B, C, words[13], 12, 0xFD987193)
-    C = FF(C, D, A, B, words[14], 17, 0xA679438E)
-    B = FF(B, C, D, A, words[15], 22, 0x49B40821)
-    # Round 2
-    A = GG(A, B, C, D, words[1], 5, 0xF61E2562)
-    D = GG(D, A, B, C, words[6], 9, 0xC040B340)
-    C = GG(C, D, A, B, words[11], 14, 0x265E5A51)
-    B = GG(B, C, D, A, words[0], 20, 0xE9B6C7AA)
-    A = GG(A, B, C, D, words[5], 5, 0xD62F105D)
-    D = GG(D, A, B, C, words[10], 9, 0x02441453)
-    C = GG(C, D, A, B, words[15], 14, 0xD8A1E681)
-    B = GG(B, C, D, A, words[4], 20, 0xE7D3FBC8)
-    A = GG(A, B, C, D, words[9], 5, 0x21E1CDE6)
-    D = GG(D, A, B, C, words[14], 9, 0xC33707D6)
-    C = GG(C, D, A, B, words[3], 14, 0xF4D50D87)
-    B = GG(B, C, D, A, words[8], 20, 0x455A14ED)
-    A = GG(A, B, C, D, words[13], 5, 0xA9E3E905)
-    D = GG(D, A, B, C, words[2], 9, 0xFCEFA3F8)
-    C = GG(C, D, A, B, words[7], 14, 0x676F02D9)
-    B = GG(B, C, D, A, words[12], 20, 0x8D2A4C8A)
-    # Round 3
-    A = HH(A, B, C, D, words[5], 4, 0xFFFA3942)
-    D = HH(D, A, B, C, words[8], 11, 0x8771F681)
-    C = HH(C, D, A, B, words[11], 16, 0x6D9D6122)
-    B = HH(B, C, D, A, words[14], 23, 0xFDE5380C)
-    A = HH(A, B, C, D, words[1], 4, 0xA4BEEA44)
-    D = HH(D, A, B, C, words[4], 11, 0x4BDECFA9)
-    C = HH(C, D, A, B, words[7], 16, 0xF6BB4B60)
-    B = HH(B, C, D, A, words[10], 23, 0xBEBFBC70)
-    A = HH(A, B, C, D, words[13], 4, 0x289B7EC6)
-    D = HH(D, A, B, C, words[0], 11, 0xEAA127FA)
-    C = HH(C, D, A, B, words[3], 16, 0xD4EF3085)
-    B = HH(B, C, D, A, words[6], 23, 0x04881D05)
-    A = HH(A, B, C, D, words[9], 4, 0xD9D4D039)
-    D = HH(D, A, B, C, words[12], 11, 0xE6DB99E5)
-    C = HH(C, D, A, B, words[15], 16, 0x1FA27CF8)
-    B = HH(B, C, D, A, words[2], 23, 0xC4AC5665)
-    # Round 4
-    A = II(A, B, C, D, words[0], 6, 0xF4292244)
-    D = II(D, A, B, C, words[7], 10, 0x432AFF97)
-    C = II(C, D, A, B, words[14], 15, 0xAB9423A7)
-    B = II(B, C, D, A, words[5], 21, 0xFC93A039)
-    A = II(A, B, C, D, words[12], 6, 0x655B59C3)
-    D = II(D, A, B, C, words[3], 10, 0x8F0CCC92)
-    C = II(C, D, A, B, words[10], 15, 0xFFEFF47D)
-    B = II(B, C, D, A, words[1], 21, 0x85845DD1)
-    A = II(A, B, C, D, words[8], 6, 0x6FA87E4F)
-    D = II(D, A, B, C, words[15], 10, 0xFE2CE6E0)
-    C = II(C, D, A, B, words[6], 15, 0xA3014314)
-    B = II(B, C, D, A, words[13], 21, 0x4E0811A1)
-    A = II(A, B, C, D, words[4], 6, 0xF7537E82)
-    D = II(D, A, B, C, words[11], 10, 0xBD3AF235)
-    C = II(C, D, A, B, words[2], 15, 0x2AD7D2BB)
-    B = II(B, C, D, A, words[9], 21, 0xEB86D391)
+  for i in range(0, len(padded), 64):
+    _process_chunk(state, padded[i : i + 64])
 
-    a0 = (a0 + A) & 0xFFFFFFFF
-    b0 = (b0 + B) & 0xFFFFFFFF
-    c0 = (c0 + C) & 0xFFFFFFFF
-    d0 = (d0 + D) & 0xFFFFFFFF
-
-  result = struct.pack("<4I", a0, b0, c0, d0)
-  return result.hex()
+  return state.to_bytes().hex()
 
 
-if __name__ == "__main__":
-  print(bytes.fromhex("31"))
-  # print(md5(bytes.fromhex('31')))
+# Backward compatibility aliases
+left_rotate = _left_rotate
+bitwise_choice = _choice
+bitwise_majority = _majority
+bitwise_xor3 = _xor3
+bitwise_nor_mix = _nor_mix
 
-  # num = 0x12345678
-  # print(num.to_bytes(4, byteorder='big').hex())
-  # print(num.to_bytes(4, byteorder='little').hex())
+
+# Round functions for testing (kept for backward compatibility)
+def FF(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+  """Round 1 MD5 transformation function."""
+  result = (a + _choice(b, c, d) + x + ac) & 0xFFFFFFFF
+  return (_left_rotate(result, s) + b) & 0xFFFFFFFF
+
+
+def GG(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+  """Round 2 MD5 transformation function."""
+  g = ((b & d) | (c & (0xFFFFFFFF ^ d))) & 0xFFFFFFFF
+  result = (a + g + x + ac) & 0xFFFFFFFF
+  return (_left_rotate(result, s) + b) & 0xFFFFFFFF
+
+
+def HH(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+  """Round 3 MD5 transformation function."""
+  result = (a + _xor3(b, c, d) + x + ac) & 0xFFFFFFFF
+  return (_left_rotate(result, s) + b) & 0xFFFFFFFF
+
+
+def II(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+  """Round 4 MD5 transformation function."""
+  result = (a + _nor_mix(b, c, d) + x + ac) & 0xFFFFFFFF
+  return (_left_rotate(result, s) + b) & 0xFFFFFFFF

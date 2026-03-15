@@ -281,7 +281,7 @@ def _left_rotate(x: int, amount: int) -> int:
 def _choice(mask: int, if_true: int, if_false: int) -> int:
   """Bitwise choice/multiplexer function.
 
-  For each bit position, selects from if_true if mask bit is 1,
+  For each bit position, selects from if_true is mask bit is 1,
   otherwise from if_false.
 
   Equivalent to: (mask & if_true) | (~mask & if_false)

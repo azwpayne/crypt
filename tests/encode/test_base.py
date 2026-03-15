@@ -7,6 +7,7 @@
 import binascii
 
 import pytest
+
 from tests import BYTE_TEST_CASES
 
 

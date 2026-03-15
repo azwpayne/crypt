@@ -2,7 +2,6 @@
 # @name    : base64.py
 # @author  : azwpayne
 # @desc    :
-import random
 
 B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
@@ -91,9 +90,7 @@ if __name__ == "__main__":
     b"a" * 100,
   ]
 
-  print(
-    f"当前字符串表: {B64_CHARS}"
-  )
+  print(f"当前字符串表: {B64_CHARS}")
 
   for test in test_cases:
     encoded = base64_encode(test)

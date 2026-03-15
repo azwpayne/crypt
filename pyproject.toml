@@ -6,17 +6,31 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "cryptography>=46.0.5",
+    "faker>=40.8.0",
     "pycryptodome>=3.23.0",
+    "ruff>=0.15.5",
+    "ty>=0.0.22",
 ]
+
+[tool.poe]
+executor.type = "uv"
+tasks.full = ["clean", "lint", "test"]
+tasks.test = ["clean", "pytest"]
+tasks.lint = "ruff check --unsafe-fixes --fix . && ruff format ."
+tasks.pytest = "pytest"
+
+tasks.clean = { shell = """
+	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks
+	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+""" }
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
 asyncio_mode = "auto"              # 自动识别异步测试
 timeout = 30                       # 默认 30 秒超时
-#addopts = "-v --tb=short"          # 详细输出和简洁的错误追踪
 addopts = """\
-    -v \
     --strict-markers \
     --tb=short \
     --cov=src/crypt \
@@ -27,9 +41,9 @@ addopts = """\
     """
 
 [dependency-groups]
-dev-kit = ["pyrefly", "pyright", "ruff", "ty"]
-docs = ["mkdocs", "mkdocs-material"]
-pytest = [
+dev = ["poethepoet", "ruff", "ty"]
+test = [
+    "pytest",
     "pytest-asyncio",
     "pytest-cov",
     "pytest-xdist",
@@ -37,31 +51,5 @@ pytest = [
     "pytest-benchmark",
     "pytest-timeout",
     "pytest-sugar",
-]
-faker_kit = ["faker", "factory-boy", "pytest-faker"]
-
-test = [
-    ## http 请求模拟
-    "aioresponses", # 异步 HTTP 请求模拟库, 用于 mock aiohttp 的 HTTP 请求，测试异步 HTTP 代码
-    "pytest-httpx", # 用于测试 HTTP 客户端和服务器
-    "respx", # 用于模拟 HTTP 请求, 支持 httpx 和 requests，提供简洁的 API 来 mock HTTP 请求
-    ## 测试数据
-    "factory-boy", # 测试 fixture 替代工具, 用于创建测试数据对象，比直接构造更灵活
-    "faker", # 伪造数据生成器, 生成假的姓名、地址、文本等测试数据
-    "hypothesis", # 属性测试库, 根据类型注解自动生成测试数据，支持 pydantic 等
-    "polyfactory", # 测试数据生成器, 创建测试数据对象，比 factory-boy 更简单
-    ## 测试工具
-    "pytest", # Python 最流行的测试框架，用于编写和运行单元测试、集成测试.支持 fixtures、参数化测试、插件扩展等特性
-    "pytest-asyncio", # 用于编写和运行异步测试, 允许使用 @pytest.mark.asyncio 装饰器测试 async/await 代码
-    "pytest-cov", # 用于测量测试覆盖率, 生成测试覆盖率报告，显示哪些代码被测试覆盖
-    "pytest-xdist", # 用于并行运行测试, 支持多 CPU 核心并行运行测试，加快测试速度
-    "pytest-mock", # 用于测试 mocking, 提供简洁的 API 来 mock 函数、方法和属性
-    "pytest-benchmark", # 用于测试性能, 提供简洁的 API 来测量代码的执行时间
-    "pytest-timeout", # 用于测试超时, 提供简洁的 API 来测量代码的执行时间
-    "pytest-sugar", # 用于测试时提供更丰富地输出和统计信息
-    ## 快照测试
-    "syrupy", # 快照测试插件, 将测试结果与历史快照对比，检测意外变更
-    # 测试工作流管理
-    #    "nox",
-    #    "tox"
+    "pytest-factoryboy",
 ]

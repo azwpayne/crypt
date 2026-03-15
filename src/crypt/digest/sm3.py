@@ -119,10 +119,4 @@ def sm3(message):
     V = CF(V, block)
 
   res = "".join(f"{x:08x}" for x in V)
-  print(res)
-
-
-# 1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b
-
-msg = b""
-sm3(msg)
+  return res

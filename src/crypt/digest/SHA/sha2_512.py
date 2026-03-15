@@ -110,7 +110,10 @@ def right_rotate(value, shift, size=64):
 
 # 消息填充
 def pad_message(message):
-  message = bytearray(message, "utf-8")
+  if isinstance(message, str):
+    message = bytearray(message, "utf-8")
+  else:
+    message = bytearray(message)
   original_length = len(message) * 8
   message.append(0x80)
   while (len(message) * 8) % 1024 != 896:  # 128 16  # noqa: PLR2004

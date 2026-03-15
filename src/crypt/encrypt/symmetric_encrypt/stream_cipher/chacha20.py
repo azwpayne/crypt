@@ -7,6 +7,11 @@
 import struct
 
 
+def _xor_bytes(a: bytes, b: bytes) -> bytes:
+    """XOR two byte strings together."""
+    return bytes(x ^ y for x, y in zip(a, b))
+
+
 def rotl(v, n):
   """对32位无符号整数 v 进行循环左移 n 位。"""
   return ((v << n) & 0xFFFFFFFF) | (v >> (32 - n))

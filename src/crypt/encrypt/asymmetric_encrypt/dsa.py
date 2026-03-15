@@ -3,10 +3,46 @@ import random
 import hashlib
 
 def generate_parameters(key_size=2048):
-    # Simplified parameter generation
-    q = 2**256 - 2**224 + 2**192 + 2**96 - 1  # NIST P-256 prime
-    p = q * 4 + 1  # Simplified
-    g = 2
+    """Generate DSA parameters.
+
+    Uses properly chosen primes where p = k*q + 1 for some k.
+    For simplicity, we use a known valid configuration.
+    """
+    # NIST P-256 prime for q (256-bit)
+    q = 2**256 - 2**224 + 2**192 + 2**96 - 1
+    # Compute p such that p = k*q + 1 for some k
+    # We need p to be prime and (p-1) to be divisible by q
+    # Using k = 2 for simplicity (gives us p = 2*q + 1)
+    # First check if 2*q + 1 is prime
+    p_candidate = 2 * q + 1
+
+    # If not prime, find next valid p by incrementing k
+    k = 2
+    while True:
+        p_candidate = k * q + 1
+        # Simple primality test
+        if pow(2, p_candidate - 1, p_candidate) == 1:
+            # Likely prime, do more checks
+            is_prime = True
+            for small_prime in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]:
+                if p_candidate % small_prime == 0:
+                    is_prime = False
+                    break
+            if is_prime:
+                break
+        k += 1
+        if k > 1000:  # Safety limit
+            raise RuntimeError("Could not find valid p")
+
+    p = p_candidate
+
+    # Generator: g = h^((p-1)/q) mod p for some h where g > 1
+    # Using h = 2, we get g = 2^k mod p where k = (p-1)/q
+    g = pow(2, k, p)
+    # Ensure g != 1
+    if g == 1:
+        g = pow(3, k, p)
+
     return p, q, g
 
 def generate_keypair(p, q, g):

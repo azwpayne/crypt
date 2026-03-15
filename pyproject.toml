@@ -7,8 +7,6 @@ requires-python = ">=3.10"
 dependencies = [
     "cryptography>=46.0.5",
     "pycryptodome>=3.23.0",
-    "ruff>=0.15.5",
-    "ty>=0.0.22",
 ]
 
 [tool.poe]

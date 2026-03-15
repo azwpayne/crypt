@@ -227,8 +227,6 @@ source = { virtual = "." }
 dependencies = [
     { name = "cryptography" },
     { name = "pycryptodome" },
-    { name = "ruff" },
-    { name = "ty" },
 ]
 
 [package.dev-dependencies]
@@ -253,8 +251,6 @@ test = [
 requires-dist = [
     { name = "cryptography", specifier = ">=46.0.5" },
     { name = "pycryptodome", specifier = ">=3.23.0" },
-    { name = "ruff", specifier = ">=0.15.5" },
-    { name = "ty", specifier = ">=0.0.22" },
 ]
 
 [package.metadata.requires-dev]

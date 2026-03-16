@@ -6,7 +6,6 @@
 # @desc    : 仿射密码加密和解密实现
 
 
-
 def _gcd(a: int, b: int) -> int:
   """计算最大公约数"""
   while b:

@@ -164,7 +164,9 @@ class TestVigenereKasiski:
     # Use a shorter key to create repeating patterns in the ciphertext
     # The plaintext repetition may not produce ciphertext repetition with long keys
     text = "ABCABCABCABC"
-    encrypted = vigenere_cipher.encrypt(text, "KEY")  # Short key for detectable patterns
+    encrypted = vigenere_cipher.encrypt(
+      text, "KEY"
+    )  # Short key for detectable patterns
     results = vigenere_cipher.kasiski_examination(encrypted)
 
     # Should find some repeated patterns with short key

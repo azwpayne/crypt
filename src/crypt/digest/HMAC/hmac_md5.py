@@ -59,9 +59,7 @@ def _compute_hmac(
   inner_hash = bytes.fromhex(hash_func(inner_key + data))
 
   # Step 5: Compute outer hash: hash(outer_key || inner_hash)
-  result = bytes.fromhex(hash_func(outer_key + inner_hash))
-
-  return result
+  return bytes.fromhex(hash_func(outer_key + inner_hash))
 
 
 def hmac_md5(key: bytes, data: bytes) -> bytes:

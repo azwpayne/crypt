@@ -51,13 +51,15 @@ class TestAffineEncrypt:
   def test_encrypt_with_different_keys(self):
     """Test encryption with various valid keys."""
     test_cases = [
-      ((3, 5), "ABC", "FIL"),    # A->F, B->I, C->L
+      ((3, 5), "ABC", "FIL"),  # A->F, B->I, C->L
       ((5, 10), "TEST", "BEWB"),  # T->B, E->P, S->L, T->B
       ((7, 15), "HELLO", "MROOJ"),  # H->M, E->R, L->O, L->O, O->J
     ]
     for (a, b), plaintext, expected in test_cases:
       result = affine_cipher.encrypt(plaintext, a, b)
-      assert result == expected, f"Failed for keys ({a}, {b}): got {result}, expected {expected}"
+      assert result == expected, (
+        f"Failed for keys ({a}, {b}): got {result}, expected {expected}"
+      )
 
   def test_encrypt_all_letters(self):
     """Test encryption of all letters."""

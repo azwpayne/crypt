@@ -8,17 +8,17 @@ import hashlib
 
 import pytest
 from Crypto.Hash import (  # noqa: F401
-    SHA1,
-    SHA224,
-    SHA256,
-    SHA384,
-    SHA512,
-    SHA3_224,
-    SHA3_256,
-    SHA3_384,
-    SHA3_512,
-    SHAKE128,
-    SHAKE256,
+  SHA1,
+  SHA3_224,
+  SHA3_256,
+  SHA3_384,
+  SHA3_512,
+  SHA224,
+  SHA256,
+  SHA384,
+  SHA512,
+  SHAKE128,
+  SHAKE256,
 )
 
 from tests import BYTE_TEST_CASES
@@ -147,7 +147,9 @@ class TestSha:
 
     result = sha3_ke_128.shake128(msg, output_len)
     ref = SHAKE128.new(msg).read(output_len)
-    assert result == ref, f"SHAKE128 test failed for msg: {msg}, output_len: {output_len}"
+    assert result == ref, (
+      f"SHAKE128 test failed for msg: {msg}, output_len: {output_len}"
+    )
 
   @pytest.mark.parametrize(
     ("msg", "output_len"),
@@ -165,7 +167,9 @@ class TestSha:
 
     result = sha3_ke_256.shake256(msg, output_len)
     ref = SHAKE256.new(msg).read(output_len)
-    assert result == ref, f"SHAKE256 test failed for msg: {msg}, output_len: {output_len}"
+    assert result == ref, (
+      f"SHAKE256 test failed for msg: {msg}, output_len: {output_len}"
+    )
 
   # SHAKE224, SHAKE384, SHAKE512 are non-standard extensions
   # They follow the same pattern but use different capacity/rate parameters

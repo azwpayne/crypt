@@ -8,8 +8,8 @@ import struct
 
 
 def _xor_bytes(a: bytes, b: bytes) -> bytes:
-    """XOR two byte strings together."""
-    return bytes(x ^ y for x, y in zip(a, b))
+  """XOR two byte strings together."""
+  return bytes(x ^ y for x, y in zip(a, b, strict=False))
 
 
 def rotl(v, n):

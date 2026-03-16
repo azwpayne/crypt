@@ -118,5 +118,4 @@ def sm3(message):
   for block in blocks:
     V = CF(V, block)
 
-  res = "".join(f"{x:08x}" for x in V)
-  return res
+  return "".join(f"{x:08x}" for x in V)

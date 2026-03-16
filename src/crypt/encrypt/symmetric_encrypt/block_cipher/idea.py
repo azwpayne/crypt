@@ -180,32 +180,30 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
 
     subkeys = key_schedule(key)
 
-    # Build inverse key schedule for IDEA decryption
-    # Decryption applies inverse operations in reverse order
-    inv_keys = [0] * 52
+    # Build inverse key schedule according to IDEA specification
+    # Decryption keys are applied in reverse order with multiplicative/additive inverses
+    dk = [0] * 52
 
     # Inverse output transformation keys (applied first in decryption)
-    # Enc: y1=x1*k49, y2=x3+k50, y3=x2+k51, y4=x4*k52 (note: x2/x3 swapped in output)
-    # Dec: x1=y1*k49^-1, x2=y3-k51, x3=y2-k50, x4=y4*k52^-1
-    inv_keys[48] = _mul_inv(subkeys[48])   # k49^-1 for y1
-    inv_keys[49] = _add_inv(subkeys[50])   # -k51 for y2 (was k3 in enc output)
-    inv_keys[50] = _add_inv(subkeys[49])   # -k50 for y3 (was k2 in enc output)
-    inv_keys[51] = _mul_inv(subkeys[51])   # k52^-1 for y4
+    # These undo the final encryption output transformation
+    dk[0] = _mul_inv(subkeys[48])   # k49^-1
+    dk[1] = _add_inv(subkeys[49])   # -k50
+    dk[2] = _add_inv(subkeys[50])   # -k51
+    dk[3] = _mul_inv(subkeys[51])   # k52^-1
 
     # Inverse round keys for rounds 8 down to 1
-    # For each round i (0-indexed), encryption uses keys[i*6:(i+1)*6]
-    # Decryption applies round inverses starting from round 7 down to 0
-    # For round inverse, we need: k1^-1, -k3, -k2, k4^-1, k5, k6
+    # For each encryption round, the decryption round uses:
+    # k1^-1, -k2, -k3, k4^-1, k5, k6
     for i in range(8):
         enc_idx = i * 6
-        dec_idx = (7 - i) * 6
+        dec_idx = 4 + (7 - i) * 6
 
-        inv_keys[dec_idx] = _mul_inv(subkeys[enc_idx])        # k1^-1
-        inv_keys[dec_idx + 1] = _add_inv(subkeys[enc_idx + 2])  # -k3 (swapped)
-        inv_keys[dec_idx + 2] = _add_inv(subkeys[enc_idx + 1])  # -k2 (swapped)
-        inv_keys[dec_idx + 3] = _mul_inv(subkeys[enc_idx + 3])  # k4^-1
-        inv_keys[dec_idx + 4] = subkeys[enc_idx + 4]            # k5
-        inv_keys[dec_idx + 5] = subkeys[enc_idx + 5]            # k6
+        dk[dec_idx] = _mul_inv(subkeys[enc_idx])       # k1^-1
+        dk[dec_idx + 1] = _add_inv(subkeys[enc_idx + 2])  # -k3 (swapped)
+        dk[dec_idx + 2] = _add_inv(subkeys[enc_idx + 1])  # -k2 (swapped)
+        dk[dec_idx + 3] = _mul_inv(subkeys[enc_idx + 3])  # k4^-1
+        dk[dec_idx + 4] = subkeys[enc_idx + 4]          # k5
+        dk[dec_idx + 5] = subkeys[enc_idx + 5]          # k6
 
     # Split ciphertext into 4 16-bit words
     x1 = int.from_bytes(block[0:2], "big")
@@ -213,20 +211,22 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
     x3 = int.from_bytes(block[4:6], "big")
     x4 = int.from_bytes(block[6:8], "big")
 
-    # Apply inverse output transformation (round 8.5)
-    k1, k2, k3, k4 = inv_keys[48:52]
-    y1 = _mul(x1, k1)
-    y2 = (x3 + k2) & 0xFFFF  # Note: x2/x3 are swapped in enc output
-    y3 = (x2 + k3) & 0xFFFF
-    y4 = _mul(x4, k4)
+    # Apply inverse output transformation (using dk[0:4])
+    y1 = _mul(x1, dk[0])
+    y2 = (x2 + dk[1]) & 0xFFFF
+    y3 = (x3 + dk[2]) & 0xFFFF
+    y4 = _mul(x4, dk[3])
     x1, x2, x3, x4 = y1, y2, y3, y4
 
-    # Apply 8 inverse rounds (rounds 8 to 1)
-    for round_idx in range(7, -1, -1):
-        # Undo the swap from encryption
+    # Apply 8 inverse rounds
+    for round_idx in range(8):
+        # Swap middle words (undoing encryption's swap between rounds)
         x2, x3 = x3, x2
-        sk = inv_keys[round_idx * 6 : (round_idx + 1) * 6]
+        sk = dk[4 + round_idx * 6 : 4 + (round_idx + 1) * 6]
         x1, x2, x3, x4 = _idea_round(x1, x2, x3, x4, sk)
+
+    # Final swap to restore original word order
+    x2, x3 = x3, x2
 
     return (
         x1.to_bytes(2, "big")

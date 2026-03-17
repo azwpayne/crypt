@@ -3,56 +3,68 @@
 # @time    : 2026/3/9 20:56 Mon
 # @blog    : https://paynewu.com/
 # @mail    : paynewu0719@gmail.com
-# @desc    :
-import unittest
+# @desc    : Tests for CRC algorithms
 from crypt.digest.CRC import crc8
 
+import pytest
 
-class TestCRC(unittest.TestCase):
-  """test crc algorithms"""
 
-  def test_crc8_implementations(self):
-    """使用已知测试向量验证CRC实现"""
+class TestCRC8:
+  """Test CRC-8 algorithm implementations."""
 
-    test_data = b"123456789"
+  # Standard test data used across CRC implementations
+  TEST_DATA = b"123456789"
 
-    # CRC-8/MAXIM - 期望值来自Maxim官方文档
-    assert crc8.crc8_maxim(test_data) == 0xA1, "CRC-8/MAXIM 测试失败"
-    print(f"✓ CRC-8/MAXIM: 0x{crc8.crc8_maxim(test_data):02X}")
+  def test_crc8_maxim(self):
+    """Test CRC-8/MAXIM against known test vector from Maxim official documentation."""
+    result = crc8.crc8_maxim(self.TEST_DATA)
+    assert result == 0xA1, f"CRC-8/MAXIM test failed: expected 0xA1, got 0x{result:02X}"
 
-    # CRC-8/AUTOSAR - 期望值来自AUTOSAR规范
-    assert crc8.crc8_autosar(test_data) == 0xDF, "CRC-8/AUTOSAR 测试失败"  # noqa: PLR2004, S101
-    print(f"✓ CRC-8/AUTOSAR: 0x{crc8.crc8_autosar(test_data):02X}")
+  def test_crc8_autosar(self):
+    """Test CRC-8/AUTOSAR against known test vector from AUTOSAR specification."""
+    result = crc8.crc8_autosar(self.TEST_DATA)
+    assert result == 0xDF, f"CRC-8/AUTOSAR test failed: expected 0xDF, got 0x{result:02X}"
 
-    # CRC-8/LTE - 期望值来自3GPP规范
-    assert crc8.crc8_lte(test_data) == 0xEA, "CRC-8/LTE 测试失败"  # noqa: PLR2004, S101
-    print(f"✓ CRC-8/LTE: 0x{crc8.crc8_lte(test_data):02X}")
+  def test_crc8_lte(self):
+    """Test CRC-8/LTE against known test vector from 3GPP specification."""
+    result = crc8.crc8_lte(self.TEST_DATA)
+    assert result == 0xEA, f"CRC-8/LTE test failed: expected 0xEA, got 0x{result:02X}"
 
-    # CRC-8/SMBUS - 期望值来自SMBus规范
-    assert crc8.crc8_smbus(test_data) == 0xF4, "CRC-8/SMBUS 测试失败"  # noqa: PLR2004, S101
-    print(f"✓ CRC-8/SMBUS: 0x{crc8.crc8_smbus(test_data):02X}")
+  def test_crc8_smbus(self):
+    """Test CRC-8/SMBUS against known test vector from SMBus specification."""
+    result = crc8.crc8_smbus(self.TEST_DATA)
+    assert result == 0xF4, f"CRC-8/SMBUS test failed: expected 0xF4, got 0x{result:02X}"
 
-    # CRC-8/BLUETOOTH - 期望值来自蓝牙规范
-    assert crc8.crc8_bluetooth(test_data) == 0x26, "CRC-8/BLUETOOTH 测试失败"  # noqa: PLR2004, S101
-    print(f"✓ CRC-8/BLUETOOTH: 0x{crc8.crc8_bluetooth(test_data):02X}")
+  def test_crc8_bluetooth(self):
+    """Test CRC-8/BLUETOOTH against known test vector from Bluetooth specification."""
+    result = crc8.crc8_bluetooth(self.TEST_DATA)
+    assert result == 0x26, f"CRC-8/BLUETOOTH test failed: expected 0x26, got 0x{result:02X}"
 
-    # CRC-8/SAE-J1850 - 期望值来自SAE J1850规范
-    assert crc8.crc8_j1850(test_data) == 0x4B, "CRC-8/SAE-J1850 测试失败"  # noqa: PLR2004, S101
-    print(f"✓ CRC-8/SAE-J1850: 0x{crc8.crc8_j1850(test_data):02X}")
+  def test_crc8_j1850(self):
+    """Test CRC-8/SAE-J1850 against known test vector from SAE J1850 specification."""
+    result = crc8.crc8_j1850(self.TEST_DATA)
+    assert result == 0x4B, f"CRC-8/SAE-J1850 test failed: expected 0x4B, got 0x{result:02X}"
 
-    print("\n所有CRC8实现通过验证! ✓")
 
-  def test_crc8(self):
-    pass
+class TestCRCPlaceholders:
+  """Placeholder tests for CRC variants to be implemented."""
 
+  @pytest.mark.skip(reason="Not yet implemented")
   def test_crc12(self):
+    """Test CRC-12 implementation."""
     pass
 
+  @pytest.mark.skip(reason="Not yet implemented")
   def test_crc16(self):
+    """Test CRC-16 implementation."""
     pass
 
+  @pytest.mark.skip(reason="Not yet implemented")
   def test_crc16_ccitt(self):
+    """Test CRC-16/CCITT implementation."""
     pass
 
+  @pytest.mark.skip(reason="Not yet implemented")
   def test_crc32(self):
+    """Test CRC-32 implementation."""
     pass

@@ -1,15 +1,12 @@
 """Block cipher modes of operation."""
 
 from .cbc import CBCMode
+from .ctr import CTRMode, ModeError
 from .ecb import ECBMode
 
 __all__ = [
     "ECBMode",
     "CBCMode",
+    "CTRMode",
     "ModeError",
 ]
-
-
-class ModeError(ValueError):
-    """Mode-specific error (e.g., IV reuse, invalid parameters)."""
-    pass

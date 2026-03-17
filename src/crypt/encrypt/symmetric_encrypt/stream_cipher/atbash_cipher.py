@@ -8,7 +8,7 @@
 from string import ascii_lowercase, ascii_uppercase
 
 
-def _create_atbash_table() -> str:
+def _create_atbash_table() -> dict[int, int]:
   """创建阿塔巴什转换表"""
   # 阿塔巴什：A <-> Z, B <-> Y, C <-> X, ...
   lower_reversed = ascii_lowercase[::-1]

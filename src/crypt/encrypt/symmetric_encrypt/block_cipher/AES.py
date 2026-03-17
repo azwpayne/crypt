@@ -8,6 +8,20 @@
 
 from typing import Literal
 
+from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import pad as _pkcs7_pad
+from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import unpad as _pkcs7_unpad
+
+
+def pkcs7_pad(data: bytes, block_size: int = 16) -> bytes:
+    """Apply PKCS7 padding to data (wrapper with default block_size for AES)."""
+    return _pkcs7_pad(data, block_size)
+
+
+def pkcs7_unpad(data: bytes, block_size: int = 16) -> bytes:
+    """Remove PKCS7 padding from data (wrapper with default block_size for AES)."""
+    return _pkcs7_unpad(data, block_size)
+
+
 # AES S-box for SubBytes transformation
 S_BOX = [
   0x63,
@@ -799,55 +813,6 @@ def _get_key_params(key: bytes) -> tuple[int, int]:
     return 8, 14  # AES-256
   msg = f"Invalid key length: {key_len}. Must be 16, 24, or 32 bytes."
   raise ValueError(msg)
-
-
-def pkcs7_pad(data: bytes, block_size: int = 16) -> bytes:
-  """
-  Apply PKCS7 padding to data.
-
-  Args:
-      data: The data to pad.
-      block_size: The block size (default 16 for AES).
-
-  Returns:
-      The padded data.
-  """
-  padding_len = block_size - (len(data) % block_size)
-  if padding_len == 0:
-    padding_len = block_size
-  return data + bytes([padding_len] * padding_len)
-
-
-def pkcs7_unpad(data: bytes, block_size: int = 16) -> bytes:
-  """
-  Remove PKCS7 padding from data.
-
-  Args:
-      data: The padded data.
-      block_size: The block size (default 16 for AES).
-
-  Returns:
-      The unpadded data.
-
-  Raises:
-      ValueError: If padding is invalid.
-  """
-  if not data:
-    msg = "Empty data"
-    raise ValueError(msg)
-  padding_len = data[-1]
-  if padding_len < 1 or padding_len > block_size:
-    msg = f"Invalid padding length: {padding_len}"
-    raise ValueError(msg)
-  if len(data) < padding_len:
-    msg = "Data too short for padding"
-    raise ValueError(msg)
-  # Verify all padding bytes
-  for i in range(1, padding_len + 1):
-    if data[-i] != padding_len:
-      msg = "Invalid padding bytes"
-      raise ValueError(msg)
-  return data[:-padding_len]
 
 
 def aes_ecb_encrypt(plaintext: bytes, key: bytes) -> bytes:

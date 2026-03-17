@@ -45,16 +45,16 @@ def unpad(data: bytes, block_size: int) -> bytes:
         raise ValueError(f"block_size must be between 1 and 255, got {block_size}")
 
     if not data:
-        raise ValueError("data is empty")
+        raise ValueError("Empty data")
 
     padding_len = data[-1]
 
     # Validate padding length
     if padding_len == 0 or padding_len > block_size:
-        raise ValueError("invalid padding")
+        raise ValueError(f"Invalid padding length: {padding_len}")
 
     if len(data) < padding_len:
-        raise ValueError("invalid padding length")
+        raise ValueError("Data too short for padding")
 
     # Constant-time verification of all padding bytes
     padding = data[-padding_len:]
@@ -62,7 +62,7 @@ def unpad(data: bytes, block_size: int) -> bytes:
 
     # Use constant-time comparison to avoid timing attacks
     if not _constant_time_compare(padding, expected_padding):
-        raise ValueError("invalid padding bytes")
+        raise ValueError("Invalid padding bytes")
 
     return data[:-padding_len]
 

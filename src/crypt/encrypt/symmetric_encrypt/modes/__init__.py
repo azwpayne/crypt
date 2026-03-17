@@ -1,9 +1,11 @@
 """Block cipher modes of operation."""
 
+from .cbc import CBCMode
 from .ecb import ECBMode
 
 __all__ = [
     "ECBMode",
+    "CBCMode",
     "ModeError",
 ]
 

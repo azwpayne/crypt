@@ -33,7 +33,7 @@ def _gamma(a: int) -> tuple[int, int, int, int]:
     h = hashlib.sha1(data).digest()
 
     # Extract four 32-bit words from SHA-1 output (160 bits)
-    y0 = int.from_bytes(h[0:4], "big")
+    y0 = int.from_bytes(h[:4], "big")
     y1 = int.from_bytes(h[4:8], "big")
     y2 = int.from_bytes(h[8:12], "big")
     y3 = int.from_bytes(h[12:16], "big")
@@ -51,7 +51,8 @@ def _initialize_tables(key: bytes) -> tuple[list[int], list[int], list[int]]:
         Tuple of (T table, S table, R table)
     """
     if len(key) != 20:
-        raise ValueError(f"Key must be 20 bytes, got {len(key)}")
+        msg = f"Key must be 20 bytes, got {len(key)}"
+        raise ValueError(msg)
 
     # Derive key-dependent tables using SHA-1
     h = hashlib.sha1(key).digest()
@@ -68,16 +69,16 @@ def _initialize_tables(key: bytes) -> tuple[list[int], list[int], list[int]]:
             h = hashlib.sha1(data).digest()
             j += 1
 
-        word = int.from_bytes(h[(i % 5) * 4:(i % 5 + 1) * 4], "big")
+        word = int.from_bytes(h[(i % 5) * 4: (i % 5 + 1) * 4], "big")
         if i < T_SIZE:
             T[i] = word
         else:
             S[i - T_SIZE] = word
 
     # Create R table
-    R_table = [0] * (4 * (NUM_ROUNDS + 1))
+    r_table = [0] * (4 * (NUM_ROUNDS + 1))
 
-    return T, S, R_table
+    return T, S, r_table
 
 
 class SEALState:
@@ -118,7 +119,7 @@ class SEALState:
                 idx = (self.R[p + j - 4] >> 24) & 0xFF
                 self.R[p + j] = self.R[p + j - 4] ^ self.S[idx]
 
-    def _generate_block(self) -> bytes:
+    def generate_block(self) -> bytes:
         """Generate 80 bytes (20 words) of keystream."""
         output = []
 
@@ -129,7 +130,7 @@ class SEALState:
         D = self.R[4 * NUM_ROUNDS + 3]
         n = self.n
 
-        for i in range(64):  # Generate 64 * 4 = 256 bytes? No, let me fix this
+        for _ in range(64):  # Generate 64 * 4 = 256 bytes? No, let me fix this
             # F function - mix A, B, C, D using T table
             for _ in range(2):
                 p0, p1 = (A >> 9) & 0x1FF, (A >> 0) & 0x1FF
@@ -140,11 +141,8 @@ class SEALState:
                 D = (D ^ self.T[q0]) & 0xFFFFFFFF
                 A = (A >> 16) | ((D ^ self.T[q1]) << 16)
 
-            output.append(B & 0xFFFFFFFF)
-            output.append(C & 0xFFFFFFFF)
-            output.append(D & 0xFFFFFFFF)
-            output.append(A & 0xFFFFFFFF)
-
+            output.extend(
+                (B & 0xFFFFFFFF, C & 0xFFFFFFFF, D & 0xFFFFFFFF, A & 0xFFFFFFFF))
             # Update n for next iteration
             n = (n + 1) & 0xFFFFFFFF
             self._initialize_register(n)
@@ -177,8 +175,8 @@ def seal_encrypt(key: bytes, iv: int, plaintext: bytes) -> bytes:
     ciphertext = b""
 
     for i in range(0, len(plaintext), L * 4):
-        keystream = state._generate_block()
-        block = plaintext[i:i+L*4]
+        keystream = state.generate_block()
+        block = plaintext[i: i + L * 4]
         for j in range(len(block)):
             ciphertext += bytes([block[j] ^ keystream[j]])
 
@@ -216,6 +214,6 @@ def seal_keystream(key: bytes, iv: int, length: int) -> bytes:
     keystream = b""
 
     while len(keystream) < length:
-        keystream += state._generate_block()
+        keystream += state.generate_block()
 
     return keystream[:length]

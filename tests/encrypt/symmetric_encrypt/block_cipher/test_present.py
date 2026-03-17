@@ -1,7 +1,5 @@
 """Tests for PRESENT block cipher."""
 
-import pytest
-
 from crypt.encrypt.symmetric_encrypt.block_cipher.present import (
     BLOCK_SIZE,
     decrypt_block,
@@ -12,6 +10,8 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.present import (
     present_ecb_decrypt,
     present_ecb_encrypt,
 )
+
+import pytest
 
 
 class TestPresent:

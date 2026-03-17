@@ -32,13 +32,9 @@ def base32_encode(data: bytes) -> str:
   padding_len = (5 - len(binary_str) % 5) % 5
   binary_str += "0" * padding_len
 
-  # 每5位一组进行编码
-  encoded = []
-  for i in range(0, len(binary_str), 5):
-    chunk = binary_str[i : i + 5]
-    index = int(chunk, 2)
-    encoded.append(BASE32_ALPHABET[index])
-
+  encoded = [
+    BASE32_ALPHABET[int(binary_str[i : i + 5], 2)] for i in range(0, len(binary_str), 5)
+  ]
   # 添加填充字符
   padding = (8 - len(encoded) % 8) % 8
   encoded.extend([PADDING_CHAR] * padding)
@@ -133,6 +129,7 @@ def test_base32():
       print(f"  编码匹配: {encode_match}  解码正确: {decode_match}")
       print()
 
+      # sourcery skip: no-conditionals-in-tests
       if encode_match == "✗" or decode_match == "✗":
         all_passed = False
 
@@ -159,6 +156,7 @@ def test_base32():
   random_data = bytes(random.getrandbits(8) for _ in range(100))
   encoded = base32_encode(random_data)
   decoded = base32_decode(encoded)
+  # sourcery skip: no-conditionals-in-tests
   if decoded == random_data:
     print("随机数据测试 (100字节): ✓")
   else:

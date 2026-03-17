@@ -1,5 +1,5 @@
 # @time    : 2026/1/6 15:53
-# @name    : RC4.py
+# @name    : rc4.py
 # @author  : azwpayne
 # @desc    :
 from Crypto.Cipher import ARC4

@@ -24,11 +24,8 @@ def _mod_inverse(a: int, m: int) -> int | None:
   返回:
       如果存在逆元则返回逆元，否则返回None
   """
-  a = a % m
-  for x in range(1, m):
-    if (a * x) % m == 1:
-      return x
-  return None
+  a %= m
+  return next((x for x in range(1, m) if (a * x) % m == 1), None)
 
 
 def _char_to_num(char: str) -> int:

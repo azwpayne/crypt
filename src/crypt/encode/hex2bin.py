@@ -132,9 +132,7 @@ def hex_byte_to_bin(hex_byte: str, *, with_prefix: bool = False) -> str:
 
   binary = hex_to_bin(clean, min_bits=8)
 
-  if with_prefix:
-    return f"0b{binary}"
-  return binary
+  return f"0b{binary}" if with_prefix else binary
 
 
 # 批量转换辅助函数
@@ -179,7 +177,7 @@ def bin_to_hex(bin_str: str, min_digits: int = 0) -> str:
     raise ValueError(msg)
 
   # 验证二进制有效性
-  if not all(c in "01" for c in clean_bin):
+  if any(c not in "01" for c in clean_bin):
     msg = f"无效的二进制字符串: {bin_str}"
     raise ValueError(msg)
 
@@ -275,9 +273,7 @@ def is_valid_bin(bin_str: str) -> bool:
   """
   try:
     clean_bin = bin_str.replace("0b", "").replace(" ", "").strip()
-    if not clean_bin:
-      return False
-    return all(c in "01" for c in clean_bin)
+    return all(c in "01" for c in clean_bin) if clean_bin else False
   except (ValueError, TypeError):
     return False
 
@@ -293,7 +289,7 @@ def bin_bits_to_hex(bit_list: list[int]) -> str:
       >>> bin_bits_to_hex([0, 0, 1, 1, 1, 1])
       '3F'
   """
-  if not all(b in (0, 1) for b in bit_list):
+  if any(b not in (0, 1) for b in bit_list):
     msg = "列表只能包含0或1"
     raise ValueError(msg)
 

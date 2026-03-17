@@ -87,7 +87,8 @@ def _clamp_scalar(scalar: bytes) -> int:
     - Clear bit 255
     """
     if len(scalar) != 32:
-        raise ValueError("Scalar must be 32 bytes")
+        msg = "Scalar must be 32 bytes"
+        raise ValueError(msg)
 
     s = bytearray(scalar)
     s[0] &= 248  # Clear bits 0, 1, 2
@@ -131,9 +132,11 @@ def compute_shared_secret(private_key: bytes, public_key: bytes) -> bytes:
         32-byte shared secret
     """
     if len(private_key) != 32:
-        raise ValueError("Private key must be 32 bytes")
+        msg = "Private key must be 32 bytes"
+        raise ValueError(msg)
     if len(public_key) != 32:
-        raise ValueError("Public key must be 32 bytes")
+        msg = "Public key must be 32 bytes"
+        raise ValueError(msg)
 
     scalar = _clamp_scalar(private_key)
     peer_x = int.from_bytes(public_key, "little")

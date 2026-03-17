@@ -1,12 +1,12 @@
 """Tests for SEAL stream cipher."""
 
-import pytest
-
 from crypt.encrypt.symmetric_encrypt.stream_cipher.seal import (
     seal_decrypt,
     seal_encrypt,
     seal_keystream,
 )
+
+import pytest
 
 
 class TestSEAL:

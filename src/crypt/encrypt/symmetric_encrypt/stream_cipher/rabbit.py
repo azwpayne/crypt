@@ -17,8 +17,14 @@ from typing import Final
 
 # Constants
 A: Final[tuple[int, ...]] = (
-    0x4D34D34D, 0xD34D34D3, 0x34D34D34, 0x4D34D34D,
-    0xD34D34D3, 0x34D34D34, 0x4D34D34D, 0xD34D34D3
+    0x4D34D34D,
+    0xD34D34D3,
+    0x34D34D34,
+    0x4D34D34D,
+    0xD34D34D3,
+    0x34D34D34,
+    0x4D34D34D,
+    0xD34D34D3,
 )
 
 MASK32: Final[int] = 0xFFFFFFFF
@@ -39,9 +45,9 @@ def _g_func(x: int) -> int:
     # Compute (x*x) using 16-bit operations to avoid overflow issues
     # Actually the original uses full 32-bit: g(x) = ((x + x) << 16) ^ ((x * x) << 1)
     # Let me use the correct formula from the paper
-    h = ((x * x) >> 32) & MASK32  # high 32 bits of x^2
-    l = (x * x) & MASK32  # low 32 bits of x^2
-    return _rotl(h ^ l, 16)
+    h = x ** 2 >> 32 & MASK32
+    low = x ** 2 & MASK32
+    return _rotl(h ^ low, 16)
 
 
 class RabbitState:
@@ -59,7 +65,7 @@ class RabbitState:
             self.carry = temp >> 32
             self.c[j] = temp & MASK32
 
-    def _next_state(self) -> None:
+    def next_state(self) -> None:
         """Update the internal state."""
         g = [0] * 8
         for j in range(8):
@@ -77,7 +83,7 @@ class RabbitState:
 
         self._update_counters()
 
-    def _extract_keystream(self) -> bytes:
+    def extract_keystream(self) -> bytes:
         """Extract 16 bytes of keystream from current state."""
         s = [0] * 4
         s[0] = (self.x[0] & 0xFFFF) ^ ((self.x[5] >> 16) & 0xFFFF)
@@ -95,10 +101,11 @@ class RabbitState:
 def _key_setup(state: RabbitState, key: bytes) -> None:
     """Setup the Rabbit state from a 128-bit key."""
     if len(key) != 16:
-        raise ValueError(f"Key must be 16 bytes, got {len(key)}")
+        msg = f"Key must be 16 bytes, got {len(key)}"
+        raise ValueError(msg)
 
     # Convert key to 4 32-bit words
-    k = [int.from_bytes(key[i:i+4], "little") for i in range(0, 16, 4)]
+    k = [int.from_bytes(key[i: i + 4], "little") for i in range(0, 16, 4)]
 
     # Initialize state
     state.x[0] = k[0]
@@ -124,16 +131,17 @@ def _key_setup(state: RabbitState, key: bytes) -> None:
 
     # Iterate 4 times
     for _ in range(4):
-        state._next_state()
+        state.next_state()
 
 
 def _iv_setup(state: RabbitState, iv: bytes) -> None:
     """Setup the Rabbit state with a 64-bit IV."""
     if len(iv) != 8:
-        raise ValueError(f"IV must be 8 bytes, got {len(iv)}")
+        msg = f"IV must be 8 bytes, got {len(iv)}"
+        raise ValueError(msg)
 
     # Convert IV to 2 32-bit words
-    i0 = int.from_bytes(iv[0:4], "little")
+    i0 = int.from_bytes(iv[:4], "little")
     i1 = int.from_bytes(iv[4:8], "little")
 
     # Modify counters
@@ -148,7 +156,7 @@ def _iv_setup(state: RabbitState, iv: bytes) -> None:
 
     # Iterate 4 times
     for _ in range(4):
-        state._next_state()
+        state.next_state()
 
 
 def rabbit_encrypt(key: bytes, iv: bytes | None, plaintext: bytes) -> bytes:
@@ -173,10 +181,10 @@ def rabbit_encrypt(key: bytes, iv: bytes | None, plaintext: bytes) -> bytes:
         # Generate 16 bytes of keystream (2 iterations)
         keystream = b""
         for _ in range(2):
-            keystream += state._extract_keystream()
-            state._next_state()
+            keystream += state.extract_keystream()
+            state.next_state()
 
-        block = plaintext[i:i+16]
+        block = plaintext[i: i + 16]
         for j in range(len(block)):
             ciphertext += bytes([block[j] ^ keystream[j]])
 
@@ -218,7 +226,7 @@ def rabbit_keystream(key: bytes, iv: bytes | None, length: int) -> bytes:
 
     keystream = b""
     while len(keystream) < length:
-        keystream += state._extract_keystream()
-        state._next_state()
+        keystream += state.extract_keystream()
+        state.next_state()
 
     return keystream[:length]

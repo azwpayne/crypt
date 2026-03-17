@@ -4,7 +4,7 @@
 # @desc    : Tests for authenticated encryption modes (CCM, GCM)
 
 
-from crypt.encrypt.symmetric_encrypt.modes import ccm, gcm
+from crypt.encrypt.symmetric_encrypt import ccm, gcm
 
 
 class TestCCM:

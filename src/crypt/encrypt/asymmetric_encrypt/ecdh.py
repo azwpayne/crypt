@@ -8,10 +8,8 @@ This implementation is for educational purposes only.
 
 from __future__ import annotations
 
-import hashlib
 import os
 from dataclasses import dataclass
-from typing import Final
 
 
 @dataclass
@@ -78,9 +76,11 @@ CURVES: dict[str, CurveParams] = {
 class Point:
     """Point on an elliptic curve."""
 
-    def __init__(self, x: int, y: int, curve: CurveParams, infinity: bool = False) -> None:
-        self.x = x % curve.p if not infinity else 0
-        self.y = y % curve.p if not infinity else 0
+    def __init__(
+            self, x: int, y: int, curve: CurveParams, infinity: bool = False
+    ) -> None:
+        self.x = 0 if infinity else x % curve.p
+        self.y = 0 if infinity else y % curve.p
         self.curve = curve
         self.infinity = infinity
 
@@ -88,10 +88,10 @@ class Point:
         if not isinstance(other, Point):
             return NotImplemented
         return (
-            self.x == other.x
-            and self.y == other.y
-            and self.curve.name == other.curve.name
-            and self.infinity == other.infinity
+                self.x == other.x
+                and self.y == other.y
+                and self.curve.name == other.curve.name
+                and self.infinity == other.infinity
         )
 
     def is_valid(self) -> bool:
@@ -164,12 +164,15 @@ def generate_keypair(curve_name: str = "P-256") -> tuple[int, Point]:
         ValueError: If curve name is invalid
     """
     if curve_name not in CURVES:
-        raise ValueError(f"Unknown curve: {curve_name}. Use P-256, P-384, or P-521")
+        msg = f"Unknown curve: {curve_name}. Use P-256, P-384, or P-521"
+        raise ValueError(msg)
 
     curve = CURVES[curve_name]
 
     # Generate random private key
-    private_key = int.from_bytes(os.urandom((curve.n.bit_length() + 7) // 8), "big") % curve.n
+    private_key = (
+            int.from_bytes(os.urandom((curve.n.bit_length() + 7) // 8), "big") % curve.n
+    )
     if private_key == 0:
         private_key = 1
 
@@ -181,8 +184,8 @@ def generate_keypair(curve_name: str = "P-256") -> tuple[int, Point]:
 
 
 def compute_shared_secret(
-    private_key: int,
-    public_key: Point,
+        private_key: int,
+        public_key: Point,
 ) -> bytes:
     """Compute ECDH shared secret.
 
@@ -196,7 +199,8 @@ def compute_shared_secret(
     shared_point = scalar_mult(private_key, public_key)
 
     if shared_point.infinity:
-        raise ValueError("Shared point is at infinity")
+        msg = "Shared point is at infinity"
+        raise ValueError(msg)
 
     # Return x-coordinate as bytes
     curve = public_key.curve

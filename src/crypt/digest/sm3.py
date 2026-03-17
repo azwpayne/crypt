@@ -36,6 +36,15 @@ def FF(X, Y, Z, j):
 
 
 def GG(X, Y, Z, j):
+  """
+  计算SM3哈希算法中的布尔函数GG。该函数在前16轮和后48轮采用不同的逻辑运算形式，以增强消息的非线性混淆特性。
+
+  :param X: 32位整数输入X
+  :param Y: 32位整数输入Y
+  :param Z: 32位整数输入Z
+  :param j: 轮次索引（0-63），用于选择不同的布尔函数形式
+  :return: 计算得到的32位整数结果
+  """
   return X ^ Y ^ Z if j < 16 else (X & Y) | (~X & Z)
 
 
@@ -61,12 +70,12 @@ def padding(message):
 # 消息扩展函数
 def message_expand(block):
   W = [int.from_bytes(block[i : i + 4], "big") for i in range(0, 64, 4)]
-  for j in range(16, 68):  # 52轮
-    W.append(
-      P1(W[j - 16] ^ W[j - 9] ^ left_rotate(W[j - 3], 15))
-      ^ left_rotate(W[j - 13], 7)
-      ^ W[j - 6]
-    )
+  W.extend(
+    P1(W[j - 16] ^ W[j - 9] ^ left_rotate(W[j - 3], 15))
+    ^ left_rotate(W[j - 13], 7)
+    ^ W[j - 6]
+    for j in range(16, 68)
+  )
   W_ = [W[j] ^ W[j + 4] for j in range(64)]
   return W, W_
 

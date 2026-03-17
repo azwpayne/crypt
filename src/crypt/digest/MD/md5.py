@@ -405,11 +405,11 @@ def pad_message(message: bytes) -> bytes:
       Padded message
   """
   original_length_bits = len(message) * 8
-  message = message + b"\x80"
+  message += b"\x80"
 
   # Pad with zeros until length ≡ 56 (mod 64)
   padding_len = (56 - len(message)) % 64
-  message = message + b"\x00" * padding_len
+  message += b"\x00" * padding_len
 
   # Append original length as 64-bit little-endian
   return message + struct.pack("<Q", original_length_bits)

@@ -10,14 +10,13 @@ from __future__ import annotations
 
 import hashlib
 import os
-from typing import Callable, Protocol
+from typing import Protocol
 
 
 class HashFunc(Protocol):
     """Protocol for hash functions like hashlib.sha256."""
 
-    def __call__(self, data: bytes = b"") -> hashlib._Hash:
-        ...
+    def __call__(self, data: bytes = b"") -> hashlib._Hash: ...
 
 
 def mgf1(seed: bytes, length: int, hash_func: HashFunc = hashlib.sha256) -> bytes:
@@ -31,8 +30,9 @@ def mgf1(seed: bytes, length: int, hash_func: HashFunc = hashlib.sha256) -> byte
     Returns:
         Generated mask
     """
-    if length > (2**32) * hash_func().digest_size:
-        raise ValueError("Mask too long")
+    if length > (2 ** 32) * hash_func().digest_size:
+        msg = "Mask too long"
+        raise ValueError(msg)
 
     output = b""
     counter = 0
@@ -45,10 +45,10 @@ def mgf1(seed: bytes, length: int, hash_func: HashFunc = hashlib.sha256) -> byte
 
 
 def _emsa_pss_encode(
-    message: bytes,
-    em_bits: int,
-    salt_len: int,
-    hash_func: HashFunc,
+        message: bytes,
+        em_bits: int,
+        salt_len: int,
+        hash_func: HashFunc,
 ) -> bytes:
     """EMSA-PSS-ENCODE operation.
 
@@ -64,7 +64,8 @@ def _emsa_pss_encode(
     hash_len = hash_func().digest_size
 
     if em_bits < 8 * hash_len + 8 * salt_len + 9:
-        raise ValueError("Encoding error")
+        msg = "Encoding error"
+        raise ValueError(msg)
 
     em_len = (em_bits + 7) // 8
 
@@ -87,24 +88,25 @@ def _emsa_pss_encode(
 
     # Mask DB
     db_mask = mgf1(h, len(db), hash_func)
-    masked_db = bytes(x ^ y for x, y in zip(db, db_mask))
+    masked_db = bytes(x ^ y for x, y in zip(db, db_mask, strict=False))
 
     # Clear leading bits
     bits_to_clear = 8 * em_len - em_bits
-    masked_db = (masked_db[0] & ((1 << (8 - bits_to_clear)) - 1)).to_bytes(1, "big") + masked_db[1:]
+    masked_db = (masked_db[0] & ((1 << (8 - bits_to_clear)) - 1)).to_bytes(
+        1, "big"
+    ) + masked_db[1:]
 
     # EM = masked_db || h || 0xbc
-    em = masked_db + h + b"\xbc"
+    return masked_db + h + b"\xbc"
 
-    return em
 
 
 def _emsa_pss_verify(
-    message: bytes,
-    em: bytes,
-    em_bits: int,
-    salt_len: int,
-    hash_func: HashFunc,
+        message: bytes,
+        em: bytes,
+        em_bits: int,
+        salt_len: int,
+        hash_func: HashFunc,
 ) -> bool:
     """EMSA-PSS-VERIFY operation.
 
@@ -132,8 +134,8 @@ def _emsa_pss_verify(
         return False
 
     # Split EM
-    masked_db = em[:em_len - hash_len - 1]
-    h = em[em_len - hash_len - 1:-1]
+    masked_db = em[: em_len - hash_len - 1]
+    h = em[em_len - hash_len - 1: -1]
 
     # Check leading bits are zero
     bits_to_clear = 8 * em_len - em_bits
@@ -142,7 +144,7 @@ def _emsa_pss_verify(
 
     # Unmask DB
     db_mask = mgf1(h, len(masked_db), hash_func)
-    db = bytes(x ^ y for x, y in zip(masked_db, db_mask))
+    db = bytes(x ^ y for x, y in zip(masked_db, db_mask, strict=False))
 
     # Clear leading bits
     db = (db[0] & ((1 << (8 - bits_to_clear)) - 1)).to_bytes(1, "big") + db[1:]
@@ -167,10 +169,10 @@ def _emsa_pss_verify(
 
 
 def sign(
-    message: bytes,
-    private_key: tuple[int, int],
-    salt_len: int | None = None,
-    hash_func: HashFunc = hashlib.sha256,
+        message: bytes,
+        private_key: tuple[int, int],
+        salt_len: int | None = None,
+        hash_func: HashFunc = hashlib.sha256,
 ) -> bytes:
     """Sign message using RSA-PSS.
 
@@ -198,7 +200,8 @@ def sign(
     m = int.from_bytes(em, "big")
 
     if m >= n:
-        raise ValueError("Message too long")
+        msg = "Message too long"
+        raise ValueError(msg)
 
     # RSA signature: s = m^d mod n
     s = pow(m, d, n)
@@ -209,11 +212,11 @@ def sign(
 
 
 def verify(
-    signature: bytes,
-    message: bytes,
-    public_key: tuple[int, int],
-    salt_len: int | None = None,
-    hash_func: HashFunc = hashlib.sha256,
+        signature: bytes,
+        message: bytes,
+        public_key: tuple[int, int],
+        salt_len: int | None = None,
+        hash_func: HashFunc = hashlib.sha256,
 ) -> bool:
     """Verify RSA-PSS signature.
 

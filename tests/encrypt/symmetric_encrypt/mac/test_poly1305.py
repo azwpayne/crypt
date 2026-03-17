@@ -5,12 +5,12 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    : Unit tests for Poly1305 implementation
 
-import pytest
-
-from src.crypt.encrypt.symmetric_encrypt.mac.poly1305 import (
+from crypt.digest.poly1305 import (
   poly1305_mac,
   poly1305_verify,
 )
+
+import pytest
 
 
 class TestPoly1305:

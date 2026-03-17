@@ -1,7 +1,5 @@
 """Tests for ECDH key exchange with NIST curves."""
 
-import pytest
-
 from crypt.encrypt.asymmetric_encrypt.ecdh import (
     CURVES,
     Point,
@@ -9,6 +7,8 @@ from crypt.encrypt.asymmetric_encrypt.ecdh import (
     generate_keypair,
     scalar_mult,
 )
+
+import pytest
 
 
 class TestECDH:

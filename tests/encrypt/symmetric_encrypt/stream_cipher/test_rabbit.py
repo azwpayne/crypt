@@ -1,12 +1,12 @@
 """Tests for Rabbit stream cipher."""
 
-import pytest
-
 from crypt.encrypt.symmetric_encrypt.stream_cipher.rabbit import (
     rabbit_decrypt,
     rabbit_encrypt,
     rabbit_keystream,
 )
+
+import pytest
 
 
 class TestRabbit:
@@ -127,5 +127,5 @@ class TestRabbit:
         keystream = rabbit_keystream(key, iv, len(plaintext))
 
         # ciphertext = plaintext XOR keystream
-        xored = bytes(a ^ b for a, b in zip(plaintext, keystream))
+        xored = bytes(a ^ b for a, b in zip(plaintext, keystream, strict=False))
         assert xored == ciphertext

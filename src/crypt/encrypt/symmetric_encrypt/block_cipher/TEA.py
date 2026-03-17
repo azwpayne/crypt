@@ -29,7 +29,8 @@ def tea_decrypt(cipher: bytes, key: bytes) -> bytes:
   for i in range(0, len(cipher), 8):
     v0, v1 = struct.unpack(">II", cipher[i : i + 8])
     k0, k1, k2, k3 = struct.unpack(">IIII", key)
-    delta, s = 0x9E3779B9, (delta * 32) & 0xFFFFFFFF
+    delta = 0x9E3779B9
+    s = (delta * 32) & 0xFFFFFFFF
     for _ in range(32):
       v1 = (v1 - (((v0 << 4) + k2) ^ (v0 + s) ^ ((v0 >> 5) + k3))) & 0xFFFFFFFF
       v0 = (v0 - (((v1 << 4) + k0) ^ (v1 + s) ^ ((v1 >> 5) + k1))) & 0xFFFFFFFF

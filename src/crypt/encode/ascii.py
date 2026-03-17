@@ -122,7 +122,7 @@ def ascii_decode_hex(hex_str: str) -> str:
 
   # 确保长度为偶数
   if len(clean_hex) % 2 != 0:
-    clean_hex = "0" + clean_hex
+    clean_hex = f"0{clean_hex}"
 
   # 每两个十六进制字符转为一个 ASCII 码
   ascii_codes = []
@@ -180,7 +180,7 @@ def ascii_decode_binary(bin_str: str) -> str:
     return ""
 
   # 验证二进制有效性
-  if not all(c in "01" for c in clean_bin):
+  if any(c not in "01" for c in clean_bin):
     msg = f"无效的二进制字符串: {bin_str}"
     raise ValueError(msg)
 

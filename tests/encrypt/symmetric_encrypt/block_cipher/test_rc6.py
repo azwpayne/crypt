@@ -1,7 +1,5 @@
 """Tests for RC6 block cipher."""
 
-import pytest
-
 from crypt.encrypt.symmetric_encrypt.block_cipher.rc6 import (
     BLOCK_SIZE,
     decrypt_block,
@@ -12,6 +10,8 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.rc6 import (
     rc6_ecb_decrypt,
     rc6_ecb_encrypt,
 )
+
+import pytest
 
 
 class TestRC6:

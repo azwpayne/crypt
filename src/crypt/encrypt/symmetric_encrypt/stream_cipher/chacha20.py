@@ -39,7 +39,7 @@ def chacha20_block(key, counter, nonce):
 
   # 构造初始状态，共16个32位整数
   state = [0] * 16
-  state[0:4] = constants
+  state[:4] = constants
   state[4:12] = key_words
   state[12] = counter & 0xFFFFFFFF
   state[13:16] = nonce_words
@@ -48,6 +48,16 @@ def chacha20_block(key, counter, nonce):
 
   # 进行 20 轮运算（10 次双轮，每次包括列轮和对角线轮）
   for _ in range(10):
+      _extracted_from_chacha20_block_19(working_state)
+  # 最终将原始状态与运算结果相加
+  for i in range(16):
+      working_state[i] = (working_state[i] + state[i]) & 0xFFFFFFFF
+
+  # 将 16 个 32 位整数以小端序打包成 64 字节
+  return struct.pack("<16L", *working_state)
+
+
+def _extracted_from_chacha20_block_19(working_state):
     # 列轮
     quarter_round(working_state, 0, 4, 8, 12)
     quarter_round(working_state, 1, 5, 9, 13)
@@ -58,13 +68,6 @@ def chacha20_block(key, counter, nonce):
     quarter_round(working_state, 1, 6, 11, 12)
     quarter_round(working_state, 2, 7, 8, 13)
     quarter_round(working_state, 3, 4, 9, 14)
-
-  # 最终将原始状态与运算结果相加
-  for i in range(16):
-    working_state[i] = (working_state[i] + state[i]) & 0xFFFFFFFF
-
-  # 将 16 个 32 位整数以小端序打包成 64 字节
-  return struct.pack("<16L", *working_state)
 
 
 def chacha20_encrypt(key, nonce, counter, plaintext):

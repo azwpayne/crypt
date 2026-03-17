@@ -29,11 +29,10 @@ def _prepare_key(key: str, length: int) -> str:
   返回:
       处理后的密钥
   """
-  cleaned_key = "".join(c for c in key if c.isalpha()).upper()
-  if not cleaned_key:
-    msg = "密钥必须包含至少一个字母"
-    raise ValueError(msg)
-  return "".join(c for c, _ in zip(cycle(cleaned_key), range(length)))
+  if cleaned_key := "".join(c for c in key if c.isalpha()).upper():
+      return "".join(c for c, _ in zip(cycle(cleaned_key), range(length)))
+  msg = "密钥必须包含至少一个字母"
+  raise ValueError(msg)
 
 
 def encrypt(text: str, key: str) -> str:
@@ -260,10 +259,7 @@ def friedman_test(text: str) -> float:
   english_ic = 0.0667
   random_ic = 0.0385
 
-  if ic <= random_ic:
-    return 1.0
-
-  return (english_ic - random_ic) / (ic - random_ic)
+  return 1.0 if ic <= random_ic else (english_ic - random_ic) / (ic - random_ic)
 
 
 if __name__ == "__main__":

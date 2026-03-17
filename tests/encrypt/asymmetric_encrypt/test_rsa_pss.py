@@ -1,6 +1,5 @@
 """Tests for RSA-PSS signature scheme."""
 
-import pytest
 
 from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair
 from crypt.encrypt.asymmetric_encrypt.rsa_pss import sign, verify

@@ -9,14 +9,30 @@ dependencies = [
     "pycryptodome",
 ]
 
+[dependency-groups]
+dev = ["poethepoet", "ruff", "ty"]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-mock",
+    # "pytest-benchmark",
+    "pytest-timeout",
+    "pytest-sugar",
+    "pytest-factoryboy",
+]
+
 [tool.poe]
 executor.type = "uv"
 tasks.full = ["clean", "lint", "test"]
 tasks.test = ["clean", "pytest"]
-tasks.lint = "ruff check --unsafe-fixes --fix . && ruff format ."
+tasks.lint = "ruff format && ruff check --unsafe-fixes --fix"
 tasks.pytest = "pytest"
+tasks.benchmark = "pytest --benchmark-only -n0"
 
 tasks.clean = { shell = """
+	rm -rf *.py
 	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
@@ -28,6 +44,7 @@ testpaths = ["tests"]
 asyncio_mode = "auto"              # 自动识别异步测试
 timeout = 30                       # 默认 30 秒超时
 addopts = """\
+    -n=8 \
     --strict-markers \
     --tb=short \
     --cov=src/crypt \
@@ -37,16 +54,10 @@ addopts = """\
     --cov-branch \
     """
 
-[dependency-groups]
-dev = ["poethepoet", "ruff", "ty"]
-test = [
-    "pytest",
-    "pytest-asyncio",
-    "pytest-cov",
-    "pytest-xdist",
-    "pytest-mock",
-    "pytest-benchmark",
-    "pytest-timeout",
-    "pytest-sugar",
-    "pytest-factoryboy",
-]
+[tool.pytest_benchmark]
+min_rounds = 5
+min_time = 0.000005
+max_time = 1.0
+calibration_precision = 10
+warmup = true
+warmup_iterations = 100000

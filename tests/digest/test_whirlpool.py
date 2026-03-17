@@ -6,10 +6,10 @@ Test vectors from ISO/IEC 10118-3 and reference implementations.
 from __future__ import annotations
 
 import hashlib
+from crypt.digest.whirlpool import whirlpool
 
 import pytest
 
-from crypt.digest.whirlpool import whirlpool
 from tests import BYTE_TEST_CASES
 
 
@@ -97,7 +97,9 @@ class TestWhirlpool:
         result2 = whirlpool(b"input2")
         assert result1 != result2
 
-    @pytest.mark.skipif(not hasattr(hashlib, "whirlpool"), reason="hashlib.whirlpool not available")
+    @pytest.mark.skipif(
+        not hasattr(hashlib, "whirlpool"), reason="hashlib.whirlpool not available"
+    )
     def test_whirlpool_vs_hashlib(self) -> None:
         """Compare against hashlib implementation if available."""
         test_cases = [b"", b"abc", b"hello", b"message digest"]

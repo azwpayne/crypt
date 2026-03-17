@@ -121,6 +121,7 @@ def _blake2b_compress(
   h: list[int],
   block: bytes,
   t: int,
+  *,
   f: bool,
 ) -> None:
   """BLAKE2b compression function.
@@ -164,6 +165,7 @@ def _blake2s_compress(
   h: list[int],
   block: bytes,
   t: int,
+  *,
   f: bool,
 ) -> None:
   """BLAKE2s compression function.
@@ -254,16 +256,8 @@ def blake2b(
   key_len = len(key)
   h[0] ^= digest_size | (key_len << 8) | (1 << 16) | (1 << 24)
 
-  # XOR salt into h[4..5]
-  salt_padded = salt.ljust(16, b"\x00")
-  h[4] ^= struct.unpack("<Q", salt_padded[:8])[0]
-  h[5] ^= struct.unpack("<Q", salt_padded[8:])[0]
-
-  # XOR personalization into h[6..7]
-  person_padded = person.ljust(16, b"\x00")
-  h[6] ^= struct.unpack("<Q", person_padded[:8])[0]
-  h[7] ^= struct.unpack("<Q", person_padded[8:])[0]
-
+  _extracted_from_blake2b_53(salt, h, 4, 5)
+  _extracted_from_blake2b_53(person, h, 6, 7)
   # Prepend key if present (key is padded to one full block)
   key_len = len(key)
   if key:
@@ -275,8 +269,7 @@ def blake2b(
   if msg_len == 0:
     data = b"\x00" * 128
   elif msg_len % 128 != 0:
-    pad_len = 128 - (msg_len % 128)
-    data = data + b"\x00" * pad_len
+    data += b"\x00" * (128 - (msg_len % 128))
 
   # Process blocks
   # t is the cumulative number of actual bytes processed (before padding)
@@ -287,11 +280,19 @@ def blake2b(
     block = data[i * 128 : (i + 1) * 128]
     is_last = i == num_blocks - 1
     t = msg_len if is_last else (i + 1) * 128
-    _blake2b_compress(h, block, t, is_last)
+    _blake2b_compress(h, block, t, f=is_last)
 
   # Output digest
   result = b"".join(struct.pack("<Q", x) for x in h)
   return result[:digest_size].hex()
+
+
+# TODO: Rename this here and in `blake2b`
+def _extracted_from_blake2b_53(arg0, h, arg2, arg3):
+  # XOR salt into h[4..5]
+  salt_padded = arg0.ljust(16, b"\x00")
+  h[arg2] ^= struct.unpack("<Q", salt_padded[:8])[0]
+  h[arg3] ^= struct.unpack("<Q", salt_padded[8:])[0]
 
 
 def blake2s(
@@ -370,7 +371,7 @@ def blake2s(
     block = data[i * 64 : (i + 1) * 64]
     is_last = i == num_blocks - 1
     t = msg_len if is_last else (i + 1) * 64
-    _blake2s_compress(h, block, t, is_last)
+    _blake2s_compress(h, block, t, f=is_last)
 
   # Output digest
   result = b"".join(struct.pack("<I", x) for x in h)

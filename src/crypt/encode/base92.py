@@ -44,9 +44,7 @@ def base92_encode(input_data: bytes) -> str:
         v = b & 16383
         b >>= 14
         n -= 14
-      out.append(BASE92_ALPHABET[v % 92])
-      out.append(BASE92_ALPHABET[v // 92])
-
+      out.extend((BASE92_ALPHABET[v % 92], BASE92_ALPHABET[v // 92]))
   if n:
     out.append(BASE92_ALPHABET[b % 92])
     if n > 7 or b > 90:

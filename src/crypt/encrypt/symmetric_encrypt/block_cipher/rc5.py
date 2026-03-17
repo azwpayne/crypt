@@ -88,7 +88,8 @@ def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
         8-byte ciphertext
     """
     if len(block) != BLOCK_SIZE:
-        raise ValueError(f"Block must be {BLOCK_SIZE} bytes, got {len(block)}")
+        msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
+        raise ValueError(msg)
 
     S = key_schedule(key, rounds)
 
@@ -121,7 +122,8 @@ def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
         8-byte plaintext
     """
     if len(block) != BLOCK_SIZE:
-        raise ValueError(f"Block must be {BLOCK_SIZE} bytes, got {len(block)}")
+        msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
+        raise ValueError(msg)
 
     S = key_schedule(key, rounds)
 
@@ -168,7 +170,7 @@ def rc5_ecb_encrypt(data: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     padded = _pkcs7_pad(data, BLOCK_SIZE)
     result = b""
     for i in range(0, len(padded), BLOCK_SIZE):
-        result += encrypt_block(padded[i:i+BLOCK_SIZE], key, rounds)
+        result += encrypt_block(padded[i: i + BLOCK_SIZE], key, rounds)
     return result
 
 
@@ -176,22 +178,23 @@ def rc5_ecb_decrypt(data: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     """Decrypt data using RC5 in ECB mode."""
     result = b""
     for i in range(0, len(data), BLOCK_SIZE):
-        result += decrypt_block(data[i:i+BLOCK_SIZE], key, rounds)
+        result += decrypt_block(data[i: i + BLOCK_SIZE], key, rounds)
     return _pkcs7_unpad(result)
 
 
 def rc5_cbc_encrypt(data: bytes, key: bytes, iv: bytes, rounds: int = ROUNDS) -> bytes:
     """Encrypt data using RC5 in CBC mode."""
     if len(iv) != BLOCK_SIZE:
-        raise ValueError(f"IV must be {BLOCK_SIZE} bytes")
+        msg = f"IV must be {BLOCK_SIZE} bytes"
+        raise ValueError(msg)
 
     padded = _pkcs7_pad(data, BLOCK_SIZE)
     result = b""
     prev = iv
 
     for i in range(0, len(padded), BLOCK_SIZE):
-        block = padded[i:i+BLOCK_SIZE]
-        xored = bytes(a ^ b for a, b in zip(block, prev))
+        block = padded[i: i + BLOCK_SIZE]
+        xored = bytes(a ^ b for a, b in zip(block, prev, strict=False))
         encrypted = encrypt_block(xored, key, rounds)
         result += encrypted
         prev = encrypted
@@ -202,15 +205,16 @@ def rc5_cbc_encrypt(data: bytes, key: bytes, iv: bytes, rounds: int = ROUNDS) ->
 def rc5_cbc_decrypt(data: bytes, key: bytes, iv: bytes, rounds: int = ROUNDS) -> bytes:
     """Decrypt data using RC5 in CBC mode."""
     if len(iv) != BLOCK_SIZE:
-        raise ValueError(f"IV must be {BLOCK_SIZE} bytes")
+        msg = f"IV must be {BLOCK_SIZE} bytes"
+        raise ValueError(msg)
 
     result = b""
     prev = iv
 
     for i in range(0, len(data), BLOCK_SIZE):
-        block = data[i:i+BLOCK_SIZE]
+        block = data[i: i + BLOCK_SIZE]
         decrypted = decrypt_block(block, key, rounds)
-        xored = bytes(a ^ b for a, b in zip(decrypted, prev))
+        xored = bytes(a ^ b for a, b in zip(decrypted, prev, strict=False))
         result += xored
         prev = block
 

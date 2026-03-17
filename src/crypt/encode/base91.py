@@ -32,9 +32,7 @@ def base91_encode(inp: bytes) -> str:
         v = b & 16383  # 16383 = 2^14 - 1
         b >>= 14
         n -= 14
-      out.append(BASE91_ALPHABET[v % 91])
-      out.append(BASE91_ALPHABET[v // 91])
-
+      out.extend((BASE91_ALPHABET[v % 91], BASE91_ALPHABET[v // 91]))
   if n:
     out.append(BASE91_ALPHABET[b % 91])
     if n > 7 or b > 90:
@@ -130,21 +128,21 @@ def test_base91():
     decoded_result = base91_decode(encoded_result)
 
     print(f"\nTest {i}:")
-    print(f"Original: {test_data}")
-    print(f"Encoded:  {encoded_result}")
-    print(f"Decoded:  {decoded_result}")
-    print(f"Match:    {test_data == decoded_result}")
-
+    _extracted_from_test_base91_21(test_data, encoded_result, decoded_result)
   # 测试字符串版本
   print("\n" + "=" * 60)
   print("Testing string encode/decode:")
   test_str = "Hello, 世界! 🌍"
   encoded_str = base91_encode_str(test_str)
   decoded_str = base91_decode_str(encoded_str)
-  print(f"Original: {test_str}")
-  print(f"Encoded:  {encoded_str}")
-  print(f"Decoded:  {decoded_str}")
-  print(f"Match:    {test_str == decoded_str}")
+  _extracted_from_test_base91_21(test_str, encoded_str, decoded_str)
+
+
+def _extracted_from_test_base91_21(arg0, arg1, arg2):
+    print(f"Original: {arg0}")
+    print(f"Encoded:  {arg1}")
+    print(f"Decoded:  {arg2}")
+    print(f"Match:    {arg0 == arg2}")
 
 
 # 使用示例

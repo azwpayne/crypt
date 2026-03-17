@@ -23,12 +23,10 @@ def generate_parameters(key_size=2048):
     p_candidate = k * q + 1
     # Simple primality test
     if pow(2, p_candidate - 1, p_candidate) == 1:
-      # Likely prime, do more checks
-      is_prime = True
-      for small_prime in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]:
-        if p_candidate % small_prime == 0:
-          is_prime = False
-          break
+        is_prime = all(
+            p_candidate % small_prime != 0
+            for small_prime in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+        )
       if is_prime:
         break
     k += 1
@@ -49,7 +47,7 @@ def generate_parameters(key_size=2048):
 
 
 def generate_keypair(p, q, g):
-  x = random.randrange(1, q)
+    x = random.randrange(1, q)  # noqa: S311
   y = pow(g, x, p)
   return x, y  # private, public
 

@@ -108,7 +108,7 @@ def generate_keypair(bits: int = 2048) -> tuple:
   # Calculate d: e * d ≡ 1 (mod phi)
   d = mod_inverse(e, phi)
 
-  return ((e, n), (d, n))
+  return (e, n), (d, n)
 
 
 def bytes_to_int(data: bytes) -> int:
@@ -222,7 +222,7 @@ def verify(signature: bytes, message: bytes, public_key: tuple) -> bool:
 
     # Compare with original message
     m = bytes_to_int(message)
-
-    return m_prime == m
   except Exception:
     return False
+  else:
+      return m_prime == m

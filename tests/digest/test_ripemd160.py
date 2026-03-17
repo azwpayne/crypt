@@ -8,6 +8,7 @@ from __future__ import annotations
 from crypt.digest.ripemd160 import ripemd160
 
 import pytest
+
 from tests import BYTE_TEST_CASES
 
 

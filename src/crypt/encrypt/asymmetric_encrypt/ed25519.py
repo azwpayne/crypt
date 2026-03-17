@@ -19,8 +19,12 @@ P: Final[int] = 2**255 - 19  # Prime field
 D: Final[int] = (-121665 * pow(121666, -1, P)) % P  # Curve constant
 
 # Base point B coordinates
-BX: Final[int] = 1511222134953540077250115140958853151145401269304185720604611328594988406618
-BY: Final[int] = 46316835694926478169428394003475163141307993866256225615783033603165251855960
+BX: Final[int] = (
+    1511222134953540077250115140958853151145401269304185720604611328594988406618
+)
+BY: Final[int] = (
+    46316835694926478169428394003475163141307993866256225615783033603165251855960
+)
 
 # Order of the base point
 L: Final[int] = 2**252 + 27742317777372353535851937790883648493
@@ -160,7 +164,8 @@ def generate_public_key(private_key: bytes) -> bytes:
         32-byte public key
     """
     if len(private_key) != 32:
-        raise ValueError("Private key must be 32 bytes")
+        msg = "Private key must be 32 bytes"
+        raise ValueError(msg)
 
     # Hash private key
     h = _h(private_key)
@@ -187,7 +192,8 @@ def sign(message: bytes, private_key: bytes) -> bytes:
         64-byte signature
     """
     if len(private_key) != 32:
-        raise ValueError("Private key must be 32 bytes")
+        msg = "Private key must be 32 bytes"
+        raise ValueError(msg)
 
     # Hash private key
     h = _h(private_key)

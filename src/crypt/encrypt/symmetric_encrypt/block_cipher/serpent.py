@@ -36,26 +36,266 @@ INV_SBOXES: Final[tuple[tuple[int, ...], ...]] = (
 
 # Initial permutation (IP)
 IP_TABLE: Final[tuple[int, ...]] = (
-    0, 32, 64, 96, 1, 33, 65, 97, 2, 34, 66, 98, 3, 35, 67, 99,
-    4, 36, 68, 100, 5, 37, 69, 101, 6, 38, 70, 102, 7, 39, 71, 103,
-    8, 40, 72, 104, 9, 41, 73, 105, 10, 42, 74, 106, 11, 43, 75, 107,
-    12, 44, 76, 108, 13, 45, 77, 109, 14, 46, 78, 110, 15, 47, 79, 111,
-    16, 48, 80, 112, 17, 49, 81, 113, 18, 50, 82, 114, 19, 51, 83, 115,
-    20, 52, 84, 116, 21, 53, 85, 117, 22, 54, 86, 118, 23, 55, 87, 119,
-    24, 56, 88, 120, 25, 57, 89, 121, 26, 58, 90, 122, 27, 59, 91, 123,
-    28, 60, 92, 124, 29, 61, 93, 125, 30, 62, 94, 126, 31, 63, 95, 127,
+    0,
+    32,
+    64,
+    96,
+    1,
+    33,
+    65,
+    97,
+    2,
+    34,
+    66,
+    98,
+    3,
+    35,
+    67,
+    99,
+    4,
+    36,
+    68,
+    100,
+    5,
+    37,
+    69,
+    101,
+    6,
+    38,
+    70,
+    102,
+    7,
+    39,
+    71,
+    103,
+    8,
+    40,
+    72,
+    104,
+    9,
+    41,
+    73,
+    105,
+    10,
+    42,
+    74,
+    106,
+    11,
+    43,
+    75,
+    107,
+    12,
+    44,
+    76,
+    108,
+    13,
+    45,
+    77,
+    109,
+    14,
+    46,
+    78,
+    110,
+    15,
+    47,
+    79,
+    111,
+    16,
+    48,
+    80,
+    112,
+    17,
+    49,
+    81,
+    113,
+    18,
+    50,
+    82,
+    114,
+    19,
+    51,
+    83,
+    115,
+    20,
+    52,
+    84,
+    116,
+    21,
+    53,
+    85,
+    117,
+    22,
+    54,
+    86,
+    118,
+    23,
+    55,
+    87,
+    119,
+    24,
+    56,
+    88,
+    120,
+    25,
+    57,
+    89,
+    121,
+    26,
+    58,
+    90,
+    122,
+    27,
+    59,
+    91,
+    123,
+    28,
+    60,
+    92,
+    124,
+    29,
+    61,
+    93,
+    125,
+    30,
+    62,
+    94,
+    126,
+    31,
+    63,
+    95,
+    127,
 )
 
 # Final permutation (FP)
 FP_TABLE: Final[tuple[int, ...]] = (
-    0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60,
-    64, 68, 72, 76, 80, 84, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124,
-    1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61,
-    65, 69, 73, 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125,
-    2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, 62,
-    66, 70, 74, 78, 82, 86, 90, 94, 98, 102, 106, 110, 114, 118, 122, 126,
-    3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63,
-    67, 71, 75, 79, 83, 87, 91, 95, 99, 103, 107, 111, 115, 119, 123, 127,
+    0,
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40,
+    44,
+    48,
+    52,
+    56,
+    60,
+    64,
+    68,
+    72,
+    76,
+    80,
+    84,
+    88,
+    92,
+    96,
+    100,
+    104,
+    108,
+    112,
+    116,
+    120,
+    124,
+    1,
+    5,
+    9,
+    13,
+    17,
+    21,
+    25,
+    29,
+    33,
+    37,
+    41,
+    45,
+    49,
+    53,
+    57,
+    61,
+    65,
+    69,
+    73,
+    77,
+    81,
+    85,
+    89,
+    93,
+    97,
+    101,
+    105,
+    109,
+    113,
+    117,
+    121,
+    125,
+    2,
+    6,
+    10,
+    14,
+    18,
+    22,
+    26,
+    30,
+    34,
+    38,
+    42,
+    46,
+    50,
+    54,
+    58,
+    62,
+    66,
+    70,
+    74,
+    78,
+    82,
+    86,
+    90,
+    94,
+    98,
+    102,
+    106,
+    110,
+    114,
+    118,
+    122,
+    126,
+    3,
+    7,
+    11,
+    15,
+    19,
+    23,
+    27,
+    31,
+    35,
+    39,
+    43,
+    47,
+    51,
+    55,
+    59,
+    63,
+    67,
+    71,
+    75,
+    79,
+    83,
+    87,
+    91,
+    95,
+    99,
+    103,
+    107,
+    111,
+    115,
+    119,
+    123,
+    127,
 )
 
 
@@ -114,7 +354,8 @@ def key_schedule(key: bytes) -> list[list[int]]:
     # Expand key to 256 bits
     key_len = len(key)
     if key_len == 0:
-        raise ValueError("Key cannot be empty")
+        msg = "Key cannot be empty"
+        raise ValueError(msg)
 
     # Pad key to 256 bits
     padded_key = bytearray(32)
@@ -127,7 +368,7 @@ def key_schedule(key: bytes) -> list[list[int]]:
             padded_key[i] = 0x00
 
     # Convert to 8 32-bit words (little endian)
-    k = [int.from_bytes(padded_key[i:i+4], 'little') for i in range(0, 32, 4)]
+    k = [int.from_bytes(padded_key[i: i + 4], "little") for i in range(0, 32, 4)]
 
     # Prekeys
     prekeys = []
@@ -137,10 +378,27 @@ def key_schedule(key: bytes) -> list[list[int]]:
     # Generate remaining prekeys
     for i in range(8, 140):
         prekeys.append(
-            ((prekeys[i-8] ^ prekeys[i-5] ^ prekeys[i-3] ^ prekeys[i-1] ^
-              (0x9E3779B9 ^ i)) << 11) & 0xFFFFFFFF |
-            ((prekeys[i-8] ^ prekeys[i-5] ^ prekeys[i-3] ^ prekeys[i-1] ^
-              (0x9E3779B9 ^ i)) >> 21)
+            (
+                    (
+                            prekeys[i - 8]
+                            ^ prekeys[i - 5]
+                            ^ prekeys[i - 3]
+                            ^ prekeys[i - 1]
+                            ^ (0x9E3779B9 ^ i)
+                    )
+                    << 11
+            )
+            & 0xFFFFFFFF
+            | (
+                    (
+                            prekeys[i - 8]
+                            ^ prekeys[i - 5]
+                            ^ prekeys[i - 3]
+                            ^ prekeys[i - 1]
+                            ^ (0x9E3779B9 ^ i)
+                    )
+                    >> 21
+            )
         )
 
     # Generate round keys
@@ -149,7 +407,7 @@ def key_schedule(key: bytes) -> list[list[int]]:
         sbox_idx = (32 + 3 - i) % 8
         round_key = []
         for j in range(4):
-            word = prekeys[4*i + j]
+            word = prekeys[4 * i + j]
             round_key.append(_apply_sbox(word, SBOXES[sbox_idx]))
         round_keys.append(round_key)
 
@@ -159,12 +417,13 @@ def key_schedule(key: bytes) -> list[list[int]]:
 def encrypt_block(block: bytes, key: bytes) -> bytes:
     """Encrypt single 16-byte block."""
     if len(block) != 16:
-        raise ValueError(f"Block must be 16 bytes, got {len(block)}")
+        msg = f"Block must be 16 bytes, got {len(block)}"
+        raise ValueError(msg)
 
     round_keys = key_schedule(key)
 
     # Convert block to 128-bit integer
-    block_int = int.from_bytes(block, 'little')
+    block_int = int.from_bytes(block, "little")
 
     # Initial permutation
     block_int = _permute(block_int, IP_TABLE)
@@ -194,24 +453,24 @@ def encrypt_block(block: bytes, key: bytes) -> bytes:
     words = [words[j] ^ round_keys[32][j] for j in range(4)]
 
     # Combine words
-    result = (words[0] | (words[1] << 32) |
-              (words[2] << 64) | (words[3] << 96))
+    result = words[0] | (words[1] << 32) | (words[2] << 64) | (words[3] << 96)
 
     # Final permutation
     result = _permute(result, FP_TABLE)
 
-    return result.to_bytes(16, 'little')
+    return result.to_bytes(16, "little")
 
 
 def decrypt_block(block: bytes, key: bytes) -> bytes:
     """Decrypt single 16-byte block."""
     if len(block) != 16:
-        raise ValueError(f"Block must be 16 bytes, got {len(block)}")
+        msg = f"Block must be 16 bytes, got {len(block)}"
+        raise ValueError(msg)
 
     round_keys = key_schedule(key)
 
     # Convert block to 128-bit integer
-    block_int = int.from_bytes(block, 'little')
+    block_int = int.from_bytes(block, "little")
 
     # Initial permutation (FP is its own inverse)
     block_int = _permute(block_int, FP_TABLE)
@@ -241,13 +500,12 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
         words = [words[j] ^ round_keys[i][j] for j in range(4)]
 
     # Combine words
-    result = (words[0] | (words[1] << 32) |
-              (words[2] << 64) | (words[3] << 96))
+    result = words[0] | (words[1] << 32) | (words[2] << 64) | (words[3] << 96)
 
     # Final permutation
     result = _permute(result, IP_TABLE)
 
-    return result.to_bytes(16, 'little')
+    return result.to_bytes(16, "little")
 
 
 # PKCS7 padding helpers
@@ -272,7 +530,7 @@ def serpent_ecb_encrypt(data: bytes, key: bytes) -> bytes:
     padded = _pkcs7_pad(data, 16)
     result = b""
     for i in range(0, len(padded), 16):
-        result += encrypt_block(padded[i:i+16], key)
+        result += encrypt_block(padded[i: i + 16], key)
     return result
 
 
@@ -280,22 +538,23 @@ def serpent_ecb_decrypt(data: bytes, key: bytes) -> bytes:
     """Decrypt data using Serpent in ECB mode."""
     result = b""
     for i in range(0, len(data), 16):
-        result += decrypt_block(data[i:i+16], key)
+        result += decrypt_block(data[i: i + 16], key)
     return _pkcs7_unpad(result)
 
 
 def serpent_cbc_encrypt(data: bytes, key: bytes, iv: bytes) -> bytes:
     """Encrypt data using Serpent in CBC mode."""
     if len(iv) != 16:
-        raise ValueError("IV must be 16 bytes")
+        msg = "IV must be 16 bytes"
+        raise ValueError(msg)
 
     padded = _pkcs7_pad(data, 16)
     result = b""
     prev = iv
 
     for i in range(0, len(padded), 16):
-        block = padded[i:i+16]
-        xored = bytes(a ^ b for a, b in zip(block, prev))
+        block = padded[i: i + 16]
+        xored = bytes(a ^ b for a, b in zip(block, prev, strict=False))
         encrypted = encrypt_block(xored, key)
         result += encrypted
         prev = encrypted
@@ -306,15 +565,16 @@ def serpent_cbc_encrypt(data: bytes, key: bytes, iv: bytes) -> bytes:
 def serpent_cbc_decrypt(data: bytes, key: bytes, iv: bytes) -> bytes:
     """Decrypt data using Serpent in CBC mode."""
     if len(iv) != 16:
-        raise ValueError("IV must be 16 bytes")
+        msg = "IV must be 16 bytes"
+        raise ValueError(msg)
 
     result = b""
     prev = iv
 
     for i in range(0, len(data), 16):
-        block = data[i:i+16]
+        block = data[i: i + 16]
         decrypted = decrypt_block(block, key)
-        xored = bytes(a ^ b for a, b in zip(decrypted, prev))
+        xored = bytes(a ^ b for a, b in zip(decrypted, prev, strict=False))
         result += xored
         prev = block
 

@@ -1,143 +1,143 @@
 """Tests for Polybius Square cipher."""
 
 from crypt.encrypt.symmetric_encrypt.stream_cipher.polybius_square import (
-    decrypt,
-    encrypt,
+  decrypt,
+  encrypt,
 )
 
 import pytest
 
 
 class TestPolybiusSquareEncrypt:
-    """Test Polybius Square encryption."""
+  """Test Polybius Square encryption."""
 
-    def test_encrypt_basic(self):
-        """Test basic encryption."""
-        result = encrypt("HELLO", size=5)
-        assert result == "23 15 31 31 34"
+  def test_encrypt_basic(self):
+    """Test basic encryption."""
+    result = encrypt("HELLO", size=5)
+    assert result == "23 15 31 31 34"
 
-    def test_encrypt_with_key(self):
-        """Test encryption with key."""
-        result = encrypt("HELLO", key="KEYWORD", size=5)
-        assert isinstance(result, str)
-        assert len(result.split()) == 5
+  def test_encrypt_with_key(self):
+    """Test encryption with key."""
+    result = encrypt("HELLO", key="KEYWORD", size=5)
+    assert isinstance(result, str)
+    assert len(result.split()) == 5
 
-    def test_encrypt_lowercase(self):
-        """Test encryption with lowercase input."""
-        result_lower = encrypt("hello", size=5)
-        result_upper = encrypt("HELLO", size=5)
-        assert result_lower == result_upper
+  def test_encrypt_lowercase(self):
+    """Test encryption with lowercase input."""
+    result_lower = encrypt("hello", size=5)
+    result_upper = encrypt("HELLO", size=5)
+    assert result_lower == result_upper
 
-    def test_encrypt_j_becomes_i(self):
-        """Test that J becomes I in 5x5 mode."""
-        result = encrypt("JAIL", size=5)
-        # J should be treated as I
-        assert isinstance(result, str)
-        assert len(result.split()) == 4
+  def test_encrypt_j_becomes_i(self):
+    """Test that J becomes I in 5x5 mode."""
+    result = encrypt("JAIL", size=5)
+    # J should be treated as I
+    assert isinstance(result, str)
+    assert len(result.split()) == 4
 
-    def test_encrypt_with_numbers_6x6(self):
-        """Test encryption with numbers in 6x6 mode."""
-        result = encrypt("HELLO1", size=6)
-        assert isinstance(result, str)
-        assert len(result.split()) == 6
+  def test_encrypt_with_numbers_6x6(self):
+    """Test encryption with numbers in 6x6 mode."""
+    result = encrypt("HELLO1", size=6)
+    assert isinstance(result, str)
+    assert len(result.split()) == 6
 
-    def test_encrypt_empty_string(self):
-        """Test encryption of empty string."""
-        result = encrypt("", size=5)
-        assert result == ""
+  def test_encrypt_empty_string(self):
+    """Test encryption of empty string."""
+    result = encrypt("", size=5)
+    assert result == ""
 
-    def test_encrypt_with_spaces(self):
-        """Test encryption with spaces."""
-        result = encrypt("HELLO WORLD", size=5)
-        # Spaces should be preserved as spaces
-        assert isinstance(result, str)
+  def test_encrypt_with_spaces(self):
+    """Test encryption with spaces."""
+    result = encrypt("HELLO WORLD", size=5)
+    # Spaces should be preserved as spaces
+    assert isinstance(result, str)
 
-    def test_encrypt_non_alpha(self):
-        """Test encryption with non-alphabetic characters."""
-        result = encrypt("HELLO123!@#", size=5)
-        # Non-alpha chars should be preserved
-        assert isinstance(result, str)
+  def test_encrypt_non_alpha(self):
+    """Test encryption with non-alphabetic characters."""
+    result = encrypt("HELLO123!@#", size=5)
+    # Non-alpha chars should be preserved
+    assert isinstance(result, str)
 
 
 class TestPolybiusSquareDecrypt:
-    """Test Polybius Square decryption."""
+  """Test Polybius Square decryption."""
 
-    def test_decrypt_basic(self):
-        """Test basic decryption."""
-        encrypted = encrypt("HELLO", size=5)
-        decrypted = decrypt(encrypted, size=5)
-        assert decrypted == "HELLO"
+  def test_decrypt_basic(self):
+    """Test basic decryption."""
+    encrypted = encrypt("HELLO", size=5)
+    decrypted = decrypt(encrypted, size=5)
+    assert decrypted == "HELLO"
 
-    def test_decrypt_with_key(self):
-        """Test decryption with key."""
-        original = "HELLO"
-        key = "KEYWORD"
-        encrypted = encrypt(original, key=key, size=5)
-        decrypted = decrypt(encrypted, key=key, size=5)
-        assert decrypted == original
+  def test_decrypt_with_key(self):
+    """Test decryption with key."""
+    original = "HELLO"
+    key = "KEYWORD"
+    encrypted = encrypt(original, key=key, size=5)
+    decrypted = decrypt(encrypted, key=key, size=5)
+    assert decrypted == original
 
-    def test_decrypt_roundtrip(self):
-        """Test roundtrip encryption/decryption."""
-        original = "ATTACK"
-        encrypted = encrypt(original, size=5)
-        decrypted = decrypt(encrypted, size=5)
-        assert decrypted == original
+  def test_decrypt_roundtrip(self):
+    """Test roundtrip encryption/decryption."""
+    original = "ATTACK"
+    encrypted = encrypt(original, size=5)
+    decrypted = decrypt(encrypted, size=5)
+    assert decrypted == original
 
-    def test_decrypt_6x6(self):
-        """Test decryption with 6x6 square."""
-        original = "TEST123"
-        encrypted = encrypt(original, size=6)
-        decrypted = decrypt(encrypted, size=6)
-        assert decrypted == original
+  def test_decrypt_6x6(self):
+    """Test decryption with 6x6 square."""
+    original = "TEST123"
+    encrypted = encrypt(original, size=6)
+    decrypted = decrypt(encrypted, size=6)
+    assert decrypted == original
 
-    def test_decrypt_empty_string(self):
-        """Test decryption of empty string."""
-        result = decrypt("", size=5)
-        assert result == ""
+  def test_decrypt_empty_string(self):
+    """Test decryption of empty string."""
+    result = decrypt("", size=5)
+    assert result == ""
 
 
 class TestPolybiusSquareModes:
-    """Test different Polybius Square modes."""
+  """Test different Polybius Square modes."""
 
-    def test_5x5_mode(self):
-        """Test 5x5 mode (25 chars, I/J shared)."""
-        result = encrypt("ABCDEFGHIKLMNOPQRSTUVWXYZ", size=5)
-        coords = result.split()
-        assert len(coords) == 25
+  def test_5x5_mode(self):
+    """Test 5x5 mode (25 chars, I/J shared)."""
+    result = encrypt("ABCDEFGHIKLMNOPQRSTUVWXYZ", size=5)
+    coords = result.split()
+    assert len(coords) == 25
 
-    def test_6x6_mode(self):
-        """Test 6x6 mode (36 chars, includes digits)."""
-        result = encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", size=6)
-        coords = result.split()
-        assert len(coords) == 36
+  def test_6x6_mode(self):
+    """Test 6x6 mode (36 chars, includes digits)."""
+    result = encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", size=6)
+    coords = result.split()
+    assert len(coords) == 36
 
-    def test_invalid_size(self):
-        """Test invalid square size."""
-        with pytest.raises(ValueError):
-            encrypt("TEST", size=4)
+  def test_invalid_size(self):
+    """Test invalid square size."""
+    with pytest.raises(ValueError):
+      encrypt("TEST", size=4)
 
 
 class TestPolybiusSquareEdgeCases:
-    """Test edge cases."""
+  """Test edge cases."""
 
-    def test_single_character(self):
-        """Test single character."""
-        result = encrypt("A", size=5)
-        assert result == "11"
+  def test_single_character(self):
+    """Test single character."""
+    result = encrypt("A", size=5)
+    assert result == "11"
 
-    def test_long_message(self):
-        """Test long message."""
-        message = "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG"
-        encrypted = encrypt(message, size=5)
-        decrypted = decrypt(encrypted, size=5)
-        # J becomes I in 5x5 mode
-        expected = message.replace("J", "I")
-        assert decrypted == expected
+  def test_long_message(self):
+    """Test long message."""
+    message = "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG"
+    encrypted = encrypt(message, size=5)
+    decrypted = decrypt(encrypted, size=5)
+    # J becomes I in 5x5 mode
+    expected = message.replace("J", "I")
+    assert decrypted == expected
 
-    def test_with_special_characters(self):
-        """Test with special characters."""
-        message = "HELLO, WORLD!"
-        encrypted = encrypt(message, size=5)
-        # Implementation filters non-alpha chars, just verify it works
-        assert isinstance(encrypted, str)
-        assert len(encrypted) > 0
+  def test_with_special_characters(self):
+    """Test with special characters."""
+    message = "HELLO, WORLD!"
+    encrypted = encrypt(message, size=5)
+    # Implementation filters non-alpha chars, just verify it works
+    assert isinstance(encrypted, str)
+    assert len(encrypted) > 0

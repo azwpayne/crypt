@@ -8,6 +8,7 @@ This module provides basic RSA functionality for educational purposes:
 """
 
 import random
+import secrets
 
 
 def is_prime(n: int, k: int = 10) -> bool:
@@ -27,9 +28,9 @@ def is_prime(n: int, k: int = 10) -> bool:
 
   # Witness loop
   for _ in range(k):
-    a = random.randrange(2, n - 1)
+    a = secrets.randbelow(n - 3) + 2
     x = pow(a, d, n)
-    if x == 1 or x == n - 1:
+    if x in [1, n - 1]:
       continue
     for _ in range(r - 1):
       x = pow(x, 2, n)
@@ -225,4 +226,4 @@ def verify(signature: bytes, message: bytes, public_key: tuple) -> bool:
   except Exception:
     return False
   else:
-      return m_prime == m
+    return m_prime == m

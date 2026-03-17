@@ -30,7 +30,7 @@ def _prepare_key(key: str, length: int) -> str:
       处理后的密钥
   """
   if cleaned_key := "".join(c for c in key if c.isalpha()).upper():
-      return "".join(c for c, _ in zip(cycle(cleaned_key), range(length)))
+    return "".join(c for c, _ in zip(cycle(cleaned_key), range(length)))
   msg = "密钥必须包含至少一个字母"
   raise ValueError(msg)
 

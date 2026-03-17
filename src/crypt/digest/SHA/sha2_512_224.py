@@ -4,7 +4,7 @@
 # @desc    :
 
 import hashlib
-import random
+from secrets import randbelow
 from string import printable
 
 # 初始哈希值 (FIPS 180-4 第 5.3.4.2 节)
@@ -364,7 +364,9 @@ def sha512_224_hex(message: bytes) -> str:
 
 if __name__ == "__main__":
   for _ in range(0x10):
-    example_str = "".join(random.sample(printable, random.randint(0, 0x10)))
+    example_str = "".join(
+      printable[randbelow(len(printable))] for _ in range(randbelow(0x10) + 1)
+    )
     print(f"输入字符串: {example_str}")
     result = sha512_224_hex(example_str.encode())
 

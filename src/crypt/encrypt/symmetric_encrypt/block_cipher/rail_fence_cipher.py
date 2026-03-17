@@ -191,13 +191,11 @@ def print_fence(text: str, rails: int) -> str:
     matrix[rail][col] = char
     rail += direction
 
-    if rail == 0 or rail == rails - 1:
+    if rail in [0, rails - 1]:
       direction *= -1
 
   # 格式化输出
-  lines = []
-  for row in matrix:
-    lines.append(" ".join(row))
+  lines = [" ".join(row) for row in matrix]
 
   return "\n".join(lines)
 

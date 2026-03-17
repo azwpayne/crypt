@@ -17,7 +17,7 @@ test = [
     "pytest-cov",
     "pytest-xdist",
     "pytest-mock",
-    # "pytest-benchmark",
+    "pytest-benchmark",
     "pytest-timeout",
     "pytest-sugar",
     "pytest-factoryboy",
@@ -25,11 +25,27 @@ test = [
 
 [tool.poe]
 executor.type = "uv"
-tasks.full = ["clean", "lint", "test"]
-tasks.test = ["clean", "pytest"]
-tasks.lint = "ruff format && ruff check --unsafe-fixes --fix"
-tasks.pytest = "pytest"
-tasks.benchmark = "pytest --benchmark-only -n0"
+tasks.full = ["clean", "format"]
+tasks.test = [
+    "clean",
+    "test-py310",
+    "test-py311",
+    "test-py312",
+    "test-py313",
+    "test-py314"
+]
+
+tasks.format = "ruff format"
+tasks.lint = "ruff check --fix --unsafe-fixes"
+
+tasks.test-py310 = { shell = "uv run --python 3.10 --group test pytest" }
+tasks.test-py311 = { shell = "uv run --python 3.11 --group test pytest" }
+tasks.test-py312 = { shell = "uv run --python 3.12 --group test pytest" }
+tasks.test-py313 = { shell = "uv run --python 3.13 --group test pytest" }
+tasks.test-py314 = { shell = "uv run --python 3.14 --group test pytest" }
+
+
+
 
 tasks.clean = { shell = """
 	rm -rf *.py
@@ -38,13 +54,14 @@ tasks.clean = { shell = """
 	find . -type f -name "*.pyc" -delete
 """ }
 
+
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
 asyncio_mode = "auto"              # 自动识别异步测试
 timeout = 30                       # 默认 30 秒超时
 addopts = """\
-    -n=8 \
+    -n=auto \
     --strict-markers \
     --tb=short \
     --cov=src/crypt \

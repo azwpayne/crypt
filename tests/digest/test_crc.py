@@ -23,7 +23,9 @@ class TestCRC8:
   def test_crc8_autosar(self):
     """Test CRC-8/AUTOSAR against known test vector from AUTOSAR specification."""
     result = crc8.crc8_autosar(self.TEST_DATA)
-    assert result == 0xDF, f"CRC-8/AUTOSAR test failed: expected 0xDF, got 0x{result:02X}"
+    assert result == 0xDF, (
+      f"CRC-8/AUTOSAR test failed: expected 0xDF, got 0x{result:02X}"
+    )
 
   def test_crc8_lte(self):
     """Test CRC-8/LTE against known test vector from 3GPP specification."""
@@ -38,12 +40,16 @@ class TestCRC8:
   def test_crc8_bluetooth(self):
     """Test CRC-8/BLUETOOTH against known test vector from Bluetooth specification."""
     result = crc8.crc8_bluetooth(self.TEST_DATA)
-    assert result == 0x26, f"CRC-8/BLUETOOTH test failed: expected 0x26, got 0x{result:02X}"
+    assert result == 0x26, (
+      f"CRC-8/BLUETOOTH test failed: expected 0x26, got 0x{result:02X}"
+    )
 
   def test_crc8_j1850(self):
     """Test CRC-8/SAE-J1850 against known test vector from SAE J1850 specification."""
     result = crc8.crc8_j1850(self.TEST_DATA)
-    assert result == 0x4B, f"CRC-8/SAE-J1850 test failed: expected 0x4B, got 0x{result:02X}"
+    assert result == 0x4B, (
+      f"CRC-8/SAE-J1850 test failed: expected 0x4B, got 0x{result:02X}"
+    )
 
 
 class TestCRCPlaceholders:
@@ -52,19 +58,15 @@ class TestCRCPlaceholders:
   @pytest.mark.skip(reason="Not yet implemented")
   def test_crc12(self):
     """Test CRC-12 implementation."""
-    pass
 
   @pytest.mark.skip(reason="Not yet implemented")
   def test_crc16(self):
     """Test CRC-16 implementation."""
-    pass
 
   @pytest.mark.skip(reason="Not yet implemented")
   def test_crc16_ccitt(self):
     """Test CRC-16/CCITT implementation."""
-    pass
 
   @pytest.mark.skip(reason="Not yet implemented")
   def test_crc32(self):
     """Test CRC-32 implementation."""
-    pass

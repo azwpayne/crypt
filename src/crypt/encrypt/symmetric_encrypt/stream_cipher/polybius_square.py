@@ -7,7 +7,7 @@
 
 
 def _create_square(key: str = "", size: int = 5) -> tuple[list[list[str]], str]:
-    # sourcery skip: inline-variable, switch
+  # sourcery skip: inline-variable, switch
   """
   创建波利比奥斯方阵
 
@@ -32,12 +32,12 @@ def _create_square(key: str = "", size: int = 5) -> tuple[list[list[str]], str]:
   seen = set()
   unique_key = []
   for c in key.upper():
-      char_to_add = c
-      if char_to_add == "J" and size == 5:
-          char_to_add = "I"
-      if char_to_add not in seen and char_to_add in alphabet:
-          seen.add(char_to_add)
-          unique_key.append(char_to_add)
+    char_to_add = c
+    if char_to_add == "J" and size == 5:
+      char_to_add = "I"
+    if char_to_add not in seen and char_to_add in alphabet:
+      seen.add(char_to_add)
+      unique_key.append(char_to_add)
 
   # 填充剩余字母
   remaining = [c for c in alphabet if c not in seen]
@@ -57,8 +57,8 @@ def _find_position(square: list[list[str]], char: str) -> tuple[int, int] | None
       (行, 列) 或 None（如果未找到）
   """
   return next(
-      ((row_idx, row.index(char)) for row_idx, row in enumerate(square) if char in row),
-      None,
+    ((row_idx, row.index(char)) for row_idx, row in enumerate(square) if char in row),
+    None,
   )
 
 
@@ -92,13 +92,13 @@ def encrypt(
 
   result = []
   for char in text.upper():
-      processed_char = char
-      if processed_char == "J" and size == 5:
-          processed_char = "I"
+    processed_char = char
+    if processed_char == "J" and size == 5:
+      processed_char = "I"
 
-      if processed_char in alphabet:
-          row, col = _find_position(square, processed_char)
-      result.append(f"{row_labels[row]}{col_labels[col]}")
+    if processed_char in alphabet:
+      row, col = _find_position(square, processed_char)
+    result.append(f"{row_labels[row]}{col_labels[col]}")
 
   return " ".join(result)
 

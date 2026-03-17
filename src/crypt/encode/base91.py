@@ -139,10 +139,10 @@ def test_base91():
 
 
 def _extracted_from_test_base91_21(arg0, arg1, arg2):
-    print(f"Original: {arg0}")
-    print(f"Encoded:  {arg1}")
-    print(f"Decoded:  {arg2}")
-    print(f"Match:    {arg0 == arg2}")
+  print(f"Original: {arg0}")
+  print(f"Encoded:  {arg1}")
+  print(f"Decoded:  {arg2}")
+  print(f"Match:    {arg0 == arg2}")
 
 
 # 使用示例

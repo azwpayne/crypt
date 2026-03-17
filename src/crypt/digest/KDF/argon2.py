@@ -15,6 +15,7 @@ Reference: RFC 9106 - Argon2 Memory-Hard Function for Password Hashing
 """
 
 import hashlib
+import itertools
 import struct
 
 # Argon2 constants
@@ -148,13 +149,10 @@ def _init_memory(
   associated_data: bytes,
 ) -> list:
   """Initialize Argon2 memory matrix."""
-  lanes = []
-
-  for lane_index in range(parallelism):
-    lane = []
-    for _i in range(memory_blocks // parallelism):
-      lane.append(_Argon2Block())
-    lanes.append(lane)
+  lanes = [
+    [_Argon2Block() for _ in range(memory_blocks // parallelism)]
+    for __ in range(parallelism)
+  ]
 
   # Compute H0
   h0_input = struct.pack(
@@ -195,30 +193,30 @@ def _fill_memory(
   """Fill memory matrix with Argon2i pattern."""
   columns = memory_blocks // parallelism
 
-  for pass_num in range(iterations):
-    for slice_num in range(4):
-      for lane_index in range(parallelism):
-        prev_index = slice_num * columns // 4
+  for pass_num, slice_num, lane_index in itertools.product(
+    range(iterations), range(4), range(parallelism)
+  ):
+    prev_index = slice_num * columns // 4
 
-        for i in range(columns // 4):
-          column_index = slice_num * columns // 4 + i
+    for i in range(columns // 4):
+      column_index = slice_num * columns // 4 + i
 
-          if pass_num == 0 and column_index < 2:
-            continue
+      if pass_num == 0 and column_index < 2:
+        continue
 
-          # Compute addresses for Argon2i (data-independent)
-          j1 = (pass_num * 4 + slice_num + lane_index + column_index) % columns
-          j2 = (pass_num * slice_num + lane_index * column_index) % columns
+      # Compute addresses for Argon2i (data-independent)
+      j1 = (pass_num * 4 + slice_num + lane_index + column_index) % columns
+      j2 = (pass_num * slice_num + lane_index * column_index) % columns
 
-          ref_lane = (lane_index + j2) % parallelism
-          ref_index = j1
+      ref_lane = (lane_index + j2) % parallelism
+      ref_index = j1
 
-          prev_block = lanes[lane_index][prev_index]
-          ref_block = lanes[ref_lane][ref_index]
+      prev_block = lanes[lane_index][prev_index]
+      ref_block = lanes[ref_lane][ref_index]
 
-          lanes[lane_index][column_index] = _compress_block(prev_block, ref_block)
+      lanes[lane_index][column_index] = _compress_block(prev_block, ref_block)
 
-          prev_index = column_index
+      prev_index = column_index
 
 
 def _finalize(lanes: list, memory_blocks: int, parallelism: int) -> bytes:

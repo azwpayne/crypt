@@ -1,6 +1,6 @@
 # Elliptic Curve Cryptography
 import hashlib
-import random
+import secrets
 
 # secp256k1 curve parameters
 P = 2**256 - 2**32 - 977
@@ -12,7 +12,7 @@ N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
 
 class Point:
-  def __init__(self, x, y, infinity=False):
+  def __init__(self, x, y, *, infinity=False):
     self.x = x
     self.y = y
     self.infinity = infinity
@@ -21,7 +21,7 @@ class Point:
     return self.x == other.x and self.y == other.y and self.infinity == other.infinity
 
 
-INFINITY = Point(0, 0, True)
+INFINITY = Point(0, 0, infinity=True)
 
 
 def point_add(P1, P2):
@@ -52,7 +52,7 @@ def scalar_mult(k, point):
 
 
 def generate_keypair():
-  private_key = random.randrange(1, N)
+  private_key = secrets.randbelow(N - 1) + 1
   public_key = scalar_mult(private_key, Point(Gx, Gy))
   return private_key, public_key
 
@@ -66,11 +66,11 @@ def ecdsa_sign(message, private_key):
   if isinstance(message, str):
     message = message.encode()
   z = int.from_bytes(hashlib.sha256(message).digest(), "big")
-  k = random.randrange(1, N)
+  k = secrets.randbelow(N - 1) + 1
   R = scalar_mult(k, Point(Gx, Gy))
   r = R.x % N
   s = (pow(k, -1, N) * (z + r * private_key)) % N
-  return (r, s)
+  return r, s
 
 
 def ecdsa_verify(message, signature, public_key):

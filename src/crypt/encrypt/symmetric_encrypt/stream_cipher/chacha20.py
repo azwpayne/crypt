@@ -48,26 +48,26 @@ def chacha20_block(key, counter, nonce):
 
   # 进行 20 轮运算（10 次双轮，每次包括列轮和对角线轮）
   for _ in range(10):
-      _extracted_from_chacha20_block_19(working_state)
+    _extracted_from_chacha20_block_19(working_state)
   # 最终将原始状态与运算结果相加
   for i in range(16):
-      working_state[i] = (working_state[i] + state[i]) & 0xFFFFFFFF
+    working_state[i] = (working_state[i] + state[i]) & 0xFFFFFFFF
 
   # 将 16 个 32 位整数以小端序打包成 64 字节
   return struct.pack("<16L", *working_state)
 
 
 def _extracted_from_chacha20_block_19(working_state):
-    # 列轮
-    quarter_round(working_state, 0, 4, 8, 12)
-    quarter_round(working_state, 1, 5, 9, 13)
-    quarter_round(working_state, 2, 6, 10, 14)
-    quarter_round(working_state, 3, 7, 11, 15)
-    # 对角线轮
-    quarter_round(working_state, 0, 5, 10, 15)
-    quarter_round(working_state, 1, 6, 11, 12)
-    quarter_round(working_state, 2, 7, 8, 13)
-    quarter_round(working_state, 3, 4, 9, 14)
+  # 列轮
+  quarter_round(working_state, 0, 4, 8, 12)
+  quarter_round(working_state, 1, 5, 9, 13)
+  quarter_round(working_state, 2, 6, 10, 14)
+  quarter_round(working_state, 3, 7, 11, 15)
+  # 对角线轮
+  quarter_round(working_state, 0, 5, 10, 15)
+  quarter_round(working_state, 1, 6, 11, 12)
+  quarter_round(working_state, 2, 7, 8, 13)
+  quarter_round(working_state, 3, 4, 9, 14)
 
 
 def chacha20_encrypt(key, nonce, counter, plaintext):

@@ -5,216 +5,224 @@ A shift register is encrypted and the output is XORed with plaintext.
 The ciphertext is fed back into the shift register.
 """
 
-from typing import Callable
-
+from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
-    _encrypt_block,
-    key_expansion,
-    _get_key_params,
+  _encrypt_block,
+  _get_key_params,
+  key_expansion,
 )
 
 
 class CFBMode:
-    """CFB (Cipher Feedback) mode of operation.
+  """CFB (Cipher Feedback) mode of operation.
 
-    CFB mode encrypts the shift register and XORs the output with plaintext
-    to produce ciphertext. The ciphertext is then fed back into the shift
-    register, making this mode self-synchronizing.
+  CFB mode encrypts the shift register and XORs the output with plaintext
+  to produce ciphertext. The ciphertext is then fed back into the shift
+  register, making this mode self-synchronizing.
 
-    This mode provides:
-    - Stream cipher properties: no padding required, any data length works
-    - Self-synchronization: errors limited to a few blocks
-    - Configurable segment size: can process 1 bit to full block at a time
+  This mode provides:
+  - Stream cipher properties: no padding required, any data length works
+  - Self-synchronization: errors limited to a few blocks
+  - Configurable segment size: can process 1 bit to full block at a time
 
-    Attributes:
-        block_size: The block size in bytes (16 for AES).
-        key: The encryption key.
-        iv: The initialization vector (initial shift register value).
-        segment_size: The number of bits to process at a time (default 8).
-        expanded_key: The expanded key schedule.
-        nr: Number of rounds.
+  Attributes:
+      block_size: The block size in bytes (16 for AES).
+      key: The encryption key.
+      iv: The initialization vector (initial shift register value).
+      segment_size: The number of bits to process at a time (default 8).
+      expanded_key: The expanded key schedule.
+      nr: Number of rounds.
+  """
+
+  def __init__(
+    self,
+    encrypt_func: Callable[[bytes], bytes] | None = None,
+    decrypt_func: Callable[[bytes], bytes] | None = None,
+    block_size: int = 16,
+    key: bytes | None = None,
+    iv: bytes | None = None,
+    expanded_key: list[int] | None = None,
+    nr: int | None = None,
+    segment_size: int = 8,
+  ):
+    """Initialize CFB mode.
+
+    Args:
+        encrypt_func: Optional external encrypt function.
+        decrypt_func: Optional external decrypt function (not used in CFB).
+        block_size: The block size in bytes (default 16 for AES).
+        key: The encryption key (required if using AES).
+        iv: The initialization vector (required, must match block_size).
+        expanded_key: Pre-computed expanded key (optional).
+        nr: Number of rounds (optional, derived from key if not provided).
+        segment_size: Number of bits to process at a time (default 8).
+
+    Raises:
+        ValueError: If IV is not provided or has wrong length.
+        ValueError: If key is not provided and no external functions are given.
+        ValueError: If segment_size is invalid.
     """
+    if iv is None:
+      msg = "IV is required for CFB mode"
+      raise ValueError(msg)
+    if len(iv) != block_size:
+      msg = f"IV must be {block_size} bytes, got {len(iv)}"
+      raise ValueError(msg)
 
-    def __init__(
-        self,
-        encrypt_func: Callable[[bytes], bytes] | None = None,
-        decrypt_func: Callable[[bytes], bytes] | None = None,
-        block_size: int = 16,
-        key: bytes | None = None,
-        iv: bytes | None = None,
-        expanded_key: list[int] | None = None,
-        nr: int | None = None,
-        segment_size: int = 8,
-    ):
-        """Initialize CFB mode.
+    # Validate segment size
+    if segment_size < 1 or segment_size > block_size * 8:
+      msg = f"segment_size must be between 1 and {block_size * 8}"
+      raise ValueError(msg)
+    if segment_size % 8 != 0:
+      msg = "segment_size must be a multiple of 8"
+      raise ValueError(msg)
 
-        Args:
-            encrypt_func: Optional external encrypt function.
-            decrypt_func: Optional external decrypt function (not used in CFB).
-            block_size: The block size in bytes (default 16 for AES).
-            key: The encryption key (required if using AES).
-            iv: The initialization vector (required, must match block_size).
-            expanded_key: Pre-computed expanded key (optional).
-            nr: Number of rounds (optional, derived from key if not provided).
-            segment_size: Number of bits to process at a time (default 8).
+    self.block_size = block_size
+    self.iv = iv
+    self.segment_size = segment_size
+    self._segment_bytes = segment_size // 8
+    self._encrypt_func = encrypt_func
 
-        Raises:
-            ValueError: If IV is not provided or has wrong length.
-            ValueError: If key is not provided and no external functions are given.
-            ValueError: If segment_size is invalid.
-        """
-        if iv is None:
-            raise ValueError("IV is required for CFB mode")
-        if len(iv) != block_size:
-            raise ValueError(f"IV must be {block_size} bytes, got {len(iv)}")
+    # If key is provided, use AES
+    if key is not None:
+      self.key = key
+      _nk, self.nr = _get_key_params(key)
+      self.expanded_key = (
+        expanded_key if expanded_key is not None else key_expansion(key)
+      )
+    elif expanded_key is not None and nr is not None:
+      self.key = None
+      self.expanded_key = expanded_key
+      self.nr = nr
+    elif encrypt_func is None:
+      msg = "Either key or encrypt_func must be provided"
+      raise ValueError(msg)
+    else:
+      self.key = None
+      self.expanded_key = []
+      self.nr = 0
 
-        # Validate segment size
-        if segment_size < 1 or segment_size > block_size * 8:
-            raise ValueError(f"segment_size must be between 1 and {block_size * 8}")
-        if segment_size % 8 != 0:
-            raise ValueError("segment_size must be a multiple of 8")
+  def _encrypt_shift_register(self, shift_reg: bytes) -> bytes:
+    """Encrypt the shift register using the block cipher.
 
-        self.block_size = block_size
-        self.iv = iv
-        self.segment_size = segment_size
-        self._segment_bytes = segment_size // 8
-        self._encrypt_func = encrypt_func
+    Args:
+        shift_reg: The current shift register value.
 
-        # If key is provided, use AES
-        if key is not None:
-            self.key = key
-            nk, self.nr = _get_key_params(key)
-            self.expanded_key = expanded_key if expanded_key is not None else key_expansion(key)
-        elif expanded_key is not None and nr is not None:
-            self.key = None
-            self.expanded_key = expanded_key
-            self.nr = nr
-        elif encrypt_func is None:
-            msg = "Either key or encrypt_func must be provided"
-            raise ValueError(msg)
-        else:
-            self.key = None
-            self.expanded_key = []
-            self.nr = 0
+    Returns:
+        The encrypted shift register.
+    """
+    if self._encrypt_func is not None:
+      return self._encrypt_func(shift_reg)
+    return _encrypt_block(shift_reg, self.expanded_key, self.nr)
 
-    def _encrypt_shift_register(self, shift_reg: bytes) -> bytes:
-        """Encrypt the shift register using the block cipher.
+  def encrypt(self, plaintext: bytes) -> bytes:
+    """Encrypt data using CFB mode.
 
-        Args:
-            shift_reg: The current shift register value.
+    Args:
+        plaintext: The data to encrypt.
 
-        Returns:
-            The encrypted shift register.
-        """
-        if self._encrypt_func is not None:
-            return self._encrypt_func(shift_reg)
-        else:
-            return _encrypt_block(shift_reg, self.expanded_key, self.nr)
+    Returns:
+        The encrypted ciphertext.
+    """
+    ciphertext = bytearray()
+    shift_reg = self.iv
 
-    def encrypt(self, plaintext: bytes) -> bytes:
-        """Encrypt data using CFB mode.
+    for i in range(0, len(plaintext), self._segment_bytes):
+      # Encrypt the shift register
+      encrypted_sr = self._encrypt_shift_register(shift_reg)
 
-        Args:
-            plaintext: The data to encrypt.
+      # Get the keystream segment (most significant bits)
+      keystream = encrypted_sr[: self._segment_bytes]
 
-        Returns:
-            The encrypted ciphertext.
-        """
-        ciphertext = bytearray()
-        shift_reg = self.iv
+      # Get plaintext segment
+      segment = plaintext[i : i + self._segment_bytes]
 
-        for i in range(0, len(plaintext), self._segment_bytes):
-            # Encrypt the shift register
-            encrypted_sr = self._encrypt_shift_register(shift_reg)
+      # XOR with keystream to get ciphertext segment
+      cipher_segment = bytes([segment[j] ^ keystream[j] for j in range(len(segment))])
+      ciphertext.extend(cipher_segment)
 
-            # Get the keystream segment (most significant bits)
-            keystream = encrypted_sr[:self._segment_bytes]
+      # Update shift register: shift left and add ciphertext
+      if self.segment_size == self.block_size * 8:
+        # Full block: replace entire shift register
+        shift_reg = cipher_segment.ljust(self.block_size, b"\x00")
+      else:
+        # Partial: shift left by segment bytes and add new ciphertext
+        shift_reg = shift_reg[self._segment_bytes :] + cipher_segment.ljust(
+          self._segment_bytes, b"\x00"
+        )
 
-            # Get plaintext segment
-            segment = plaintext[i:i + self._segment_bytes]
+    return bytes(ciphertext)
 
-            # XOR with keystream to get ciphertext segment
-            cipher_segment = bytes([segment[j] ^ keystream[j] for j in range(len(segment))])
-            ciphertext.extend(cipher_segment)
+  def decrypt(self, ciphertext: bytes) -> bytes:
+    """Decrypt data using CFB mode.
 
-            # Update shift register: shift left and add ciphertext
-            if self.segment_size == self.block_size * 8:
-                # Full block: replace entire shift register
-                shift_reg = cipher_segment.ljust(self.block_size, b'\x00')
-            else:
-                # Partial: shift left by segment bytes and add new ciphertext
-                shift_reg = shift_reg[self._segment_bytes:] + cipher_segment.ljust(self._segment_bytes, b'\x00')
+    Args:
+        ciphertext: The data to decrypt.
 
-        return bytes(ciphertext)
+    Returns:
+        The decrypted plaintext.
+    """
+    plaintext = bytearray()
+    shift_reg = self.iv
 
-    def decrypt(self, ciphertext: bytes) -> bytes:
-        """Decrypt data using CFB mode.
+    for i in range(0, len(ciphertext), self._segment_bytes):
+      # Encrypt the shift register (same as encryption)
+      encrypted_sr = self._encrypt_shift_register(shift_reg)
 
-        Args:
-            ciphertext: The data to decrypt.
+      # Get the keystream segment
+      keystream = encrypted_sr[: self._segment_bytes]
 
-        Returns:
-            The decrypted plaintext.
-        """
-        plaintext = bytearray()
-        shift_reg = self.iv
+      # Get ciphertext segment
+      segment = ciphertext[i : i + self._segment_bytes]
 
-        for i in range(0, len(ciphertext), self._segment_bytes):
-            # Encrypt the shift register (same as encryption)
-            encrypted_sr = self._encrypt_shift_register(shift_reg)
+      # XOR with keystream to get plaintext segment
+      plain_segment = bytes([segment[j] ^ keystream[j] for j in range(len(segment))])
+      plaintext.extend(plain_segment)
 
-            # Get the keystream segment
-            keystream = encrypted_sr[:self._segment_bytes]
+      # Update shift register with ciphertext (same as encryption)
+      if self.segment_size == self.block_size * 8:
+        # Full block: replace entire shift register
+        shift_reg = segment.ljust(self.block_size, b"\x00")
+      else:
+        # Partial: shift left by segment bytes and add new ciphertext
+        shift_reg = shift_reg[self._segment_bytes :] + segment.ljust(
+          self._segment_bytes, b"\x00"
+        )
 
-            # Get ciphertext segment
-            segment = ciphertext[i:i + self._segment_bytes]
-
-            # XOR with keystream to get plaintext segment
-            plain_segment = bytes([segment[j] ^ keystream[j] for j in range(len(segment))])
-            plaintext.extend(plain_segment)
-
-            # Update shift register with ciphertext (same as encryption)
-            if self.segment_size == self.block_size * 8:
-                # Full block: replace entire shift register
-                shift_reg = segment.ljust(self.block_size, b'\x00')
-            else:
-                # Partial: shift left by segment bytes and add new ciphertext
-                shift_reg = shift_reg[self._segment_bytes:] + segment.ljust(self._segment_bytes, b'\x00')
-
-        return bytes(plaintext)
+    return bytes(plaintext)
 
 
 def test_cfb_mode():
-    """Basic tests for CFB mode."""
-    key = b"0123456789abcdef"
-    iv = b"1234567890123456"
+  """Basic tests for CFB mode."""
+  key = b"0123456789abcdef"
+  iv = b"1234567890123456"
 
+  cfb = CFBMode(key=key, iv=iv)
+
+  # Test basic encryption/decryption
+  plaintext = b"Hello, World!"
+  ciphertext = cfb.encrypt(plaintext)
+  decrypted = cfb.decrypt(ciphertext)
+  assert decrypted == plaintext, f"Expected {plaintext!r}, got {decrypted!r}"
+
+  # Test empty data
+  empty = b""
+  ciphertext = cfb.encrypt(empty)
+  decrypted = cfb.decrypt(ciphertext)
+  assert decrypted == empty
+
+  # Test various lengths (no padding needed in CFB)
+  for length in [1, 5, 15, 16, 17, 32]:
     cfb = CFBMode(key=key, iv=iv)
-
-    # Test basic encryption/decryption
-    plaintext = b"Hello, World!"
-    ciphertext = cfb.encrypt(plaintext)
+    data = b"a" * length
+    ciphertext = cfb.encrypt(data)
+    assert len(ciphertext) == length, f"Length mismatch for {length} bytes"
+    cfb = CFBMode(key=key, iv=iv)
     decrypted = cfb.decrypt(ciphertext)
-    assert decrypted == plaintext, f"Expected {plaintext!r}, got {decrypted!r}"
+    assert decrypted == data, f"Decrypt failed for {length} bytes"
 
-    # Test empty data
-    empty = b""
-    ciphertext = cfb.encrypt(empty)
-    decrypted = cfb.decrypt(ciphertext)
-    assert decrypted == empty
-
-    # Test various lengths (no padding needed in CFB)
-    for length in [1, 5, 15, 16, 17, 32]:
-        cfb = CFBMode(key=key, iv=iv)
-        data = b"a" * length
-        ciphertext = cfb.encrypt(data)
-        assert len(ciphertext) == length, f"Length mismatch for {length} bytes"
-        cfb = CFBMode(key=key, iv=iv)
-        decrypted = cfb.decrypt(ciphertext)
-        assert decrypted == data, f"Decrypt failed for {length} bytes"
-
-    print("All CFB mode tests passed!")
+  print("All CFB mode tests passed!")
 
 
 if __name__ == "__main__":
-    test_cfb_mode()
+  test_cfb_mode()

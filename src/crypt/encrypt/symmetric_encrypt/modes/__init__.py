@@ -7,10 +7,10 @@ from .ecb import ECBMode
 from .ofb import OFBMode
 
 __all__ = [
-    "ECBMode",
-    "CBCMode",
-    "CFBMode",
-    "CTRMode",
-    "ModeError",
-    "OFBMode",
+  "CBCMode",
+  "CFBMode",
+  "CTRMode",
+  "ECBMode",
+  "ModeError",
+  "OFBMode",
 ]

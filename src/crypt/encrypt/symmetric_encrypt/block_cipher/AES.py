@@ -6,20 +6,19 @@
 # @desc    : AES (Advanced Encryption Standard) block cipher implementation.
 #           Supports AES-128, AES-192, AES-256 with ECB, CBC, and CTR modes.
 
-from typing import Literal
-
 from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import pad as _pkcs7_pad
 from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import unpad as _pkcs7_unpad
+from typing import Literal
 
 
 def pkcs7_pad(data: bytes, block_size: int = 16) -> bytes:
-    """Apply PKCS7 padding to data (wrapper with default block_size for AES)."""
-    return _pkcs7_pad(data, block_size)
+  """Apply PKCS7 padding to data (wrapper with default block_size for AES)."""
+  return _pkcs7_pad(data, block_size)
 
 
 def pkcs7_unpad(data: bytes, block_size: int = 16) -> bytes:
-    """Remove PKCS7 padding from data (wrapper with default block_size for AES)."""
-    return _pkcs7_unpad(data, block_size)
+  """Remove PKCS7 padding from data (wrapper with default block_size for AES)."""
+  return _pkcs7_unpad(data, block_size)
 
 
 # AES S-box for SubBytes transformation

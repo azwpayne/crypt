@@ -118,7 +118,7 @@ class TestTigerPadding:
 
   def test_tiger_pad_message_empty(self):
     """Test Tiger padding of empty message."""
-    result = tiger._pad_message_tiger(b"")
+    result = tiger._pad_message_tiger(b"")  # noqa: SLF001 - Testing internal padding function
     # Should add 0x01 + padding to 56 mod 64, then 8 bytes length
     assert len(result) == 64
     assert result[0] == 0x01
@@ -127,7 +127,7 @@ class TestTigerPadding:
 
   def test_tiger2_pad_message_empty(self):
     """Test Tiger2 padding of empty message."""
-    result = tiger._pad_message_tiger2(b"")
+    result = tiger._pad_message_tiger2(b"")  # noqa: SLF001 - Testing internal padding function
     # Should add 0x80 + padding to 56 mod 64, then 8 bytes length
     assert len(result) == 64
     assert result[0] == 0x80
@@ -137,31 +137,31 @@ class TestTigerPadding:
   def test_tiger_pad_message_short(self):
     """Test Tiger padding of short message."""
     msg = b"abc"
-    result = tiger._pad_message_tiger(msg)
+    result = tiger._pad_message_tiger(msg)  # noqa: SLF001 - Testing internal padding function
     assert result.startswith(b"abc\x01")
     assert len(result) % 64 == 0
 
   def test_tiger2_pad_message_short(self):
     """Test Tiger2 padding of short message."""
     msg = b"abc"
-    result = tiger._pad_message_tiger2(msg)
+    result = tiger._pad_message_tiger2(msg)  # noqa: SLF001 - Testing internal padding function
     assert result.startswith(b"abc\x80")
     assert len(result) % 64 == 0
 
   def test_tiger_pad_message_length(self):
     """Test that Tiger padding adds correct length."""
     msg = b"a" * 55  # Just fits in one block
-    result = tiger._pad_message_tiger(msg)
+    result = tiger._pad_message_tiger(msg)  # noqa: SLF001 - Testing internal padding function
     assert len(result) == 64
 
     msg = b"a" * 56  # Needs another block
-    result = tiger._pad_message_tiger(msg)
+    result = tiger._pad_message_tiger(msg)  # noqa: SLF001 - Testing internal padding function
     assert len(result) == 128
 
   def test_tiger_pad_message_length_encoding(self):
     """Test that Tiger message length is correctly encoded."""
     msg = b"abc"
-    result = tiger._pad_message_tiger(msg)
+    result = tiger._pad_message_tiger(msg)  # noqa: SLF001 - Testing internal padding function
     # Length in bits: 3 * 8 = 24 = 0x18
     assert result[-8] == 24  # Little-endian
 
@@ -175,7 +175,7 @@ class TestTigerInternal:
     x = 0x123456789ABCDEF0
     mult = 5
 
-    new_a, new_b, new_c = tiger._round(a, b, c, x, mult)
+    new_a, new_b, new_c = tiger._round(a, b, c, x, mult)  # noqa: SLF001 - Testing internal round function
 
     # Check that values changed
     assert (new_a, new_b, new_c) != (a, b, c)
@@ -184,10 +184,10 @@ class TestTigerInternal:
 
   def test_compress_block(self):
     """Test the compression function."""
-    a, b, c = tiger._INITIAL_A, tiger._INITIAL_B, tiger._INITIAL_C
+    a, b, c = tiger._INITIAL_A, tiger._INITIAL_B, tiger._INITIAL_C  # noqa: SLF001 - Testing internal constants
     block = b"\x00" * 64
 
-    new_a, new_b, new_c = tiger._compress_block(a, b, c, block)
+    new_a, new_b, new_c = tiger._compress_block(a, b, c, block)  # noqa: SLF001 - Testing internal compression function
 
     # Check that values changed
     assert (new_a, new_b, new_c) != (a, b, c)
@@ -197,7 +197,7 @@ class TestTigerInternal:
   def test_key_schedule(self):
     """Test the key schedule function."""
     words = tuple(range(8))  # 8 words: 0, 1, 2, 3, 4, 5, 6, 7
-    schedule = tiger._key_schedule(words)
+    schedule = tiger._key_schedule(words)  # noqa: SLF001 - Testing internal key schedule function
 
     # Should produce 24 words
     assert len(schedule) == 24
@@ -206,13 +206,13 @@ class TestTigerInternal:
 
   def test_s_boxes_exist_and_correct_size(self):
     """Test that S-boxes are defined with correct size."""
-    assert len(tiger._S0) == 256
-    assert len(tiger._S1) == 256
-    assert len(tiger._S2) == 256
-    assert len(tiger._S3) == 256
+    assert len(tiger._S0) == 256  # noqa: SLF001 - Testing internal S-box constants
+    assert len(tiger._S1) == 256  # noqa: SLF001 - Testing internal S-box constants
+    assert len(tiger._S2) == 256  # noqa: SLF001 - Testing internal S-box constants
+    assert len(tiger._S3) == 256  # noqa: SLF001 - Testing internal S-box constants
 
     # All values should be 64-bit
-    for box in (tiger._S0, tiger._S1, tiger._S2, tiger._S3):
+    for box in (tiger._S0, tiger._S1, tiger._S2, tiger._S3):  # noqa: SLF001 - Testing internal S-box constants
       assert all(0 <= v <= 0xFFFFFFFFFFFFFFFF for v in box)
 
 

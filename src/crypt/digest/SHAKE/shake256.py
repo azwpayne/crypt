@@ -6,12 +6,7 @@ It uses a rate of 136 bytes (1088 bits) and capacity of 64 bytes (512 bits).
 Domain separator: 0x1F (same as SHAKE128)
 """
 
-# Import from SHA3 implementation
-from crypt.digest.SHA.sha3_256 import (
-  bytes_to_lanes,
-  keccak_f_1600,
-  lanes_to_bytes,
-)
+from crypt.digest.SHA.utils import bytes_to_lanes, keccak_f_1600, lanes_to_bytes
 
 # SHAKE256 parameters
 SHAKE256_RATE = 136  # bytes (1088 bits)

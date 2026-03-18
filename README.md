@@ -27,16 +27,6 @@ uv sync --group dev
 uv sync --group test
 ```
 
-### Claude Code Setup (Optional)
-
-If using Claude Code, install gstack for enhanced browsing and review capabilities:
-
-```bash
-./scripts/install-gstack.sh
-```
-
-This provides skills like `/browse`, `/review`, `/ship`, and more. See `.claude/CLAUDE.md` for details.
-
 ### Requirements
 
 - Python >= 3.10

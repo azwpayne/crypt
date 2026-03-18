@@ -6,6 +6,142 @@
 # @desc    :
 
 import math
+import struct
+
+# Keccak-f[1600] parameters
+KECCAK_F_WIDTH = 1600  # State width in bits
+KECCAK_F_ROUNDS = 24  # Number of permutation rounds
+
+# Round constants for Keccak-f[1600]
+KECCAK_RC = [
+    0x0000000000000001,
+    0x0000000000008082,
+    0x800000000000808A,
+    0x8000000080008000,
+    0x000000000000808B,
+    0x0000000080000001,
+    0x8000000080008081,
+    0x8000000000008009,
+    0x000000000000008A,
+    0x0000000000000088,
+    0x0000000080008009,
+    0x000000008000000A,
+    0x000000008000808B,
+    0x800000000000008B,
+    0x8000000000008089,
+    0x8000000000008003,
+    0x8000000000008002,
+    0x8000000000000080,
+    0x000000000000800A,
+    0x800000008000000A,
+    0x8000000080008081,
+    0x8000000000008080,
+    0x0000000080000001,
+    0x8000000080008008,
+]
+
+# Rotation offsets for rho step
+KECCAK_ROTATION_OFFSETS = [
+    [0, 36, 3, 41, 18],
+    [1, 44, 10, 45, 2],
+    [62, 6, 43, 15, 61],
+    [28, 55, 25, 21, 56],
+    [27, 20, 39, 8, 14],
+]
+
+
+def rotate_left_64(x: int, n: int) -> int:
+    """Perform left circular rotation on a 64-bit integer.
+
+    Args:
+        x: The 64-bit integer to rotate
+        n: Number of bits to rotate left
+
+    Returns:
+        The rotated 64-bit integer
+    """
+    n = n % 64
+    return ((x << n) | (x >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
+
+
+def bytes_to_lanes(data: bytes) -> list[int]:
+    """Convert bytes to 25 64-bit lanes (little-endian).
+
+    Args:
+        data: Input bytes (up to 200 bytes)
+
+    Returns:
+        List of 25 64-bit integers
+    """
+    lanes = [0] * 25
+    for i in range(min(len(data) // 8, 25)):
+        lanes[i] = struct.unpack("<Q", data[i * 8 : (i + 1) * 8])[0]
+    return lanes
+
+
+def lanes_to_bytes(lanes: list[int]) -> bytes:
+    """Convert 25 64-bit lanes to bytes (little-endian).
+
+    Args:
+        lanes: List of 25 64-bit integers
+
+    Returns:
+        Bytes representation (200 bytes)
+    """
+    result = bytearray()
+    for lane in lanes:
+        result.extend(struct.pack("<Q", lane))
+    return bytes(result)
+
+
+def keccak_f_1600(state: list[int]) -> list[int]:
+    """Keccak-f[1600] permutation function.
+
+    Applies 24 rounds of the Keccak permutation.
+
+    Args:
+        state: List of 25 64-bit integers representing the state
+
+    Returns:
+        Permuted state as list of 25 64-bit integers
+    """
+    # Convert to 5x5 matrix
+    A = [[0] * 5 for _ in range(5)]
+    for x in range(5):
+        for y in range(5):
+            A[x][y] = state[x + 5 * y]
+
+    # 24 rounds
+    for round_num in range(KECCAK_F_ROUNDS):
+        # Theta step
+        C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
+        D = [C[(x - 1) % 5] ^ rotate_left_64(C[(x + 1) % 5], 1) for x in range(5)]
+
+        for x in range(5):
+            for y in range(5):
+                A[x][y] ^= D[x]
+
+        # Rho and Pi steps
+        B = [[0] * 5 for _ in range(5)]
+        for x in range(5):
+            for y in range(5):
+                B[y][(2 * x + 3 * y) % 5] = rotate_left_64(A[x][y], KECCAK_ROTATION_OFFSETS[x][y])
+
+        # Chi step
+        for x in range(5):
+            for y in range(5):
+                A[x][y] = B[x][y] ^ ((~B[(x + 1) % 5][y]) & B[(x + 2) % 5][y])
+
+        # Iota step
+        A[0][0] ^= KECCAK_RC[round_num]
+
+    # Convert back to list
+    result = [0] * 25
+    for x in range(5):
+        for y in range(5):
+            result[x + 5 * y] = A[x][y]
+
+    return result
 
 
 def sieve_of_eratosthenes(sieve_upper_bound: int) -> list[int]:

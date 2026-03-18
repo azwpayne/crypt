@@ -25,151 +25,12 @@ References:
 
 from __future__ import annotations
 
-import struct
+from crypt.digest.SHA.utils import bytes_to_lanes, keccak_f_1600, lanes_to_bytes
 
 # SHA3-256 parameters
 SHA3_256_RATE = 136  # Rate in bytes (1088 bits)
 SHA3_256_CAPACITY = 64  # Capacity in bytes (512 bits)
 SHA3_256_OUTPUT_LENGTH = 32  # Output length in bytes (256 bits)
-KECCAK_F_WIDTH = 1600  # State width in bits
-KECCAK_F_ROUNDS = 24  # Number of permutation rounds
-
-# Round constants for Keccak-f[1600]
-RC = [
-    0x0000000000000001,
-    0x0000000000008082,
-    0x800000000000808A,
-    0x8000000080008000,
-    0x000000000000808B,
-    0x0000000080000001,
-    0x8000000080008081,
-    0x8000000000008009,
-    0x000000000000008A,
-    0x0000000000000088,
-    0x0000000080008009,
-    0x000000008000000A,
-    0x000000008000808B,
-    0x800000000000008B,
-    0x8000000000008089,
-    0x8000000000008003,
-    0x8000000000008002,
-    0x8000000000000080,
-    0x000000000000800A,
-    0x800000008000000A,
-    0x8000000080008081,
-    0x8000000000008080,
-    0x0000000080000001,
-    0x8000000080008008,
-]
-
-# Rotation offsets for rho step
-ROTATION_OFFSETS = [
-    [0, 36, 3, 41, 18],
-    [1, 44, 10, 45, 2],
-    [62, 6, 43, 15, 61],
-    [28, 55, 25, 21, 56],
-    [27, 20, 39, 8, 14],
-]
-
-# Pi permutation indices
-PI_PERMUTATION = [
-    0, 6, 12, 18, 24, 3, 9, 10, 16, 22, 1, 7, 13, 19, 20,
-    4, 5, 11, 17, 23, 2, 8, 14, 15, 21,
-]
-
-
-def _rotate_left_64(x: int, n: int) -> int:
-    """Perform left circular rotation on a 64-bit integer.
-
-    Args:
-        x: The 64-bit integer to rotate
-        n: Number of bits to rotate left
-
-    Returns:
-        The rotated 64-bit integer
-    """
-    n = n % 64
-    return ((x << n) | (x >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
-
-
-def _bytes_to_lanes(data: bytes) -> list[int]:
-    """Convert bytes to 25 64-bit lanes (little-endian).
-
-    Args:
-        data: Input bytes (up to 200 bytes)
-
-    Returns:
-        List of 25 64-bit integers
-    """
-    lanes = [0] * 25
-    for i in range(min(len(data) // 8, 25)):
-        lanes[i] = struct.unpack("<Q", data[i * 8 : (i + 1) * 8])[0]
-    return lanes
-
-
-def _lanes_to_bytes(lanes: list[int]) -> bytes:
-    """Convert 25 64-bit lanes to bytes (little-endian).
-
-    Args:
-        lanes: List of 25 64-bit integers
-
-    Returns:
-        Bytes representation (200 bytes)
-    """
-    result = bytearray()
-    for lane in lanes:
-        result.extend(struct.pack("<Q", lane))
-    return bytes(result)
-
-
-def _keccak_f_1600(state: list[int]) -> list[int]:
-    """Keccak-f[1600] permutation function.
-
-    Applies 24 rounds of the Keccak permutation.
-
-    Args:
-        state: List of 25 64-bit integers representing the state
-
-    Returns:
-        Permuted state as list of 25 64-bit integers
-    """
-    # Convert to 5x5 matrix
-    A = [[0] * 5 for _ in range(5)]
-    for x in range(5):
-        for y in range(5):
-            A[x][y] = state[x + 5 * y]
-
-    # 24 rounds
-    for round_num in range(KECCAK_F_ROUNDS):
-        # Theta step
-        C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
-        D = [C[(x - 1) % 5] ^ _rotate_left_64(C[(x + 1) % 5], 1) for x in range(5)]
-
-        for x in range(5):
-            for y in range(5):
-                A[x][y] ^= D[x]
-
-        # Rho and Pi steps
-        B = [[0] * 5 for _ in range(5)]
-        for x in range(5):
-            for y in range(5):
-                B[y][(2 * x + 3 * y) % 5] = _rotate_left_64(A[x][y], ROTATION_OFFSETS[x][y])
-
-        # Chi step
-        for x in range(5):
-            for y in range(5):
-                A[x][y] = B[x][y] ^ ((~B[(x + 1) % 5][y]) & B[(x + 2) % 5][y])
-
-        # Iota step
-        A[0][0] ^= RC[round_num]
-
-    # Convert back to list
-    result = [0] * 25
-    for x in range(5):
-        for y in range(5):
-            result[x + 5 * y] = A[x][y]
-
-    return result
 
 
 def _sha3_pad(message_len: int, rate: int) -> bytes:
@@ -226,21 +87,21 @@ def sha3_256(msg: bytes) -> bytes:
     # Absorb phase
     for i in range(0, len(padded_msg), SHA3_256_RATE):
         block = padded_msg[i : i + SHA3_256_RATE]
-        block_lanes = _bytes_to_lanes(block.ljust(200, b"\x00"))
+        block_lanes = bytes_to_lanes(block.ljust(200, b"\x00"))
 
         # XOR block into state
         for j in range(len(block_lanes)):
             state[j] ^= block_lanes[j]
 
         # Apply permutation
-        state = _keccak_f_1600(state)
+        state = keccak_f_1600(state)
 
     # Squeeze phase
     output = bytearray()
     while len(output) < SHA3_256_OUTPUT_LENGTH:
-        output.extend(_lanes_to_bytes(state)[:SHA3_256_RATE])
+        output.extend(lanes_to_bytes(state)[:SHA3_256_RATE])
         if len(output) < SHA3_256_OUTPUT_LENGTH:
-            state = _keccak_f_1600(state)
+            state = keccak_f_1600(state)
 
     return bytes(output)[:SHA3_256_OUTPUT_LENGTH]
 

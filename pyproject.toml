@@ -5,12 +5,17 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "blake3>=1.0.8",
     "cryptography",
     "pycryptodome",
 ]
 
 [dependency-groups]
-dev = ["poethepoet", "ruff", "ty"]
+dev = [
+    "poethepoet",
+    "ruff",
+    "ty",
+]
 test = [
     "pytest",
     "pytest-asyncio",

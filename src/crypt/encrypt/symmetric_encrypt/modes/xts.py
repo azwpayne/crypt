@@ -20,7 +20,7 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
 class XTSMode:
   """XTS (XEX-based Tweaked Codebook) mode of operation."""
 
-  def __init__(
+  def __init__(  # noqa: PLR0913
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
     decrypt_func: Callable[[bytes], bytes] | None = None,
@@ -241,7 +241,9 @@ class XTSMode:
     ]
 
     # Get C_stolen (the last full cipher block)
-    stolen_cipher = ciphertext[num_full_blocks * self.block_size :]
+    # C_stolen starts after CC[0:partial_len] in the previous "slot"
+    stolen_cipher_start = (num_full_blocks - 1) * self.block_size + partial_len
+    stolen_cipher = ciphertext[stolen_cipher_start:]
 
     # Decrypt C_stolen with tweak M to get stolen_block
     stolen_block = self._xex_decrypt(stolen_cipher, tweaks[num_full_blocks])

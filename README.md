@@ -1,42 +1,361 @@
-# crypt
+# Crypt
 
-crypt is a pure Python implementation of common cryptographic algorithms
-such as AES, RSA, SHA, etc.
+A pure Python implementation of common cryptographic algorithms for educational purposes.
 
-For now, I am only concerned with implementation and Enhanced Transformation, rather
-than the principles of algorithms
+## Overview
 
-## Todo
+This library provides implementations of various cryptographic algorithms including hash functions, symmetric and asymmetric encryption, and encoding schemes. The focus is on clear, understandable implementations that demonstrate how these algorithms work under the hood.
 
-- [ ] docs
-- [ ] code quality
-    - code style
-    - linting
-    - tests
-    - etc
-- [ ] more algorithms
+**Note**: This is an educational project. While the implementations are tested against reference libraries, they are not optimized for production use and have not undergone formal security audits.
 
-# premise
+## Installation
 
-8 bit = 1 byte(B)
-bytes 是二进制数据的"只读视图"，bytearray 是"可编辑视图"。 处理网络协议、文件 I/O 时，
+This project uses `uv` for dependency management:
 
-- 接收用 bytearray（可修改），
-- 发送用 bytes（不可变保证），
-  中间通过 bytes(ba) 或 ba[:] 快速转换。
+```bash
+# Clone the repository
+git clone <repository-url>
+cd crypt
 
-# padding
+# Install dependencies
+uv sync
 
-填充算法
-> 填充字节数 = 块大小 - 待填充数据长度
-> 填充字节数 = 块大小 - (待填充数据长度 % 块大小)
-> 填充字节数 = 块大小 - (待填充数据长度 + 填充字节数) % 块大小
+# Install with dev dependencies
+uv sync --group dev
 
-初始向量/初始值(IV, Initial Hash Value, Initialization Vector, Initialization Vector,
-Initial Chaining Value): 密码学算法在开始运算前设置的起始状态或起始参数，目的是引入随机性，
-确保即使相同输入也能产生不同输出，同时防止攻击者通过观察输入输出模式来破解算法。
+# Install with test dependencies
+uv sync --group test
+```
 
-轮常数（Round Constants）: 密码学算法（哈希函数、分组密码等）在每一轮迭代中使用的固定常量，
-用于破坏对称性、增加混乱度，并防止攻击者利用轮函数的代数结构。
-一般以一个固定的值开始，然后每轮迭代增加一个固定的值。
+### Requirements
 
+- Python >= 3.10
+- uv (for dependency management)
+
+## Quick Start
+
+### Hash Functions
+
+```python
+from crypt.digest.MD.md5 import md5
+from crypt.digest.SHA.sha2_256 import sha256
+
+# MD5 hash (for educational purposes - not for security)
+result = md5(b"Hello, World!")
+print(result.hex())  # 65a8e27d8879283831b664bd8b7f0ad4
+
+# SHA-256 hash
+result = sha256(b"Hello, World!")
+print(result.hex())  # dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f
+```
+
+### Symmetric Encryption
+
+```python
+from crypt.encrypt.symmetric_encrypt.block_cipher.AES import aes_encrypt, aes_decrypt
+
+key = b"0123456789abcdef"  # 16 bytes for AES-128
+plaintext = b"Hello, World!!!!"  # Must be 16 bytes (block size)
+
+# Encrypt
+ciphertext = aes_encrypt(plaintext, key)
+print(f"Encrypted: {ciphertext.hex()}")
+
+# Decrypt
+decrypted = aes_decrypt(ciphertext, key)
+print(f"Decrypted: {decrypted.decode()}")
+```
+
+### Encoding
+
+```python
+from crypt.encode.base64 import encode as b64_encode, decode as b64_decode
+from crypt.encode.base58 import encode as b58_encode, decode as b58_decode
+
+# Base64 encoding
+data = b"Hello, World!"
+encoded = b64_encode(data)
+print(encoded)  # SGVsbG8sIFdvcmxkIQ==
+
+decoded = b64_decode(encoded)
+print(decoded)  # b"Hello, World!"
+
+# Base58 encoding (commonly used in Bitcoin)
+encoded = b58_encode(data)
+print(encoded)  # 72k1xXWG59fYdzSNoA
+decoded = b58_decode(encoded)
+print(decoded)  # b"Hello, World!"
+```
+
+### Asymmetric Encryption
+
+```python
+from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
+
+# Generate RSA key pair
+public_key, private_key = generate_keypair(key_size=2048)
+
+# Encrypt
+message = b"Hello, RSA!"
+ciphertext = rsa_encrypt(message, public_key)
+
+# Decrypt
+decrypted = rsa_decrypt(ciphertext, private_key)
+print(decrypted.decode())  # Hello, RSA!
+```
+
+## Implemented Algorithms
+
+### Hash Functions
+
+| Algorithm | Description | Status |
+|-----------|-------------|--------|
+| **MD Family** | | |
+| MD2 | 128-bit hash (legacy) | Implemented |
+| MD4 | 128-bit hash (legacy) | Implemented |
+| MD5 | 128-bit hash (broken, legacy) | Implemented |
+| MD6 | Variable-length hash | Implemented |
+| **SHA Family** | | |
+| SHA-0 | 160-bit hash (broken) | Implemented |
+| SHA-1 | 160-bit hash (deprecated) | Implemented |
+| SHA-224 | 224-bit hash | Implemented |
+| SHA-256 | 256-bit hash | Implemented |
+| SHA-384 | 384-bit hash | Implemented |
+| SHA-512 | 512-bit hash | Implemented |
+| SHA-512/224 | 224-bit truncated SHA-512 | Implemented |
+| SHA-512/256 | 256-bit truncated SHA-512 | Implemented |
+| SHA3-224 | Keccak-based 224-bit | Implemented |
+| SHA3-256 | Keccak-based 256-bit | Implemented |
+| SHA3-384 | Keccak-based 384-bit | Implemented |
+| SHA3-512 | Keccak-based 512-bit | Implemented |
+| SHAKE128 | Extendable-output function (XOF) | Implemented |
+| SHAKE256 | Extendable-output function (XOF) | Implemented |
+| **Other Hashes** | | |
+| BLAKE2b/BLAKE2s | Fast cryptographic hash | Implemented |
+| BLAKE3 | Modern fast hash | Implemented |
+| CRC8/CRC12/CRC16/CRC32 | Cyclic redundancy checks | Implemented |
+| Tiger | 192-bit hash | Implemented |
+| RIPEMD-160 | 160-bit hash | Implemented |
+| Whirlpool | 512-bit hash | Implemented |
+| SM3 | Chinese national standard hash | Implemented |
+| bcrypt | Password hashing | Implemented |
+| Poly1305 | Message authentication code | Implemented |
+
+### HMAC (Hash-based Message Authentication)
+
+- HMAC-MD5
+- HMAC-SHA1
+- HMAC-SHA256
+
+### Key Derivation Functions (KDF)
+
+| Algorithm | Description |
+|-----------|-------------|
+| PBKDF2 | Password-Based Key Derivation Function 2 |
+| scrypt | Memory-hard password hashing |
+| Argon2 | Modern memory-hard password hashing |
+
+### Symmetric Encryption
+
+#### Block Ciphers
+
+| Algorithm | Block Size | Key Sizes | Description |
+|-----------|------------|-----------|-------------|
+| AES | 128-bit | 128/192/256-bit | Advanced Encryption Standard |
+| DES | 64-bit | 56-bit | Data Encryption Standard (legacy) |
+| 3DES (Triple DES) | 64-bit | 112/168-bit | Triple DES (legacy) |
+| Blowfish | 64-bit | 32-448-bit | Fast block cipher |
+| Twofish | 128-bit | 128/192/256-bit | AES finalist |
+| Serpent | 128-bit | 128/192/256-bit | AES finalist |
+| Camellia | 128-bit | 128/192/256-bit | Japanese standard |
+| CAST5 (CAST-128) | 64-bit | 40-128-bit | Legacy cipher |
+| CAST6 (CAST-256) | 128-bit | 128/192/256-bit | AES candidate |
+| RC5 | 64-bit | Variable | Variable rounds |
+| RC6 | 128-bit | 128/192/256-bit | AES finalist |
+| IDEA | 64-bit | 128-bit | International Data Encryption Algorithm |
+| TEA | 64-bit | 128-bit | Tiny Encryption Algorithm |
+| SM4 | 128-bit | 128-bit | Chinese national standard |
+| PRESENT | 64-bit | 80/128-bit | Lightweight cipher |
+| BELT | 128-bit | 256-bit | Belarusian standard |
+| Simon/Speck | Various | Various | NSA lightweight ciphers |
+
+#### Block Cipher Modes
+
+| Mode | Description |
+|------|-------------|
+| ECB | Electronic Codebook (not recommended) |
+| CBC | Cipher Block Chaining |
+| CFB | Cipher Feedback |
+| OFB | Output Feedback |
+| CTR | Counter mode |
+| XTS | XEX-based tweaked-codebook with ciphertext stealing |
+| EAX | Authenticated encryption with associated data (AEAD) |
+
+#### Stream Ciphers
+
+| Algorithm | Description |
+|-----------|-------------|
+| ChaCha20 | Modern stream cipher |
+| Salsa20 | Predecessor to ChaCha20 |
+| RC4 | Legacy stream cipher (deprecated) |
+| SEAL | Software-optimized encryption algorithm |
+| ZUC | Chinese stream cipher (4G/5G) |
+
+#### Classical Ciphers
+
+| Algorithm | Type |
+|-----------|------|
+| Vigenere | Polyalphabetic substitution |
+| Atbash | Monoalphabetic substitution |
+| Affine | Mathematical substitution |
+| ROT13 | Caesar cipher variant |
+| Simple Substitution | Character substitution |
+| Playfair | Digraph substitution |
+| Rail Fence | Transposition cipher |
+
+### Asymmetric Encryption
+
+| Algorithm | Description |
+|-----------|-------------|
+| RSA | Rivest-Shamir-Adleman encryption and signatures |
+| RSA-PSS | Probabilistic Signature Scheme |
+| DSA | Digital Signature Algorithm |
+| ECC | Elliptic Curve Cryptography |
+| ECDH | Elliptic Curve Diffie-Hellman |
+| Ed25519 | Edwards-curve Digital Signature Algorithm |
+| X25519 | Elliptic Curve Diffie-Hellman (Curve25519) |
+| Diffie-Hellman | Key exchange protocol |
+
+### Encoding Schemes
+
+| Encoding | Description |
+|----------|-------------|
+| Base16 (Hex) | Hexadecimal encoding |
+| Base32 | RFC 4648 Base32 |
+| Base58 | Bitcoin-style encoding (no 0/O/I/l) |
+| Base62 | Alphanumeric encoding |
+| Base64 | RFC 4648 Base64 |
+| Base85 | ASCII85 encoding |
+| Base91 | High-density encoding |
+| Base92 | Dense binary-to-text |
+| ASCII85 | Adobe-style encoding |
+| Hex2Bin | Binary-hexadecimal conversion |
+| Morse Code | Telegraph encoding |
+| URL Encoding | Percent-encoding |
+| HTML Entities | Character encoding |
+
+## Security Notice
+
+**IMPORTANT**: This library is intended for educational purposes only.
+
+1. **Not for Production**: These implementations are not optimized for performance and have not undergone formal security audits.
+2. **Timing Attacks**: Pure Python implementations may be vulnerable to timing attacks due to non-constant-time operations.
+3. **Deprecated Algorithms**: Some implemented algorithms (MD5, SHA-1, DES, RC4) are cryptographically broken or deprecated. They are included for educational and legacy compatibility purposes only.
+4. **Use Established Libraries**: For production use, please use well-established libraries such as:
+   - [cryptography](https://cryptography.io/)
+   - [pycryptodome](https://www.pycryptodome.org/)
+   - Python's built-in `hashlib` and `secrets` modules
+
+## Testing
+
+The project includes comprehensive tests for all implementations:
+
+```bash
+# Run all tests with coverage
+uv run pytest
+
+# Run specific test file
+uv run pytest tests/digest/test_sha.py
+
+# Run without parallelization (for debugging)
+uv run pytest -n0
+
+# Run with verbose output
+uv run pytest -v
+```
+
+Tests validate implementations against reference libraries (`hashlib`, `pycryptodome`, `cryptography`) to ensure correctness.
+
+## Development
+
+### Code Quality
+
+```bash
+# Run linting
+uv run ruff check .
+
+# Fix linting issues
+uv run ruff check --fix .
+
+# Format code
+uv run ruff format .
+
+# Type checking
+uv run pyright
+
+# Run all quality checks
+uv run poe full
+```
+
+### Project Structure
+
+```
+src/crypt/
+├── digest/        # Hash algorithms and message authentication
+├── encode/        # Encoding schemes
+└── encrypt/       # Encryption algorithms
+    ├── asymmetric_encrypt/  # Public-key cryptography
+    ├── end2end_encrypt/     # End-to-end encryption protocols
+    └── symmetric_encrypt/   # Secret-key cryptography
+        ├── block_cipher/    # Block cipher implementations
+        ├── modes/           # Block cipher modes of operation
+        ├── padding/         # Padding schemes
+        └── stream_cipher/   # Stream cipher implementations
+tests/             # Comprehensive test suite
+```
+
+## Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. **Code Style**: Follow PEP 8 and use type hints where appropriate
+2. **Testing**: Add tests for new algorithms and ensure all tests pass
+3. **Documentation**: Include docstrings and comments explaining the algorithm
+4. **Security**: Clearly mark any deprecated or broken algorithms
+5. **References**: Cite RFCs, papers, or other sources for algorithm implementations
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-algorithm`)
+3. Make your changes
+4. Run tests and linting (`uv run poe full && uv run pytest`)
+5. Commit your changes (`git commit -am 'feat: add new algorithm'`)
+6. Push to the branch (`git push origin feature/new-algorithm`)
+7. Create a Pull Request
+
+## References
+
+- [FIPS 180-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf) - Secure Hash Standard (SHS)
+- [FIPS 197](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf) - Advanced Encryption Standard (AES)
+- [RFC 1321](https://tools.ietf.org/html/rfc1321) - The MD5 Message-Digest Algorithm
+- [RFC 2104](https://tools.ietf.org/html/rfc2104) - HMAC: Keyed-Hashing for Message Authentication
+- [RFC 2898](https://tools.ietf.org/html/rfc2898) - PKCS #5: Password-Based Cryptography
+- [RFC 4648](https://tools.ietf.org/html/rfc4648) - Base16, Base32, and Base64 Encodings
+- [RFC 7748](https://tools.ietf.org/html/rfc7748) - Elliptic Curves for Security
+- [RFC 8032](https://tools.ietf.org/html/rfc8032) - Edwards-Curve Digital Signature Algorithm
+
+## License
+
+This project is open source. Please see the repository for license information.
+
+## Acknowledgments
+
+This project is inspired by and references implementations from:
+- [pycryptodome](https://www.pycryptodome.org/)
+- [cryptography](https://cryptography.io/)
+- Various academic papers and RFC specifications
+
+---
+
+**Disclaimer**: The authors are not responsible for any misuse of this software. Always consult with security professionals when implementing cryptography in production systems.

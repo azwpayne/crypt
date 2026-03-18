@@ -1,8 +1,33 @@
-"""OFB (Output Feedback) mode implementation.
+"""OFB (Output Feedback) Mode Implementation
 
 OFB mode generates a keystream independent of plaintext by repeatedly encrypting
 an initialization vector. The keystream is XORed with plaintext to produce
 ciphertext. This provides no error propagation in the ciphertext.
+
+Security Considerations:
+- IV must be unique for each encryption with the same key. Never reuse an IV.
+- IV does not need to be secret, but must be unpredictable (use a CSPRNG).
+- OFB is NOT self-synchronizing: transmission errors affect only corresponding bits.
+- No padding required: works with any plaintext length.
+- Keystream can be precomputed before plaintext is available.
+- If a keystream block repeats, security is compromised (like a two-time pad).
+
+Usage Examples:
+    >>> # Basic encryption with AES
+    >>> from crypt.encrypt.symmetric_encrypt.modes.ofb import OFBMode
+    >>> key = b'0123456789abcdef'  # 16 bytes for AES-128
+    >>> iv = b'1234567890123456'   # 16 bytes (must match block size)
+    >>> ofb = OFBMode(key=key, iv=iv)
+    >>> plaintext = b"Hello, World!"
+    >>> ciphertext = ofb.encrypt(plaintext)
+    >>> ofb2 = OFBMode(key=key, iv=iv)
+    >>> decrypted = ofb2.decrypt(ciphertext)
+    >>> assert decrypted == plaintext
+
+    >>> # Encryption and decryption are identical operations in OFB
+    >>> ofb3 = OFBMode(key=key, iv=iv)
+    >>> double_encrypted = ofb3.encrypt(ciphertext)  # Actually decrypts!
+    >>> assert double_encrypted == plaintext
 """
 
 from collections.abc import Callable
@@ -31,6 +56,24 @@ class OFBMode:
       iv: The initialization vector (initial feedback value).
       expanded_key: The expanded key schedule.
       nr: Number of rounds.
+
+  Examples:
+      >>> # Basic usage with AES
+      >>> key = b'0123456789abcdef'
+      >>> iv = b'1234567890123456'
+      >>> ofb = OFBMode(key=key, iv=iv)
+      >>> plaintext = b"Hello, World!"
+      >>> ciphertext = ofb.encrypt(plaintext)
+      >>> ofb2 = OFBMode(key=key, iv=iv)
+      >>> decrypted = ofb2.decrypt(ciphertext)
+      >>> decrypted == plaintext
+      True
+
+      >>> # Encryption and decryption are identical in OFB
+      >>> ofb3 = OFBMode(key=key, iv=iv)
+      >>> double_encrypted = ofb3.encrypt(ciphertext)
+      >>> double_encrypted == plaintext
+      True
   """
 
   def __init__(
@@ -57,6 +100,17 @@ class OFBMode:
     Raises:
         ValueError: If IV is not provided or has wrong length.
         ValueError: If key is not provided and no external functions are given.
+
+    Examples:
+        >>> # Using AES key directly
+        >>> ofb = OFBMode(key=b'0123456789abcdef', iv=b'1234567890123456')
+        >>> ciphertext = ofb.encrypt(b"Hello")
+
+        >>> # Using external cipher function
+        >>> from Crypto.Cipher import AES
+        >>> cipher = AES.new(b'0123456789abcdef', AES.MODE_ECB)
+        >>> ofb = OFBMode(encrypt_func=cipher.encrypt, block_size=16,
+        ...               iv=b'1234567890123456')
     """
     if iv is None:
       msg = "IV is required for OFB mode"
@@ -120,6 +174,12 @@ class OFBMode:
 
     Returns:
         The encrypted ciphertext.
+
+    Examples:
+        >>> ofb = OFBMode(key=b'0123456789abcdef', iv=b'1234567890123456')
+        >>> ciphertext = ofb.encrypt(b"Hello, World!")
+        >>> len(ciphertext) == len(b"Hello, World!")
+        True
     """
     keystream = self._generate_keystream(len(plaintext))
 
@@ -134,6 +194,15 @@ class OFBMode:
 
     Returns:
         The decrypted plaintext.
+
+    Examples:
+        >>> key = b'0123456789abcdef'
+        >>> iv = b'1234567890123456'
+        >>> ofb = OFBMode(key=key, iv=iv)
+        >>> ciphertext = ofb.encrypt(b"Hello, World!")
+        >>> ofb2 = OFBMode(key=key, iv=iv)
+        >>> ofb2.decrypt(ciphertext)
+        b'Hello, World!'
     """
     # OFB decryption is identical to encryption (both XOR with keystream)
     keystream = self._generate_keystream(len(ciphertext))

@@ -1,4 +1,4 @@
-"""EAX (Encrypt-then-Authenticate-then-Translate) mode implementation.
+"""EAX (Encrypt-then-Authenticate-then-Translate) Mode Implementation
 
 EAX is an authenticated encryption mode that combines CTR mode for encryption
 with CMAC (Cipher-based MAC) for authentication. It provides both confidentiality
@@ -8,11 +8,41 @@ EAX mode is a two-pass AEAD (Authenticated Encryption with Associated Data) sche
 1. First pass: Compute CMAC over the associated data, nonce, and ciphertext
 2. Second pass: Encrypt/decrypt using CTR mode
 
+Security Considerations:
+- NEVER reuse a (key, nonce) pair. Reusing a nonce completely breaks security.
+- The nonce does not need to be secret, but must be unique per key.
+- The nonce can be any length up to the block size (16 bytes for AES).
+- The authentication tag provides integrity protection for both ciphertext and AAD.
+- EAX is not nonce-misuse resistant; accidental nonce reuse is catastrophic.
+- Use a CSPRNG or counter to generate nonces.
+
 Security properties:
 - Confidentiality: Provided by CTR mode encryption
 - Authenticity: Provided by CMAC authentication tag
-- Nonce-misuse resistance: EAX is not nonce-misuse resistant; reusing a nonce
-  with the same key compromises security
+- Associated Data: Data that is authenticated but not encrypted (e.g., headers)
+
+Usage Examples:
+    >>> # Basic authenticated encryption with AES
+    >>> from crypt.encrypt.symmetric_encrypt.modes.eax import EAXMode
+    >>> key = b'0123456789abcdef'  # 16 bytes for AES-128
+    >>> nonce = b'unique_nonce_16b'  # Must be unique per key
+    >>> eax = EAXMode(key=key, tag_length=16)
+    >>> plaintext = b"Hello, World!"
+    >>> ciphertext, tag = eax.encrypt(plaintext, nonce)
+    >>> decrypted = eax.decrypt(ciphertext, nonce, tag)
+    >>> assert decrypted == plaintext
+
+    >>> # With Associated Data (AEAD)
+    >>> aad = b"authenticated header"
+    >>> ciphertext, tag = eax.encrypt(plaintext, nonce, aad)
+    >>> decrypted = eax.decrypt(ciphertext, nonce, tag, aad)
+    >>> assert decrypted == plaintext
+
+    >>> # Tampering detection
+    >>> try:
+    ...     eax.decrypt(ciphertext, nonce, tag, b"wrong_aad")
+    ... except ValueError as e:
+    ...     print("Authentication failed:", e)
 
 WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
@@ -45,14 +75,29 @@ class EAXMode:
       nr: Number of rounds.
       tag_length: Length of the authentication tag in bytes.
 
-  Example:
+  Examples:
+      >>> # Basic authenticated encryption with AES
       >>> eax = EAXMode(key=b'0123456789abcdef', tag_length=16)
       >>> nonce = b'unique_nonce_16b'  # 16 bytes for AES
       >>> plaintext = b"Hello, World!"
+      >>> ciphertext, tag = eax.encrypt(plaintext, nonce)
+      >>> decrypted = eax.decrypt(ciphertext, nonce, tag)
+      >>> decrypted == plaintext
+      True
+
+      >>> # With Associated Data (AEAD)
       >>> aad = b"authenticated header"
       >>> ciphertext, tag = eax.encrypt(plaintext, nonce, aad)
       >>> decrypted = eax.decrypt(ciphertext, nonce, tag, aad)
-      >>> assert decrypted == plaintext
+      >>> decrypted == plaintext
+      True
+
+      >>> # Tampering detection raises ValueError
+      >>> try:
+      ...     eax.decrypt(ciphertext, nonce, tag, b"wrong_aad")
+      ... except ValueError:
+      ...     print("Authentication failed!")
+      Authentication failed!
   """
 
   # ruff: noqa: PLR0913
@@ -80,6 +125,18 @@ class EAXMode:
     Raises:
         ValueError: If key is not provided and no external functions are given.
         ValueError: If tag_length is invalid.
+
+    Examples:
+        >>> # Using AES key directly with default 16-byte tag
+        >>> eax = EAXMode(key=b'0123456789abcdef')
+
+        >>> # Using custom tag length (8 bytes)
+        >>> eax_short = EAXMode(key=b'0123456789abcdef', tag_length=8)
+
+        >>> # Using external cipher function
+        >>> from Crypto.Cipher import AES
+        >>> cipher = AES.new(b'0123456789abcdef', AES.MODE_ECB)
+        >>> eax = EAXMode(encrypt_func=cipher.encrypt, block_size=16)
     """
     if tag_length < 1 or tag_length > block_size:
       msg = f"tag_length must be between 1 and {block_size}"
@@ -260,6 +317,16 @@ class EAXMode:
     WARNING:
         Never reuse a nonce with the same key. Nonce reuse completely
         breaks the security of EAX mode.
+
+    Examples:
+        >>> eax = EAXMode(key=b'0123456789abcdef')
+        >>> nonce = b'unique_nonce_16b'
+        >>> ciphertext, tag = eax.encrypt(b"Hello, World!", nonce)
+        >>> len(tag) == 16  # Default tag length
+        True
+
+        >>> # With associated data
+        >>> ciphertext, tag = eax.encrypt(b"Hello", nonce, b"header")
     """
     # Use aad if provided, otherwise fall back to associated_data
     if aad is not None:
@@ -326,6 +393,20 @@ class EAXMode:
     WARNING:
         Never reuse a nonce with the same key. Nonce reuse completely
         breaks the security of EAX mode.
+
+    Examples:
+        >>> eax = EAXMode(key=b'0123456789abcdef')
+        >>> nonce = b'unique_nonce_16b'
+        >>> ciphertext, tag = eax.encrypt(b"Hello, World!", nonce)
+        >>> eax.decrypt(ciphertext, nonce, tag)
+        b'Hello, World!'
+
+        >>> # Authentication failure raises ValueError
+        >>> try:
+        ...     eax.decrypt(ciphertext, nonce, b'wrong_tag_bytes')
+        ... except ValueError as e:
+        ...     print("Authentication failed")
+        Authentication failed
     """
     # Use aad if provided, otherwise fall back to associated_data
     if aad is not None:

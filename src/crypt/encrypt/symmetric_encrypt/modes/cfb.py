@@ -1,8 +1,31 @@
-"""CFB (Cipher Feedback) mode implementation.
+"""CFB (Cipher Feedback) Mode Implementation
 
 CFB mode converts a block cipher into a self-synchronizing stream cipher.
 A shift register is encrypted and the output is XORed with plaintext.
 The ciphertext is fed back into the shift register.
+
+Security Considerations:
+- IV must be unique for each encryption with the same key. Never reuse an IV.
+- IV does not need to be secret, but must be unpredictable (use a CSPRNG).
+- CFB is self-synchronizing: transmission errors only affect a few blocks.
+- No padding required: works with any plaintext length.
+- For 8-bit CFB (segment_size=8), single bit errors affect one byte.
+
+Usage Examples:
+    >>> # Basic encryption with AES
+    >>> from crypt.encrypt.symmetric_encrypt.modes.cfb import CFBMode
+    >>> key = b'0123456789abcdef'  # 16 bytes for AES-128
+    >>> iv = b'1234567890123456'   # 16 bytes (must match block size)
+    >>> cfb = CFBMode(key=key, iv=iv)
+    >>> plaintext = b"Hello, World!"
+    >>> ciphertext = cfb.encrypt(plaintext)
+    >>> cfb2 = CFBMode(key=key, iv=iv)
+    >>> decrypted = cfb2.decrypt(ciphertext)
+    >>> assert decrypted == plaintext
+
+    >>> # Using with custom segment size (e.g., 1 byte = 8 bits)
+    >>> cfb_8bit = CFBMode(key=key, iv=iv, segment_size=8)
+    >>> ciphertext = cfb_8bit.encrypt(b"Secret message")
 """
 
 from collections.abc import Callable
@@ -32,6 +55,24 @@ class CFBMode:
       segment_size: The number of bits to process at a time (default 8).
       expanded_key: The expanded key schedule.
       nr: Number of rounds.
+
+  Examples:
+      >>> # Basic usage with AES
+      >>> key = b'0123456789abcdef'
+      >>> iv = b'1234567890123456'
+      >>> cfb = CFBMode(key=key, iv=iv)
+      >>> plaintext = b"Hello, World!"
+      >>> ciphertext = cfb.encrypt(plaintext)
+      >>> cfb2 = CFBMode(key=key, iv=iv)
+      >>> decrypted = cfb2.decrypt(ciphertext)
+      >>> decrypted == plaintext
+      True
+
+      >>> # Using 8-bit segment size (CFB-8)
+      >>> cfb8 = CFBMode(key=key, iv=iv, segment_size=8)
+      >>> ciphertext = cfb8.encrypt(b"Test")
+      >>> CFBMode(key=key, iv=iv, segment_size=8).decrypt(ciphertext)
+      b'Test'
   """
 
   def __init__(
@@ -61,6 +102,24 @@ class CFBMode:
         ValueError: If IV is not provided or has wrong length.
         ValueError: If key is not provided and no external functions are given.
         ValueError: If segment_size is invalid.
+
+    Examples:
+        >>> # Using AES key directly
+        >>> cfb = CFBMode(key=b'0123456789abcdef', iv=b'1234567890123456')
+        >>> ciphertext = cfb.encrypt(b"Hello")
+
+        >>> # Using custom segment size (CFB-8)
+        >>> cfb8 = CFBMode(
+        ...     key=b'0123456789abcdef',
+        ...     iv=b'1234567890123456',
+        ...     segment_size=8
+        ... )
+
+        >>> # Using external cipher function
+        >>> from Crypto.Cipher import AES
+        >>> cipher = AES.new(b'0123456789abcdef', AES.MODE_ECB)
+        >>> cfb = CFBMode(encrypt_func=cipher.encrypt, block_size=16,
+        ...               iv=b'1234567890123456')
     """
     if iv is None:
       msg = "IV is required for CFB mode"
@@ -123,6 +182,12 @@ class CFBMode:
 
     Returns:
         The encrypted ciphertext.
+
+    Examples:
+        >>> cfb = CFBMode(key=b'0123456789abcdef', iv=b'1234567890123456')
+        >>> ciphertext = cfb.encrypt(b"Hello, World!")
+        >>> len(ciphertext) == len(b"Hello, World!")
+        True
     """
     ciphertext = bytearray()
     shift_reg = self.iv
@@ -161,6 +226,15 @@ class CFBMode:
 
     Returns:
         The decrypted plaintext.
+
+    Examples:
+        >>> key = b'0123456789abcdef'
+        >>> iv = b'1234567890123456'
+        >>> cfb = CFBMode(key=key, iv=iv)
+        >>> ciphertext = cfb.encrypt(b"Hello, World!")
+        >>> cfb2 = CFBMode(key=key, iv=iv)
+        >>> cfb2.decrypt(ciphertext)
+        b'Hello, World!'
     """
     plaintext = bytearray()
     shift_reg = self.iv

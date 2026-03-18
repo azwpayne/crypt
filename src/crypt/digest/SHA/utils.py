@@ -9,7 +9,6 @@ import math
 import struct
 
 # Keccak-f[1600] parameters
-KECCAK_F_WIDTH = 1600  # State width in bits
 KECCAK_F_ROUNDS = 24  # Number of permutation rounds
 
 # Round constants for Keccak-f[1600]
@@ -73,10 +72,8 @@ def bytes_to_lanes(data: bytes) -> list[int]:
     Returns:
         List of 25 64-bit integers
     """
-    lanes = [0] * 25
-    for i in range(min(len(data) // 8, 25)):
-        lanes[i] = struct.unpack("<Q", data[i * 8 : (i + 1) * 8])[0]
-    return lanes
+    # Pad to 200 bytes and unpack all 25 lanes at once (more efficient than loop)
+    return list(struct.unpack("<25Q", data.ljust(200, b"\x00")[:200]))
 
 
 def lanes_to_bytes(lanes: list[int]) -> bytes:
@@ -88,10 +85,8 @@ def lanes_to_bytes(lanes: list[int]) -> bytes:
     Returns:
         Bytes representation (200 bytes)
     """
-    result = bytearray()
-    for lane in lanes:
-        result.extend(struct.pack("<Q", lane))
-    return bytes(result)
+    # Pack all 25 lanes at once (more efficient than loop with bytearray.extend)
+    return struct.pack("<25Q", *lanes)
 
 
 def keccak_f_1600(state: list[int]) -> list[int]:
@@ -111,18 +106,24 @@ def keccak_f_1600(state: list[int]) -> list[int]:
         for y in range(5):
             A[x][y] = state[x + 5 * y]
 
+    # Pre-allocate working matrices to avoid repeated allocations in the loop
+    C = [0] * 5
+    D = [0] * 5
+    B = [[0] * 5 for _ in range(5)]
+
     # 24 rounds
     for round_num in range(KECCAK_F_ROUNDS):
         # Theta step
-        C = [A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4] for x in range(5)]
-        D = [C[(x - 1) % 5] ^ rotate_left_64(C[(x + 1) % 5], 1) for x in range(5)]
+        for x in range(5):
+            C[x] = A[x][0] ^ A[x][1] ^ A[x][2] ^ A[x][3] ^ A[x][4]
+        for x in range(5):
+            D[x] = C[(x - 1) % 5] ^ rotate_left_64(C[(x + 1) % 5], 1)
 
         for x in range(5):
             for y in range(5):
                 A[x][y] ^= D[x]
 
         # Rho and Pi steps
-        B = [[0] * 5 for _ in range(5)]
         for x in range(5):
             for y in range(5):
                 B[y][(2 * x + 3 * y) % 5] = rotate_left_64(A[x][y], KECCAK_ROTATION_OFFSETS[x][y])
@@ -135,57 +136,40 @@ def keccak_f_1600(state: list[int]) -> list[int]:
         # Iota step
         A[0][0] ^= KECCAK_RC[round_num]
 
-    # Convert back to list
-    result = [0] * 25
-    for x in range(5):
-        for y in range(5):
-            result[x + 5 * y] = A[x][y]
-
-    return result
+    # Convert back to list (column-major order: x + 5*y)
+    return [A[x][y] for y in range(5) for x in range(5)]
 
 
 def sieve_of_eratosthenes(sieve_upper_bound: int) -> list[int]:
-  """
-    生成 [2, limit] 内所有素数，时间复杂度 O(n log log n)
+  """Generate all primes in [2, sieve_upper_bound] using Sieve of Eratosthenes.
 
-  素数（也称质数）是大于 1 的自然数，且只能被 1 和它自身整除。
+  Time complexity: O(n log log n)
 
-  换句话说，如果一个数 n>1 ，且除了 1 和 n  之外没有其他正因数，那它就是素数。
+  A prime number is a natural number greater than 1 that has no positive divisors
+  other than 1 and itself.
 
-  核心特征:
-  - 因数个数：恰好有 2 个正因数（1 和它本身）
-  - 最小素数：2（也是唯一的偶素数）
-  - 前几个素数：2, 3, 5, 7, 11, 13, 17, 19, 23, 29...
+  Core characteristics:
+  - Exactly 2 positive divisors (1 and itself)
+  - Smallest prime: 2 (also the only even prime)
+  - First few primes: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29...
 
-  为什么 1 不是素数？
-    历史上曾将 1 视为素数，但现代数学将其排除，主要原因：
-    1. 算术基本定理：任何大于 1 的整数都可以唯一分解为素数的乘积。如果 1 是素数，6=2 * 3=1^2×2×3=1^2×3...  分解就不唯一了。
-    2. 素数计数函数：π(n)  表示不超过 n  的素数个数，排除 1 使公式更优雅。
-  :param sieve_upper_bound: 素数搜索的上限值（包含）, sieve_upper_bound必须大于2
-  :return: 包含所有不超过 sieve_upper_bound 的素数的列表  生成 [2, limit] 内所有素数，时间复杂度 O(n log log n)
+  Why 1 is not prime:
+    Historically 1 was considered prime, but modern mathematics excludes it because:
+    1. Fundamental Theorem of Arithmetic: Every integer > 1 can be uniquely factored
+       into primes. If 1 were prime, 6 = 2×3 = 1²×2×3 = ... would have infinite factorizations.
+    2. Prime counting function π(n) is more elegant when 1 is excluded.
 
-  素数（也称质数）是大于 1 的自然数，且只能被 1 和它自身整除。
-
-  换句话说，如果一个数 n>1 ，且除了 1 和 n  之外没有其他正因数，那它就是素数。
-
-  核心特征:
-  - 因数个数：恰好有 2 个正因数（1 和它本身）
-  - 最小素数：2（也是唯一的偶素数）
-  - 前几个素数：2, 3, 5, 7, 11, 13, 17, 19, 23, 29...
-
-  为什么 1 不是素数？
-    历史上曾将 1 视为素数，但现代数学将其排除，主要原因：
-    1. 算术基本定理：任何大于 1 的整数都可以唯一分解为素数的乘积。如果 1 是素数，6=2 * 3=1^2×2×3=1^2×3...  分解就不唯一了。
-    2. 素数计数函数：π(n)  表示不超过 n  的素数个数，排除 1 使公式更优雅。
   Args:
-    sieve_upper_bound: 素数搜索的上限值（包含）, sieve_upper_bound必须大于2
+    sieve_upper_bound: Upper bound for prime search (inclusive). Must be >= 2.
 
   Returns:
-    包含所有不超过 sieve_upper_bound 的素数的列表
+    List of all primes <= sieve_upper_bound
 
+  Raises:
+    ValueError: If sieve_upper_bound < 2
   """
   if sieve_upper_bound < 2:
-    msg = "sieve_upper_bound 必须大于2"
+    msg = "sieve_upper_bound must be >= 2"
     raise ValueError(msg)
 
   # 初始化全部标记为 True

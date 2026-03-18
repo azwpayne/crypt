@@ -51,28 +51,28 @@ def key_schedule(key: bytes, rounds: int = ROUNDS) -> list[int]:
 
   # Convert key to word array L
   c = max(1, (key_len + 3) // 4)  # Number of words
-  L = [0] * c
+  key_words = [0] * c
 
   for i in range(key_len - 1, -1, -1):
-    L[i // 4] = (L[i // 4] << 8) | key[i]
+    key_words[i // 4] = (key_words[i // 4] << 8) | key[i]
 
   # Initialize S array with constants
   t = 2 * (rounds + 2)
-  S = [0] * t
-  S[0] = P32
+  s_array = [0] * t
+  s_array[0] = P32
   for i in range(1, t):
-    S[i] = (S[i - 1] + Q32) & MASK32
+    s_array[i] = (s_array[i - 1] + Q32) & MASK32
 
   # Mix key into S
   i = j = 0
-  A = B = 0
+  a = b = 0
   for _ in range(3 * max(t, c)):
-    A = S[i] = _rotl((S[i] + A + B) & MASK32, 3)
-    B = L[j] = _rotl((L[j] + A + B) & MASK32, (A + B) % 32)
+    a = s_array[i] = _rotl((s_array[i] + a + b) & MASK32, 3)
+    b = key_words[j] = _rotl((key_words[j] + a + b) & MASK32, (a + b) % 32)
     i = (i + 1) % t
     j = (j + 1) % c
 
-  return S
+  return s_array
 
 
 def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
@@ -90,36 +90,36 @@ def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
     raise ValueError(msg)
 
-  S = key_schedule(key, rounds)
+  s_array = key_schedule(key, rounds)
 
   # Split into four 32-bit words (little endian)
-  A = int.from_bytes(block[0:4], "little")
-  B = int.from_bytes(block[4:8], "little")
-  C = int.from_bytes(block[8:12], "little")
-  D = int.from_bytes(block[12:16], "little")
+  a = int.from_bytes(block[0:4], "little")
+  b = int.from_bytes(block[4:8], "little")
+  c = int.from_bytes(block[8:12], "little")
+  d = int.from_bytes(block[12:16], "little")
 
   # Initial whitening
-  B = (B + S[0]) & MASK32
-  D = (D + S[1]) & MASK32
+  b = (b + s_array[0]) & MASK32
+  d = (d + s_array[1]) & MASK32
 
   # Rounds
   for i in range(1, rounds + 1):
-    t = _rotl(B * (2 * B + 1) & MASK32, LG_W)
-    u = _rotl(D * (2 * D + 1) & MASK32, LG_W)
-    A = (_rotl(A ^ t, u % 32) + S[2 * i]) & MASK32
-    C = (_rotl(C ^ u, t % 32) + S[2 * i + 1]) & MASK32
-    A, B, C, D = B, C, D, A
+    t = _rotl(b * (2 * b + 1) & MASK32, LG_W)
+    u = _rotl(d * (2 * d + 1) & MASK32, LG_W)
+    a = (_rotl(a ^ t, u % 32) + s_array[2 * i]) & MASK32
+    c = (_rotl(c ^ u, t % 32) + s_array[2 * i + 1]) & MASK32
+    a, b, c, d = b, c, d, a
 
   # Final whitening
-  A = (A + S[2 * rounds + 2]) & MASK32
-  C = (C + S[2 * rounds + 3]) & MASK32
+  a = (a + s_array[2 * rounds + 2]) & MASK32
+  c = (c + s_array[2 * rounds + 3]) & MASK32
 
   # Combine result (little endian)
   return (
-    A.to_bytes(4, "little")
-    + B.to_bytes(4, "little")
-    + C.to_bytes(4, "little")
-    + D.to_bytes(4, "little")
+    a.to_bytes(4, "little")
+    + b.to_bytes(4, "little")
+    + c.to_bytes(4, "little")
+    + d.to_bytes(4, "little")
   )
 
 
@@ -138,36 +138,36 @@ def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
     raise ValueError(msg)
 
-  S = key_schedule(key, rounds)
+  s_array = key_schedule(key, rounds)
 
   # Split into four 32-bit words (little endian)
-  A = int.from_bytes(block[0:4], "little")
-  B = int.from_bytes(block[4:8], "little")
-  C = int.from_bytes(block[8:12], "little")
-  D = int.from_bytes(block[12:16], "little")
+  a = int.from_bytes(block[0:4], "little")
+  b = int.from_bytes(block[4:8], "little")
+  c = int.from_bytes(block[8:12], "little")
+  d = int.from_bytes(block[12:16], "little")
 
   # Reverse final whitening
-  C = (C - S[2 * rounds + 3]) & MASK32
-  A = (A - S[2 * rounds + 2]) & MASK32
+  c = (c - s_array[2 * rounds + 3]) & MASK32
+  a = (a - s_array[2 * rounds + 2]) & MASK32
 
   # Reverse rounds
   for i in range(rounds, 0, -1):
-    A, B, C, D = D, A, B, C
-    u = _rotl(D * (2 * D + 1) & MASK32, LG_W)
-    t = _rotl(B * (2 * B + 1) & MASK32, LG_W)
-    C = _rotr((C - S[2 * i + 1]) & MASK32, t % 32) ^ u
-    A = _rotr((A - S[2 * i]) & MASK32, u % 32) ^ t
+    a, b, c, d = d, a, b, c
+    u = _rotl(d * (2 * d + 1) & MASK32, LG_W)
+    t = _rotl(b * (2 * b + 1) & MASK32, LG_W)
+    c = _rotr((c - s_array[2 * i + 1]) & MASK32, t % 32) ^ u
+    a = _rotr((a - s_array[2 * i]) & MASK32, u % 32) ^ t
 
   # Reverse initial whitening
-  D = (D - S[1]) & MASK32
-  B = (B - S[0]) & MASK32
+  d = (d - s_array[1]) & MASK32
+  b = (b - s_array[0]) & MASK32
 
   # Combine result (little endian)
   return (
-    A.to_bytes(4, "little")
-    + B.to_bytes(4, "little")
-    + C.to_bytes(4, "little")
-    + D.to_bytes(4, "little")
+    a.to_bytes(4, "little")
+    + b.to_bytes(4, "little")
+    + c.to_bytes(4, "little")
+    + d.to_bytes(4, "little")
   )
 
 

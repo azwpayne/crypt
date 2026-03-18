@@ -7,6 +7,16 @@ It provides both confidentiality and authenticity.
 import hashlib
 
 
+def _constant_time_compare(a: bytes, b: bytes) -> bool:
+    """Compare two byte strings in constant time to prevent timing attacks."""
+    if len(a) != len(b):
+        return False
+    result = 0
+    for x, y in zip(a, b):
+        result |= x ^ y
+    return result == 0
+
+
 def _xor_bytes(a: bytes, b: bytes) -> bytes:
   """XOR two byte strings together."""
   return bytes(x ^ y for x, y in zip(a, b, strict=False))
@@ -88,7 +98,7 @@ def gcm_decrypt(
     # Verify tag first
     expected_tag_input = aad + iv + ciphertext + key
     expected_tag = hashlib.sha256(expected_tag_input).digest()[:16]
-    if tag != expected_tag:
+    if not _constant_time_compare(tag, expected_tag):
       return None
     # Decrypt
     keystream = _generate_keystream(key, iv, len(ciphertext))

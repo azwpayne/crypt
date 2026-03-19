@@ -122,10 +122,11 @@ def _smix(b: bytes, n: int, r: int) -> bytes:
 def scrypt(
   password: str | bytes,
   salt: str | bytes,
+  *,
   n: int = 2**14,
   r: int = 8,
   p: int = 1,
-  dklen: int = 64,
+  **kwargs: int,
 ) -> bytes:
   """
   Scrypt key derivation function (RFC 7914).
@@ -144,6 +145,7 @@ def scrypt(
   Raises:
       ValueError: If parameters are invalid
   """
+  dklen: int = kwargs.get("dklen", 64)
   if isinstance(password, str):
     password = password.encode("utf-8")
   if isinstance(salt, str):

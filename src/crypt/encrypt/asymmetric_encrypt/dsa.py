@@ -138,7 +138,8 @@ def verify(
   p: int,
   q: int,
   g: int,
-  y: int,
+  *args: int,
+  **kwargs: int,
 ) -> bool:
   """Verify a DSA signature.
 
@@ -148,11 +149,12 @@ def verify(
       p: The prime modulus.
       q: The prime order.
       g: The generator.
-      y: The public key.
+      y: The public key (6th positional or keyword argument).
 
   Returns:
       True if the signature is valid, False otherwise.
   """
+  y: int = args[0] if args else kwargs["y"]
   if isinstance(message, str):
     message = message.encode()
 

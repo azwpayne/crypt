@@ -60,7 +60,7 @@ class TestECDH:
 
   def test_invalid_curve_name(self):
     """Test that invalid curve name raises error."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unsupported curve|Unknown curve|invalid"):
       generate_keypair("invalid-curve")
 
   def test_point_equality(self):
@@ -68,7 +68,8 @@ class TestECDH:
     _, public1 = generate_keypair("P-256")
     _, public2 = generate_keypair("P-256")
 
-    assert public1 == public1
+    public1_copy = public1
+    assert public1 == public1_copy
     assert public1 != public2
     assert public1 != "not a point"
 

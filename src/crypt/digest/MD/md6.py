@@ -10,7 +10,7 @@ Note: This is a simplified sequential implementation, not the full parallel tree
 from __future__ import annotations
 
 import struct
-from typing import Final
+from typing import Final, cast
 
 # MD6 constants
 _Q: Final[int] = 64  # Word size in bits
@@ -176,7 +176,7 @@ def _md6_hash(data: bytes, hash_size: int = 256) -> bytes:
       Hash bytes
   """
   # Initialize state with IV
-  state = list(_IV)
+  state = cast("list[int]", list(_IV))
 
   # Process data in blocks
   block_size = 64  # Bytes per block

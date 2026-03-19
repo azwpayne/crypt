@@ -27,6 +27,52 @@ def _reflect16(value: int) -> int:
   return result
 
 
+def _crc16_reflected(data: bytes, poly: int, init: int, *, ref_out: bool) -> int:
+  """CRC-16 in reflected (LSB-first) mode."""
+  poly_ref = _reflect16(poly)
+
+  crc_table = [0] * 256
+  for i in range(256):
+    crc = i
+    for _ in range(8):
+      if crc & 1:
+        crc = (crc >> 1) ^ poly_ref
+      else:
+        crc >>= 1
+    crc_table[i] = crc
+
+  crc = init
+  for byte in data:
+    crc = crc_table[(crc ^ byte) & 0xFF] ^ (crc >> 8)
+
+  if ref_out:
+    crc = _reflect16(crc)
+  return crc
+
+
+def _crc16_normal(data: bytes, poly: int, init: int, *, ref_out: bool) -> int:
+  """CRC-16 in normal (MSB-first) mode."""
+  crc_table = [0] * 256
+  for i in range(256):
+    crc = i << 8
+    for _ in range(8):
+      if crc & 0x8000:
+        crc = (crc << 1) ^ poly
+      else:
+        crc <<= 1
+      crc &= 0xFFFF
+    crc_table[i] = crc
+
+  crc = init
+  for byte in data:
+    crc = crc_table[((crc >> 8) ^ byte) & 0xFF] ^ ((crc << 8) & 0xFFFF)
+    crc &= 0xFFFF
+
+  if ref_out:
+    crc = _reflect16(crc)
+  return crc
+
+
 def crc16(
   data: bytes,
   poly: int = 0x8005,
@@ -34,7 +80,7 @@ def crc16(
   *,
   ref_in: bool = True,
   ref_out: bool = True,
-  xor_out: int = 0x0000,
+  **kwargs: int,
 ) -> int:
   """Generic CRC-16 calculation function.
 
@@ -44,58 +90,17 @@ def crc16(
       init: Initial value (typically 0x0000 or 0xFFFF)
       ref_in: Whether input is reflected (LSB first)
       ref_out: Whether output is reflected
-      xor_out: Final XOR value
+      xor_out: Final XOR value (passed via **kwargs)
 
   Returns:
       CRC-16 checksum (0-65535)
   """
+  xor_out: int = kwargs.get("xor_out", 0x0000)
+
   if ref_in:
-    # Reflected mode (LSB first)
-    # For reflected CRC, we use the reflected polynomial
-    poly_ref = _reflect16(poly)
-
-    # Generate lookup table for reflected polynomial
-    crc_table = [0] * 256
-    for i in range(256):
-      crc = i
-      for _ in range(8):
-        if crc & 1:
-          crc = (crc >> 1) ^ poly_ref
-        else:
-          crc >>= 1
-      crc_table[i] = crc
-
-    # Process data
-    crc = init
-    for byte in data:
-      crc = crc_table[(crc ^ byte) & 0xFF] ^ (crc >> 8)
-
-    # Reflect output if needed
-    if ref_out:
-      crc = _reflect16(crc)
+    crc = _crc16_reflected(data, poly, init, ref_out=ref_out)
   else:
-    # Non-reflected mode (MSB first)
-    # Generate lookup table for normal polynomial
-    crc_table = [0] * 256
-    for i in range(256):
-      crc = i << 8
-      for _ in range(8):
-        if crc & 0x8000:
-          crc = (crc << 1) ^ poly
-        else:
-          crc <<= 1
-        crc &= 0xFFFF
-      crc_table[i] = crc
-
-    # Process data
-    crc = init
-    for byte in data:
-      crc = crc_table[((crc >> 8) ^ byte) & 0xFF] ^ ((crc << 8) & 0xFFFF)
-      crc &= 0xFFFF
-
-    # Reflect output if needed
-    if ref_out:
-      crc = _reflect16(crc)
+    crc = _crc16_normal(data, poly, init, ref_out=ref_out)
 
   return (crc ^ xor_out) & 0xFFFF
 
@@ -111,9 +116,7 @@ def crc16_ibm(data: bytes) -> int:
 
   Test vector: crc16_ibm(b"123456789") == 0xBB3D
   """
-  return crc16(
-    data, poly=0x8005, init=0x0000, ref_in=True, ref_out=False, xor_out=0x0000
-  )
+  return crc16(data, 0x8005, 0x0000, ref_in=True, ref_out=False, xor_out=0x0000)
 
 
 def crc16_modbus(data: bytes) -> int:
@@ -124,9 +127,7 @@ def crc16_modbus(data: bytes) -> int:
 
   Test vector: crc16_modbus(b"123456789") == 0x4B37
   """
-  return crc16(
-    data, poly=0x8005, init=0xFFFF, ref_in=True, ref_out=False, xor_out=0x0000
-  )
+  return crc16(data, 0x8005, 0xFFFF, ref_in=True, ref_out=False, xor_out=0x0000)
 
 
 def crc16_usb(data: bytes) -> int:
@@ -137,9 +138,7 @@ def crc16_usb(data: bytes) -> int:
 
   Test vector: crc16_usb(b"123456789") == 0xB4C8
   """
-  return crc16(
-    data, poly=0x8005, init=0xFFFF, ref_in=True, ref_out=False, xor_out=0xFFFF
-  )
+  return crc16(data, 0x8005, 0xFFFF, ref_in=True, ref_out=False, xor_out=0xFFFF)
 
 
 def crc16_xmodem(data: bytes) -> int:
@@ -151,9 +150,7 @@ def crc16_xmodem(data: bytes) -> int:
 
   Test vector: crc16_xmodem(b"123456789") == 0x31C3
   """
-  return crc16(
-    data, poly=0x1021, init=0x0000, ref_in=False, ref_out=False, xor_out=0x0000
-  )
+  return crc16(data, 0x1021, 0x0000, ref_in=False, ref_out=False, xor_out=0x0000)
 
 
 def crc16_ansi(data: bytes) -> int:
@@ -172,6 +169,4 @@ def crc16_dnp(data: bytes) -> int:
 
   Test vector: crc16_dnp(b"123456789") == 0xEA82
   """
-  return crc16(
-    data, poly=0x3D65, init=0x0000, ref_in=False, ref_out=False, xor_out=0xFFFF
-  )
+  return crc16(data, 0x3D65, 0x0000, ref_in=False, ref_out=False, xor_out=0xFFFF)

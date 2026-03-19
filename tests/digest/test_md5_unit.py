@@ -12,7 +12,7 @@ class TestMD5State:
 
   def test_state_initialization(self):
     """Test state is properly initialized."""
-    state = md5._MD5State(  # noqa: SLF001
+    state = md5.MD5State(
       a=0x67452301,
       b=0xEFCDAB89,
       c=0x98BADCFE,
@@ -25,7 +25,7 @@ class TestMD5State:
 
   def test_state_copy(self):
     """Test state copy creates independent copy."""
-    original = md5._MD5State(a=1, b=2, c=3, d=4)  # noqa: SLF001
+    original = md5.MD5State(a=1, b=2, c=3, d=4)
     copy = original.copy()
 
     # Verify values are equal
@@ -40,8 +40,8 @@ class TestMD5State:
 
   def test_state_add(self):
     """Test state addition with modulo 2^32."""
-    state1 = md5._MD5State(a=0xFFFFFFFF, b=1, c=0, d=0)  # noqa: SLF001
-    state2 = md5._MD5State(a=1, b=0xFFFFFFFF, c=0, d=0)  # noqa: SLF001
+    state1 = md5.MD5State(a=0xFFFFFFFF, b=1, c=0, d=0)
+    state2 = md5.MD5State(a=1, b=0xFFFFFFFF, c=0, d=0)
 
     state1.add(state2)
 
@@ -54,7 +54,7 @@ class TestMD5State:
 
   def test_state_to_bytes(self):
     """Test state conversion to little-endian bytes."""
-    state = md5._MD5State(  # noqa: SLF001
+    state = md5.MD5State(
       a=0x67452301,
       b=0xEFCDAB89,
       c=0x98BADCFE,
@@ -73,7 +73,7 @@ class TestMD5RoundFunctions:
     a, b, c, d = 0, 0, 0xFFFFFFFF, 0
     x, s, ac = 1, 7, 0xD76AA478
 
-    result = md5.FF(a, b, c, d, x, s, ac)
+    result = md5.FF(a, b, c, d, x, s=s, ac=ac)
 
     # Manual calculation
     expected = (a + ((b & c) | (~b & d)) + x + ac) & 0xFFFFFFFF
@@ -87,7 +87,7 @@ class TestMD5RoundFunctions:
     a, b, c, d = 0, 0, 0, 0xFFFFFFFF
     x, s, ac = 1, 5, 0xF61E2562
 
-    result = md5.GG(a, b, c, d, x, s, ac)
+    result = md5.GG(a, b, c, d, x, s=s, ac=ac)
 
     # Manual calculation: (b & d) | (c & ~d)
     g = ((b & d) | (c & (0xFFFFFFFF ^ d))) & 0xFFFFFFFF
@@ -102,7 +102,7 @@ class TestMD5RoundFunctions:
     a, b, c, d = 0xFFFFFFFF, 0, 0, 0
     x, s, ac = 1, 4, 0xFFFA3942
 
-    result = md5.HH(a, b, c, d, x, s, ac)
+    result = md5.HH(a, b, c, d, x, s=s, ac=ac)
 
     # Manual calculation: b ^ c ^ d
     expected = (a + (b ^ c ^ d) + x + ac) & 0xFFFFFFFF
@@ -116,7 +116,7 @@ class TestMD5RoundFunctions:
     a, b, c, d = 0, 0, 0xFFFFFFFF, 0
     x, s, ac = 1, 6, 0xF4292244
 
-    result = md5.II(a, b, c, d, x, s, ac)
+    result = md5.II(a, b, c, d, x, s=s, ac=ac)
 
     # Manual calculation: c ^ (b | ~d)
     expected = (a + (c ^ (b | (0xFFFFFFFF ^ d))) + x + ac) & 0xFFFFFFFF
@@ -126,20 +126,15 @@ class TestMD5RoundFunctions:
     assert result == expected
 
   @pytest.mark.parametrize(
-    ("func", "expected_pattern"),
-    [
-      (md5.FF, "round_1"),
-      (md5.GG, "round_2"),
-      (md5.HH, "round_3"),
-      (md5.II, "round_4"),
-    ],
+    "func",
+    [md5.FF, md5.GG, md5.HH, md5.II],
   )
-  def test_round_functions_different(self, func, expected_pattern):  # noqa: ARG002
+  def test_round_functions_different(self, func):
     """Verify round functions produce different results."""
     a, b, c, d = 0x12345678, 0x9ABCDEF0, 0x0F1E2D3C, 0x4B5A6978
     x, s, ac = 0x11111111, 7, 0xAAAAAAAA
 
-    result = func(a, b, c, d, x, s, ac)
+    result = func(a, b, c, d, x, s=s, ac=ac)
     assert isinstance(result, int)
     assert 0 <= result <= 0xFFFFFFFF
 

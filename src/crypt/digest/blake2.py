@@ -9,7 +9,7 @@ Reference: RFC 7693
 from __future__ import annotations
 
 import struct
-from typing import Final
+from typing import Final, cast
 
 # BLAKE2b constants (64-bit words)
 # IV is the first 64 bits of the fractional parts of the square roots of the first 8 primes
@@ -67,10 +67,7 @@ def _rotr32(x: int, n: int) -> int:
 
 def _blake2b_mix(
   v: list[int],
-  a: int,
-  b: int,
-  c: int,
-  d: int,
+  indices: tuple[int, int, int, int],
   x: int,
   y: int,
 ) -> None:
@@ -78,9 +75,10 @@ def _blake2b_mix(
 
   Args:
       v: Working vector (16 x 64-bit words)
-      a, b, c, d: Indices into v
+      indices: Tuple of (a, b, c, d) indices into v
       x, y: Message words to mix in
   """
+  a, b, c, d = indices
   v[a] = (v[a] + v[b] + x) & 0xFFFFFFFFFFFFFFFF
   v[d] = _rotr64(v[d] ^ v[a], 32)
   v[c] = (v[c] + v[d]) & 0xFFFFFFFFFFFFFFFF
@@ -93,10 +91,7 @@ def _blake2b_mix(
 
 def _blake2s_mix(
   v: list[int],
-  a: int,
-  b: int,
-  c: int,
-  d: int,
+  indices: tuple[int, int, int, int],
   x: int,
   y: int,
 ) -> None:
@@ -104,9 +99,10 @@ def _blake2s_mix(
 
   Args:
       v: Working vector (16 x 32-bit words)
-      a, b, c, d: Indices into v
+      indices: Tuple of (a, b, c, d) indices into v
       x, y: Message words to mix in
   """
+  a, b, c, d = indices
   v[a] = (v[a] + v[b] + x) & 0xFFFFFFFF
   v[d] = _rotr32(v[d] ^ v[a], 16)
   v[c] = (v[c] + v[d]) & 0xFFFFFFFF
@@ -147,14 +143,14 @@ def _blake2b_compress(
   # 12 rounds
   for i in range(12):
     s = SIGMA[i]
-    _blake2b_mix(v, 0, 4, 8, 12, m[s[0]], m[s[1]])
-    _blake2b_mix(v, 1, 5, 9, 13, m[s[2]], m[s[3]])
-    _blake2b_mix(v, 2, 6, 10, 14, m[s[4]], m[s[5]])
-    _blake2b_mix(v, 3, 7, 11, 15, m[s[6]], m[s[7]])
-    _blake2b_mix(v, 0, 5, 10, 15, m[s[8]], m[s[9]])
-    _blake2b_mix(v, 1, 6, 11, 12, m[s[10]], m[s[11]])
-    _blake2b_mix(v, 2, 7, 8, 13, m[s[12]], m[s[13]])
-    _blake2b_mix(v, 3, 4, 9, 14, m[s[14]], m[s[15]])
+    _blake2b_mix(v, (0, 4, 8, 12), m[s[0]], m[s[1]])
+    _blake2b_mix(v, (1, 5, 9, 13), m[s[2]], m[s[3]])
+    _blake2b_mix(v, (2, 6, 10, 14), m[s[4]], m[s[5]])
+    _blake2b_mix(v, (3, 7, 11, 15), m[s[6]], m[s[7]])
+    _blake2b_mix(v, (0, 5, 10, 15), m[s[8]], m[s[9]])
+    _blake2b_mix(v, (1, 6, 11, 12), m[s[10]], m[s[11]])
+    _blake2b_mix(v, (2, 7, 8, 13), m[s[12]], m[s[13]])
+    _blake2b_mix(v, (3, 4, 9, 14), m[s[14]], m[s[15]])
 
   # Update state
   for i in range(8):
@@ -191,14 +187,14 @@ def _blake2s_compress(
   # 10 rounds
   for i in range(10):
     s = SIGMA[i]
-    _blake2s_mix(v, 0, 4, 8, 12, m[s[0]], m[s[1]])
-    _blake2s_mix(v, 1, 5, 9, 13, m[s[2]], m[s[3]])
-    _blake2s_mix(v, 2, 6, 10, 14, m[s[4]], m[s[5]])
-    _blake2s_mix(v, 3, 7, 11, 15, m[s[6]], m[s[7]])
-    _blake2s_mix(v, 0, 5, 10, 15, m[s[8]], m[s[9]])
-    _blake2s_mix(v, 1, 6, 11, 12, m[s[10]], m[s[11]])
-    _blake2s_mix(v, 2, 7, 8, 13, m[s[12]], m[s[13]])
-    _blake2s_mix(v, 3, 4, 9, 14, m[s[14]], m[s[15]])
+    _blake2s_mix(v, (0, 4, 8, 12), m[s[0]], m[s[1]])
+    _blake2s_mix(v, (1, 5, 9, 13), m[s[2]], m[s[3]])
+    _blake2s_mix(v, (2, 6, 10, 14), m[s[4]], m[s[5]])
+    _blake2s_mix(v, (3, 7, 11, 15), m[s[6]], m[s[7]])
+    _blake2s_mix(v, (0, 5, 10, 15), m[s[8]], m[s[9]])
+    _blake2s_mix(v, (1, 6, 11, 12), m[s[10]], m[s[11]])
+    _blake2s_mix(v, (2, 7, 8, 13), m[s[12]], m[s[13]])
+    _blake2s_mix(v, (3, 4, 9, 14), m[s[14]], m[s[15]])
 
   # Update state
   for i in range(8):
@@ -242,7 +238,7 @@ def blake2b(
     raise ValueError(msg)
 
   # Initialize state with IV
-  h = list(BLAKE2B_IV)
+  h = cast("list[int]", list(BLAKE2B_IV))
 
   # XOR parameter block into first 4 state words
   # P[0] = digest_size | key_len << 8 | fanout << 16 | depth << 24
@@ -332,7 +328,7 @@ def blake2s(
     raise ValueError(msg)
 
   # Initialize state with IV
-  h = list(BLAKE2S_IV)
+  h = cast("list[int]", list(BLAKE2S_IV))
 
   # XOR parameter block into first 4 state words
   key_len = len(key)

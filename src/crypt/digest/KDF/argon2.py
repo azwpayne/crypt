@@ -145,10 +145,11 @@ def _init_memory(
   parallelism: int,
   password: bytes,
   salt: bytes,
-  key: bytes,
-  associated_data: bytes,
+  **kwargs: bytes,
 ) -> list:
   """Initialize Argon2 memory matrix."""
+  key: bytes = kwargs.get("key", b"")  # type: ignore[assignment]
+  associated_data: bytes = kwargs.get("associated_data", b"")  # type: ignore[assignment]
   lanes = [
     [_Argon2Block() for _ in range(memory_blocks // parallelism)]
     for __ in range(parallelism)
@@ -234,12 +235,11 @@ def _finalize(lanes: list, memory_blocks: int, parallelism: int) -> bytes:
 def argon2i(
   password: str | bytes,
   salt: str | bytes,
+  *,
   memory_cost: int = 65536,  # m (in KiB)
   time_cost: int = 3,  # t
   parallelism: int = 4,  # p
-  hash_len: int = 32,
-  key: str | bytes = b"",
-  associated_data: str | bytes = b"",
+  **kwargs: object,
 ) -> bytes:
   """
   Argon2i key derivation function.
@@ -264,6 +264,10 @@ def argon2i(
   Raises:
       ValueError: If parameters are invalid
   """
+  # Extract optional kwargs
+  hash_len: int = kwargs.get("hash_len", 32)  # type: ignore[assignment]
+  key: str | bytes = kwargs.get("key", b"")  # type: ignore[assignment]
+  associated_data: str | bytes = kwargs.get("associated_data", b"")  # type: ignore[assignment]
   # Convert inputs to bytes
   if isinstance(password, str):
     password = password.encode("utf-8")
@@ -301,8 +305,8 @@ def argon2i(
     parallelism,
     password,
     salt,
-    key,
-    associated_data,
+    key=key,
+    associated_data=associated_data,
   )
 
   # Fill memory
@@ -321,14 +325,16 @@ def argon2i(
 def argon2(
   password: str | bytes,
   salt: str | bytes,
+  *,
   time_cost: int = 3,
   memory_cost: int = 65536,
   parallelism: int = 4,
-  hash_len: int = 32,
+  **kwargs: object,
 ) -> bytes:
   """
   Simplified Argon2i interface compatible with common implementations.
   """
+  hash_len: int = kwargs.get("hash_len", 32)  # type: ignore[assignment]
   return argon2i(
     password=password,
     salt=salt,

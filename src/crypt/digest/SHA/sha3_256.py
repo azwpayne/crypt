@@ -34,105 +34,105 @@ SHA3_256_OUTPUT_LENGTH = 32  # Output length in bytes (256 bits)
 
 
 def _sha3_pad(message_len: int, rate: int) -> bytes:
-    """SHA3 padding function.
+  """SHA3 padding function.
 
-    Applies multi-rate padding: 0x06 || 0x00... || 0x80
+  Applies multi-rate padding: 0x06 || 0x00... || 0x80
 
-    Args:
-        message_len: Length of message in bytes
-        rate: Rate in bytes
+  Args:
+      message_len: Length of message in bytes
+      rate: Rate in bytes
 
-    Returns:
-        Padding bytes
-    """
-    pad_len = rate - (message_len % rate)
-    if pad_len == 0:
-        pad_len = rate
+  Returns:
+      Padding bytes
+  """
+  pad_len = rate - (message_len % rate)
+  if pad_len == 0:
+    pad_len = rate
 
-    padding = bytearray(pad_len)
-    padding[0] = 0x06  # SHA3 domain separator
-    padding[pad_len - 1] |= 0x80  # Final bit
+  padding = bytearray(pad_len)
+  padding[0] = 0x06  # SHA3 domain separator
+  padding[pad_len - 1] |= 0x80  # Final bit
 
-    return bytes(padding)
+  return bytes(padding)
 
 
 def sha3_256(msg: bytes) -> bytes:
-    """Compute SHA3-256 hash of message.
+  """Compute SHA3-256 hash of message.
 
-    Args:
-        msg: Input message as bytes
+  Args:
+      msg: Input message as bytes
 
-    Returns:
-        The 32-byte (256-bit) hash digest
+  Returns:
+      The 32-byte (256-bit) hash digest
 
-    Raises:
-        TypeError: If msg is not bytes
+  Raises:
+      TypeError: If msg is not bytes
 
-    Examples:
-        >>> sha3_256(b"").hex()
-        'a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a'
-        >>> sha3_256(b"abc").hex()
-        '3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532'
-    """
-    if not isinstance(msg, bytes):
-        msg_err = "msg must be bytes"
-        raise TypeError(msg_err)
+  Examples:
+      >>> sha3_256(b"").hex()
+      'a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a'
+      >>> sha3_256(b"abc").hex()
+      '3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532'
+  """
+  if not isinstance(msg, bytes):
+    msg_err = "msg must be bytes"
+    raise TypeError(msg_err)
 
-    # Initialize state
-    state = [0] * 25
+  # Initialize state
+  state = [0] * 25
 
-    # Padding
-    padded_msg = msg + _sha3_pad(len(msg), SHA3_256_RATE)
+  # Padding
+  padded_msg = msg + _sha3_pad(len(msg), SHA3_256_RATE)
 
-    # Absorb phase
-    for i in range(0, len(padded_msg), SHA3_256_RATE):
-        block = padded_msg[i : i + SHA3_256_RATE]
-        block_lanes = bytes_to_lanes(block.ljust(200, b"\x00"))
+  # Absorb phase
+  for i in range(0, len(padded_msg), SHA3_256_RATE):
+    block = padded_msg[i : i + SHA3_256_RATE]
+    block_lanes = bytes_to_lanes(block.ljust(200, b"\x00"))
 
-        # XOR block into state
-        for j in range(len(block_lanes)):
-            state[j] ^= block_lanes[j]
+    # XOR block into state
+    for j in range(len(block_lanes)):
+      state[j] ^= block_lanes[j]
 
-        # Apply permutation
-        state = keccak_f_1600(state)
+    # Apply permutation
+    state = keccak_f_1600(state)
 
-    # Squeeze phase
-    output = bytearray()
-    while len(output) < SHA3_256_OUTPUT_LENGTH:
-        output.extend(lanes_to_bytes(state)[:SHA3_256_RATE])
-        if len(output) < SHA3_256_OUTPUT_LENGTH:
-            state = keccak_f_1600(state)
+  # Squeeze phase
+  output = bytearray()
+  while len(output) < SHA3_256_OUTPUT_LENGTH:
+    output.extend(lanes_to_bytes(state)[:SHA3_256_RATE])
+    if len(output) < SHA3_256_OUTPUT_LENGTH:
+      state = keccak_f_1600(state)
 
-    return bytes(output)[:SHA3_256_OUTPUT_LENGTH]
+  return bytes(output)[:SHA3_256_OUTPUT_LENGTH]
 
 
 def sha3_256_hex(msg: bytes) -> str:
-    """Compute SHA3-256 hash and return as hex string.
+  """Compute SHA3-256 hash and return as hex string.
 
-    Args:
-        msg: Input message as bytes
+  Args:
+      msg: Input message as bytes
 
-    Returns:
-        64-character hexadecimal string
+  Returns:
+      64-character hexadecimal string
 
-    Examples:
-        >>> sha3_256_hex(b"hello world")
-        '644bcc7e564373040999aac89e7622f3ca71fba1d972fd94a31c3bfbf24e3938'
-    """
-    return sha3_256(msg).hex()
+  Examples:
+      >>> sha3_256_hex(b"hello world")
+      '644bcc7e564373040999aac89e7622f3ca71fba1d972fd94a31c3bfbf24e3938'
+  """
+  return sha3_256(msg).hex()
 
 
 if __name__ == "__main__":
-    # Test vectors
-    test_vectors = [
-        (b"", "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-        (b"abc", "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"),
-    ]
+  # Test vectors
+  test_vectors = [
+    (b"", "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
+    (b"abc", "3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532"),
+  ]
 
-    for msg, expected in test_vectors:
-        result = sha3_256_hex(msg)
-        print(f"Input: {msg!r}")
-        print(f"Expected: {expected}")
-        print(f"Got:      {result}")
-        print(f"Match: {result == expected}")
-        print()
+  for msg, expected in test_vectors:
+    result = sha3_256_hex(msg)
+    print(f"Input: {msg!r}")
+    print(f"Expected: {expected}")
+    print(f"Got:      {result}")
+    print(f"Match: {result == expected}")
+    print()

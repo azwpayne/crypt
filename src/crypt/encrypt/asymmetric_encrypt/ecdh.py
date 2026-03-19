@@ -77,7 +77,12 @@ class Point:
   """Point on an elliptic curve."""
 
   def __init__(
-    self, x: int, y: int, curve: CurveParams, infinity: bool = False
+    self,
+    x: int,
+    y: int,
+    curve: CurveParams,
+    *,
+    infinity: bool = False,
   ) -> None:
     self.x = 0 if infinity else x % curve.p
     self.y = 0 if infinity else y % curve.p
@@ -93,6 +98,8 @@ class Point:
       and self.curve.name == other.curve.name
       and self.infinity == other.infinity
     )
+
+  __hash__ = None
 
   def is_valid(self) -> bool:
     """Check if point is on the curve."""
@@ -112,27 +119,27 @@ def _mod_inv(a: int, m: int) -> int:
   return pow(a, -1, m)
 
 
-def point_add(P: Point, Q: Point) -> Point:
+def point_add(pt1: Point, pt2: Point) -> Point:
   """Add two points on the same curve."""
-  if P.infinity:
-    return Q
-  if Q.infinity:
-    return P
-  if P.x == Q.x and (P.y != Q.y or P.y == 0):
-    return Point(0, 0, P.curve, infinity=True)
+  if pt1.infinity:
+    return pt2
+  if pt2.infinity:
+    return pt1
+  if pt1.x == pt2.x and (pt1.y != pt2.y or pt1.y == 0):
+    return Point(0, 0, pt1.curve, infinity=True)
 
-  curve = P.curve
+  curve = pt1.curve
   p = curve.p
 
-  if P == Q:
+  if pt1 == pt2:
     # Point doubling
-    m = ((3 * P.x * P.x + curve.a) * _mod_inv(2 * P.y, p)) % p
+    m = ((3 * pt1.x * pt1.x + curve.a) * _mod_inv(2 * pt1.y, p)) % p
   else:
     # Point addition
-    m = ((Q.y - P.y) * _mod_inv(Q.x - P.x, p)) % p
+    m = ((pt2.y - pt1.y) * _mod_inv(pt2.x - pt1.x, p)) % p
 
-  x3 = (m * m - P.x - Q.x) % p
-  y3 = (m * (P.x - x3) - P.y) % p
+  x3 = (m * m - pt1.x - pt2.x) % p
+  y3 = (m * (pt1.x - x3) - pt1.y) % p
 
   return Point(x3, y3, curve)
 

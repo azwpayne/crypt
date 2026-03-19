@@ -129,18 +129,18 @@ class TestPresent:
     """Test that invalid block size raises error."""
     key = b"SecretKey1"
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Block must be"):
       encrypt_block(b"short", key)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Block must be"):
       decrypt_block(b"short", key)
 
   def test_invalid_key_size(self):
     """Test that invalid key size raises error."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Key must be"):
       key_schedule(b"short")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Key must be"):
       encrypt_block(b"12345678", b"short")
 
   def test_cbc_invalid_iv(self):
@@ -149,5 +149,5 @@ class TestPresent:
     iv = b"short"
     plaintext = b"Test data"
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="IV must be"):
       present_cbc_encrypt(plaintext, key, iv)

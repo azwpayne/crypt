@@ -8,13 +8,13 @@ import hashlib
 
 
 def _constant_time_compare(a: bytes, b: bytes) -> bool:
-    """Compare two byte strings in constant time to prevent timing attacks."""
-    if len(a) != len(b):
-        return False
-    result = 0
-    for x, y in zip(a, b):
-        result |= x ^ y
-    return result == 0
+  """Compare two byte strings in constant time to prevent timing attacks."""
+  if len(a) != len(b):
+    return False
+  result = 0
+  for x, y in zip(a, b, strict=False):
+    result |= x ^ y
+  return result == 0
 
 
 def _xor_bytes(a: bytes, b: bytes) -> bytes:

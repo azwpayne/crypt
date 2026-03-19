@@ -4,7 +4,7 @@ from crypt.encrypt.symmetric_encrypt.modes import ModeError
 from crypt.encrypt.symmetric_encrypt.modes.ctr import CTRMode
 
 import pytest
-from Crypto.Cipher import AES as CryptoAES
+from Crypto.Cipher import AES as CRYPTO_AES
 
 AES_KEY = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
 NONCE_96 = bytes.fromhex("000102030405060708090a0b")
@@ -37,14 +37,14 @@ class TestCTR:
     our_ciphertext = ctr.encrypt(plaintext)
 
     # PyCryptodome implementation
-    cipher = CryptoAES.new(key, CryptoAES.MODE_CTR, nonce=nonce[:12], initial_value=0)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CTR, nonce=nonce[:12], initial_value=0)
     pycryptodome_ciphertext = cipher.encrypt(plaintext)
 
     assert our_ciphertext == pycryptodome_ciphertext
 
     # Also test decryption
-    cipher_decrypt = CryptoAES.new(
-      key, CryptoAES.MODE_CTR, nonce=nonce[:12], initial_value=0
+    cipher_decrypt = CRYPTO_AES.new(
+      key, CRYPTO_AES.MODE_CTR, nonce=nonce[:12], initial_value=0
     )
     pycryptodome_decrypted = cipher_decrypt.decrypt(our_ciphertext)
     assert pycryptodome_decrypted == plaintext

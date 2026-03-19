@@ -17,10 +17,10 @@ if TYPE_CHECKING:
   from collections.abc import Callable
 
 # MD5 initial hash values (IV) - little-endian
-_INITIAL_A: Final = 0x67452301
-_INITIAL_B: Final = 0xEFCDAB89
-_INITIAL_C: Final = 0x98BADCFE
-_INITIAL_D: Final = 0x10325476
+INITIAL_A: Final = 0x67452301
+INITIAL_B: Final = 0xEFCDAB89
+INITIAL_C: Final = 0x98BADCFE
+INITIAL_D: Final = 0x10325476
 
 # MD5 round constants (K values) - integer part of abs(sin(i+1)) * 2^32
 _K: Final[tuple[int, ...]] = (
@@ -241,7 +241,7 @@ _ROUND3_END: Final = 48
 
 
 @dataclass(slots=True)
-class _MD5State:
+class MD5State:
   """Internal MD5 state (4 32-bit registers)."""
 
   a: int
@@ -249,11 +249,11 @@ class _MD5State:
   c: int
   d: int
 
-  def copy(self) -> _MD5State:
+  def copy(self) -> MD5State:
     """Create a copy of the state."""
-    return _MD5State(self.a, self.b, self.c, self.d)
+    return MD5State(self.a, self.b, self.c, self.d)
 
-  def add(self, other: _MD5State) -> None:
+  def add(self, other: MD5State) -> None:
     """Add another state to this one (mod 2^32)."""
     self.a = (self.a + other.a) & 0xFFFFFFFF
     self.b = (self.b + other.b) & 0xFFFFFFFF
@@ -348,7 +348,7 @@ def _gg_func(b: int, c: int, d: int) -> int:
 
 
 def _apply_round(
-  state: _MD5State,
+  state: MD5State,
   words: tuple[int, ...],
   round_idx: int,
   func: Callable[[int, int, int], int],
@@ -374,7 +374,7 @@ def _apply_round(
   state.a, state.b, state.c, state.d = state.d, temp, state.b, state.c
 
 
-def _process_chunk(state: _MD5State, chunk: bytes) -> None:
+def _process_chunk(state: MD5State, chunk: bytes) -> None:
   """Process a single 64-byte chunk.
 
   Args:
@@ -432,11 +432,11 @@ def md5(data: bytes | str) -> str:
   """
   message = data if isinstance(data, bytes) else data.encode()
 
-  state = _MD5State(
-    a=_INITIAL_A,
-    b=_INITIAL_B,
-    c=_INITIAL_C,
-    d=_INITIAL_D,
+  state = MD5State(
+    a=INITIAL_A,
+    b=INITIAL_B,
+    c=INITIAL_C,
+    d=INITIAL_D,
   )
 
   padded = pad_message(message)
@@ -456,26 +456,42 @@ bitwise_nor_mix = _nor_mix
 
 
 # Round functions for testing (kept for backward compatibility)
-def FF(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+# Accepts 5 positional args (a, b, c, d, x) plus keyword args s and ac
+def ff(a: int, b: int, c: int, d: int, x: int, **kwargs: int) -> int:
   """Round 1 MD5 transformation function."""
+  s: int = kwargs.get("s", 0)
+  ac: int = kwargs.get("ac", 0)
   result = (a + _choice(b, c, d) + x + ac) & 0xFFFFFFFF
   return (_left_rotate(result, s) + b) & 0xFFFFFFFF
 
 
-def GG(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+def gg(a: int, b: int, c: int, d: int, x: int, **kwargs: int) -> int:
   """Round 2 MD5 transformation function."""
+  s: int = kwargs.get("s", 0)
+  ac: int = kwargs.get("ac", 0)
   g = ((b & d) | (c & (0xFFFFFFFF ^ d))) & 0xFFFFFFFF
   result = (a + g + x + ac) & 0xFFFFFFFF
   return (_left_rotate(result, s) + b) & 0xFFFFFFFF
 
 
-def HH(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+def hh(a: int, b: int, c: int, d: int, x: int, **kwargs: int) -> int:
   """Round 3 MD5 transformation function."""
+  s: int = kwargs.get("s", 0)
+  ac: int = kwargs.get("ac", 0)
   result = (a + _xor3(b, c, d) + x + ac) & 0xFFFFFFFF
   return (_left_rotate(result, s) + b) & 0xFFFFFFFF
 
 
-def II(a: int, b: int, c: int, d: int, x: int, s: int, ac: int) -> int:  # noqa: N802, PLR0913
+def ii(a: int, b: int, c: int, d: int, x: int, **kwargs: int) -> int:
   """Round 4 MD5 transformation function."""
+  s: int = kwargs.get("s", 0)
+  ac: int = kwargs.get("ac", 0)
   result = (a + _nor_mix(b, c, d) + x + ac) & 0xFFFFFFFF
   return (_left_rotate(result, s) + b) & 0xFFFFFFFF
+
+
+# Uppercase aliases for backward compatibility
+FF = ff
+GG = gg
+HH = hh
+II = ii

@@ -1975,7 +1975,10 @@ def key_schedule(key: bytes) -> tuple[list[int], list[list[int]]]:
 
 
 def _f_function(
-  x: int, s_boxes: list[list[int]], round_key: int, round_type: int
+  x: int,
+  s_boxes: list[list[int]],
+  _round_key: int,
+  round_type: int,
 ) -> int:
   """
   CAST5 round function.

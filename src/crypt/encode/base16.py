@@ -121,6 +121,6 @@ if __name__ == "__main__":
     print(f"错误捕获: {e}")
 
   try:
-    base16_decode("GGGG")  # noqa: spell-checker  # 非法字符
+    base16_decode("GGGG")  # 非法字符
   except ValueError as e:
     print(f"错误捕获: {e}")

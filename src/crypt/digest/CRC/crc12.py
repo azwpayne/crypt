@@ -15,7 +15,7 @@ def crc12(
   *,
   ref_in: bool = False,
   ref_out: bool = False,
-  xor_out: int = 0x000,
+  **kwargs: int,
 ) -> int:
   """Generic CRC-12 calculation function.
 
@@ -32,6 +32,7 @@ def crc12(
   Returns:
       CRC-12 checksum (0-4095)
   """
+  xor_out: int = kwargs.get("xor_out", 0x000)
   # CRC-12 uses 12 bits stored in the MSB of a 16-bit register
   # Align 12-bit values to upper 16 bits
   crc = (init & 0xFFF) << 4
@@ -85,7 +86,9 @@ def crc12_cdma2000(data: bytes) -> int:
   poly=0xF13 init=0xFFF refin=false refout=false xorout=0x000
   Used in CDMA2000 telecommunications.
   """
-  return crc12(data, poly=0xF13, init=0xFFF, ref_in=False, ref_out=False, xor_out=0x000)
+  return crc12(
+    data=data, poly=0xF13, init=0xFFF, ref_in=False, ref_out=False, xor_out=0x000
+  )
 
 
 def crc12_dect(data: bytes) -> int:
@@ -94,7 +97,9 @@ def crc12_dect(data: bytes) -> int:
   poly=0x80F init=0x000 refin=false refout=false xorout=0x000
   Used in DECT cordless phones.
   """
-  return crc12(data, poly=0x80F, init=0x000, ref_in=False, ref_out=False, xor_out=0x000)
+  return crc12(
+    data=data, poly=0x80F, init=0x000, ref_in=False, ref_out=False, xor_out=0x000
+  )
 
 
 def crc12_gsm(data: bytes) -> int:
@@ -103,4 +108,6 @@ def crc12_gsm(data: bytes) -> int:
   poly=0xD31 init=0x000 refin=false refout=false xorout=0xFFF
   Used in GSM telecommunications.
   """
-  return crc12(data, poly=0xD31, init=0x000, ref_in=False, ref_out=False, xor_out=0xFFF)
+  return crc12(
+    data=data, poly=0xD31, init=0x000, ref_in=False, ref_out=False, xor_out=0xFFF
+  )

@@ -29,7 +29,7 @@ Usage Examples:
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
@@ -78,13 +78,11 @@ class CFBMode:
   def __init__(
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
-    decrypt_func: Callable[[bytes], bytes] | None = None,
     block_size: int = 16,
     key: bytes | None = None,
     iv: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
     segment_size: int = 8,
+    **kwargs: object,
   ):
     """Initialize CFB mode.
 
@@ -121,6 +119,8 @@ class CFBMode:
         >>> cfb = CFBMode(encrypt_func=cipher.encrypt, block_size=16,
         ...               iv=b'1234567890123456')
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     if iv is None:
       msg = "IV is required for CFB mode"
       raise ValueError(msg)

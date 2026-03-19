@@ -41,27 +41,27 @@ def generate_crc32_table(_poly):
 origin_crc32_table = generate_crc32_table(0x04C11DB7)
 
 
-def getCrc32(bytes_arr):
+def get_crc32(bytes_arr):
   length = len(bytes_arr)
   if bytes_arr is not None:
     crc = 0xFFFFFFFF
     for i in range(length):
       crc = (crc << 8) ^ origin_crc32_table[
-        (getReverse(bytes_arr[i], 8) ^ (crc >> 24)) & 0xFF
+        (get_reverse(bytes_arr[i], 8) ^ (crc >> 24)) & 0xFF
       ]
   else:
     crc = 0xFFFFFFFF
-  return getReverse(crc ^ 0xFFFFFFFF, 32)
+  return get_reverse(crc ^ 0xFFFFFFFF, 32)
 
 
-def getReverse(tempData, byte_length):
-  reverseData = 0
+def get_reverse(temp_data, byte_length):
+  reverse_data = 0
   for i in range(byte_length):
-    reverseData += ((tempData >> i) & 1) << (byte_length - 1 - i)
-  return reverseData
+    reverse_data += ((temp_data >> i) & 1) << (byte_length - 1 - i)
+  return reverse_data
 
 
 data = b"azwpayne"
 
-crc32 = getCrc32(data)
+crc32 = get_crc32(data)
 print("CRC32:", format(crc32, "0x"))

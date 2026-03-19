@@ -117,8 +117,8 @@ class TestDSASigning:
     sig_bytes = dsa.sign(message_bytes, p, q, g, x)
 
     # Both should verify successfully
-    assert dsa.verify(message_str, sig_str, p, q, g, y)
-    assert dsa.verify(message_bytes, sig_str, p, q, g, y)
+    assert dsa.verify(message_str, sig_str, p, q, g, y, y=y)
+    assert dsa.verify(message_bytes, sig_str, p, q, g, y, y=y)
 
   def test_sign_empty_message(self) -> None:
     """Test signing empty message."""
@@ -139,7 +139,7 @@ class TestDSASigning:
     message = b"x" * 1000000  # 1MB message
     signature = dsa.sign(message, p, q, g, x)
 
-    assert dsa.verify(message, signature, p, q, g, y)
+    assert dsa.verify(message, signature, p, q, g, y, y=y)
 
   def test_sign_with_special_characters(self) -> None:
     """Test signing messages with special characters."""
@@ -156,7 +156,7 @@ class TestDSASigning:
 
     for message in messages:
       signature = dsa.sign(message, p, q, g, x)
-      assert dsa.verify(message, signature, p, q, g, y)
+      assert dsa.verify(message, signature, p, q, g, y, y=y)
 
 
 class TestDSAVerification:
@@ -170,7 +170,7 @@ class TestDSAVerification:
     message = b"test message"
     signature = dsa.sign(message, p, q, g, x)
 
-    assert dsa.verify(message, signature, p, q, g, y)
+    assert dsa.verify(message, signature, p, q, g, y, y=y)
 
   def test_verify_invalid_signature_wrong_message(self) -> None:
     """Test verification fails with wrong message."""
@@ -181,7 +181,7 @@ class TestDSAVerification:
     wrong_message = b"wrong message"
     signature = dsa.sign(message, p, q, g, x)
 
-    assert not dsa.verify(wrong_message, signature, p, q, g, y)
+    assert not dsa.verify(wrong_message, signature, p, q, g, y, y=y)
 
   def test_verify_invalid_signature_wrong_r(self) -> None:
     """Test verification fails with modified r."""
@@ -193,7 +193,7 @@ class TestDSAVerification:
 
     # Modify r
     invalid_signature = (r + 1, s)
-    assert not dsa.verify(message, invalid_signature, p, q, g, y)
+    assert not dsa.verify(message, invalid_signature, p, q, g, y, y=y)
 
   def test_verify_invalid_signature_wrong_s(self) -> None:
     """Test verification fails with modified s."""
@@ -205,7 +205,7 @@ class TestDSAVerification:
 
     # Modify s
     invalid_signature = (r, s + 1)
-    assert not dsa.verify(message, invalid_signature, p, q, g, y)
+    assert not dsa.verify(message, invalid_signature, p, q, g, y, y=y)
 
   def test_verify_signature_r_out_of_range(self) -> None:
     """Test verification fails when r is out of range."""
@@ -216,11 +216,11 @@ class TestDSAVerification:
     _, s = dsa.sign(message, p, q, g, x)
 
     # r = 0 should fail
-    assert not dsa.verify(message, (0, s), p, q, g, y)
+    assert not dsa.verify(message, (0, s), p, q, g, y=y)
     # r = q should fail
-    assert not dsa.verify(message, (q, s), p, q, g, y)
+    assert not dsa.verify(message, (q, s), p, q, g, y=y)
     # r > q should fail
-    assert not dsa.verify(message, (q + 1, s), p, q, g, y)
+    assert not dsa.verify(message, (q + 1, s), p, q, g, y=y)
 
   def test_verify_signature_s_out_of_range(self) -> None:
     """Test verification fails when s is out of range."""
@@ -231,11 +231,11 @@ class TestDSAVerification:
     r, _ = dsa.sign(message, p, q, g, x)
 
     # s = 0 should fail
-    assert not dsa.verify(message, (r, 0), p, q, g, y)
+    assert not dsa.verify(message, (r, 0), p, q, g, y=y)
     # s = q should fail
-    assert not dsa.verify(message, (r, q), p, q, g, y)
+    assert not dsa.verify(message, (r, q), p, q, g, y=y)
     # s > q should fail
-    assert not dsa.verify(message, (r, q + 1), p, q, g, y)
+    assert not dsa.verify(message, (r, q + 1), p, q, g, y=y)
 
   def test_verify_with_wrong_public_key(self) -> None:
     """Test verification fails with wrong public key."""
@@ -260,8 +260,8 @@ class TestDSAVerification:
     signature = dsa.sign(message_bytes, p, q, g, x)
 
     # Both string and bytes should verify
-    assert dsa.verify(message_str, signature, p, q, g, y)
-    assert dsa.verify(message_bytes, signature, p, q, g, y)
+    assert dsa.verify(message_str, signature, p, q, g, y, y=y)
+    assert dsa.verify(message_bytes, signature, p, q, g, y, y=y)
 
 
 class TestDSAIntegration:
@@ -300,13 +300,13 @@ class TestDSAIntegration:
 
     # Verify all signatures
     for message, signature in signatures:
-      assert dsa.verify(message, signature, p, q, g, y)
+      assert dsa.verify(message, signature, p, q, g, y, y=y)
 
     # Cross-verify should fail
     for i, (_msg1, sig1) in enumerate(signatures):
       for j, (msg2, _) in enumerate(signatures):
         if i != j:
-          assert not dsa.verify(msg2, sig1, p, q, g, y)
+          assert not dsa.verify(msg2, sig1, p, q, g, y, y=y)
 
   def test_dsa_with_different_parameter_sets(self) -> None:
     """Test DSA with multiple parameter generations."""
@@ -317,7 +317,7 @@ class TestDSAIntegration:
       message = b"test"
       signature = dsa.sign(message, p, q, g, x)
 
-      assert dsa.verify(message, signature, p, q, g, y)
+      assert dsa.verify(message, signature, p, q, g, y, y=y)
 
 
 class TestDSASecurity:
@@ -380,7 +380,7 @@ class TestDSAEdgeCases:
 
     for message in unicode_messages:
       signature = dsa.sign(message, p, q, g, x)
-      assert dsa.verify(message, signature, p, q, g, y)
+      assert dsa.verify(message, signature, p, q, g, y, y=y)
 
   def test_signature_with_leading_zeros_in_hash(self) -> None:
     """Test signatures when hash has leading zeros."""
@@ -394,7 +394,7 @@ class TestDSAEdgeCases:
       h = hashlib.sha256(message).digest()
       if h[0] == 0:
         signature = dsa.sign(message, p, q, g, x)
-        assert dsa.verify(message, signature, p, q, g, y)
+        assert dsa.verify(message, signature, p, q, g, y, y=y)
         break
 
   def test_boundary_values_for_r_and_s(self) -> None:
@@ -427,4 +427,4 @@ class TestDSAEdgeCases:
     for sig in valid_boundaries:
       # These may or may not verify depending on the actual signature
       # Just ensure they don't crash
-      dsa.verify(message, sig, p, q, g, y)
+      dsa.verify(message, sig, p, q, g, y, y=y)

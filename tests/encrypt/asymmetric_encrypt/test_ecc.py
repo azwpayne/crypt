@@ -63,19 +63,19 @@ class TestECC:
 
   def test_scalar_mult_identity(self) -> None:
     """Test scalar multiplication with identity."""
-    G = ecc.Point(ecc.Gx, ecc.Gy)
+    gen_point = ecc.Point(ecc.Gx, ecc.Gy)
 
-    # 1 * G = G
-    result = ecc.scalar_mult(1, G)
-    assert result == G
+    # 1 * G = gen_point
+    result = ecc.scalar_mult(1, gen_point)
+    assert result == gen_point
 
   def test_point_addition(self) -> None:
     """Test point addition."""
-    G = ecc.Point(ecc.Gx, ecc.Gy)
+    gen_point = ecc.Point(ecc.Gx, ecc.Gy)
 
-    # G + (-G) = infinity
-    neg_G = ecc.Point(ecc.Gx, (-ecc.Gy) % ecc.P)
-    result = ecc.point_add(G, neg_G)
+    # gen_point + (-gen_point) = infinity
+    neg_gen = ecc.Point(ecc.Gx, (-ecc.Gy) % ecc.P)
+    result = ecc.point_add(gen_point, neg_gen)
     assert result.infinity
 
   def test_signature_format(self) -> None:

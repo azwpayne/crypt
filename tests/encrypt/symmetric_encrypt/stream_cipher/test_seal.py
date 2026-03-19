@@ -90,7 +90,7 @@ class TestSEAL:
 
   def test_invalid_key_size(self):
     """Test that invalid key size raises error."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Key must be 20 bytes"):
       seal_encrypt(b"short", 0, b"test")
 
   def test_stream_cipher_property(self):

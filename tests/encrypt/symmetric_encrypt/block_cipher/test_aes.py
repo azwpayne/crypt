@@ -5,7 +5,7 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    : Tests for AES block cipher implementation
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,
   _encrypt_block,
   add_round_key,
@@ -25,7 +25,7 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
 )
 
 import pytest
-from Crypto.Cipher import AES as CryptoAES
+from Crypto.Cipher import AES as CRYPTO_AES
 from Crypto.Util.Padding import pad
 
 
@@ -273,7 +273,7 @@ class TestAESECB:
     our_ciphertext = aes_ecb_encrypt(plaintext, key)
 
     # PyCryptodome reference
-    cipher = CryptoAES.new(key, CryptoAES.MODE_ECB)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_ECB)
     expected_ciphertext = cipher.encrypt(pad(plaintext, 16))
 
     assert our_ciphertext == expected_ciphertext
@@ -326,7 +326,7 @@ class TestAESCBC:
     our_ciphertext = aes_cbc_encrypt(plaintext, key, iv)
 
     # PyCryptodome reference
-    cipher = CryptoAES.new(key, CryptoAES.MODE_CBC, iv=iv)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CBC, iv=iv)
     expected_ciphertext = cipher.encrypt(pad(plaintext, 16))
 
     assert our_ciphertext == expected_ciphertext
@@ -386,8 +386,8 @@ class TestAESCTR:
     our_ciphertext = aes_ctr_crypt(plaintext, key, full_nonce)
 
     # PyCryptodome reference
-    cipher = CryptoAES.new(
-      key, CryptoAES.MODE_CTR, nonce=nonce, initial_value=initial_value
+    cipher = CRYPTO_AES.new(
+      key, CRYPTO_AES.MODE_CTR, nonce=nonce, initial_value=initial_value
     )
     expected_ciphertext = cipher.encrypt(plaintext)
 

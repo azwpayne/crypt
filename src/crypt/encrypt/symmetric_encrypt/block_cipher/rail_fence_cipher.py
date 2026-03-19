@@ -109,6 +109,14 @@ def decrypt(text: str, rails: int) -> str:
   return "".join(result)
 
 
+def _try_decrypt(text: str, rails: int) -> str | None:
+  """Attempt to decrypt with a given rail count; return None on failure."""
+  try:
+    return decrypt(text, rails)
+  except ValueError:
+    return None
+
+
 def brute_force_decrypt(text: str, max_rails: int = 10) -> dict[int, str]:
   """
   暴力破解栅栏密码
@@ -124,10 +132,10 @@ def brute_force_decrypt(text: str, max_rails: int = 10) -> dict[int, str]:
   """
   results = {}
   for rails in range(2, min(max_rails + 1, len(text) + 1)):
-    try:
-      results[rails] = decrypt(text, rails)
-    except ValueError:
+    result = _try_decrypt(text, rails)
+    if result is None:
       break
+    results[rails] = result
   return results
 
 

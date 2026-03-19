@@ -96,13 +96,13 @@ class TestRabbit:
 
   def test_invalid_key_size(self):
     """Test that invalid key size raises error."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Key must be 16 bytes"):
       rabbit_encrypt(b"short", None, b"test")
 
   def test_invalid_iv_size(self):
     """Test that invalid IV size raises error."""
     key = b"SecretKey1234567"
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="IV must be 8 bytes"):
       rabbit_encrypt(key, b"short", b"test")
 
   def test_stream_cipher_property(self):

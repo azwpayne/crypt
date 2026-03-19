@@ -120,8 +120,8 @@ def pbkdf2(
     raise ValueError(msg)
 
   # Number of blocks needed
-  l = (dklen + hlen - 1) // hlen
-  r = dklen - (l - 1) * hlen
+  num_blocks = (dklen + hlen - 1) // hlen
+  remainder = dklen - (num_blocks - 1) * hlen
 
   def _f(i: int) -> bytes:
     """
@@ -144,11 +144,11 @@ def pbkdf2(
 
   # Generate each block
   derived_key = bytearray()
-  for i in range(1, l + 1):
+  for i in range(1, num_blocks + 1):
     block = _f(i)
     # Last block may be truncated
-    if i == l and r != 0:
-      derived_key.extend(block[:r])
+    if i == num_blocks and remainder != 0:
+      derived_key.extend(block[:remainder])
     else:
       derived_key.extend(block)
 

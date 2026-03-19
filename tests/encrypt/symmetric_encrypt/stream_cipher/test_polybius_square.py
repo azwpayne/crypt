@@ -113,7 +113,7 @@ class TestPolybiusSquareModes:
 
   def test_invalid_size(self):
     """Test invalid square size."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="方阵大小必须是5或6"):
       encrypt("TEST", size=4)
 
 

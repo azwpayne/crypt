@@ -8,7 +8,7 @@ WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
@@ -28,59 +28,57 @@ class _CTRCrypt:
   """
 
   def __init__(self, mode: "CTRMode"):
-    self._mode = mode
-    self._is_decrypt = False
+    self.mode = mode
+    self.is_decrypt = False
 
   def __call__(self, data: bytes) -> bytes:
     """Encrypt or decrypt data."""
-    if self._is_decrypt:
+    if self.is_decrypt:
       # Decrypt: reset counter to initial value
-      self._mode._counter = self._mode._initial_counter
-    # Encrypt: use current counter (persists between calls)
+      self.mode.ctr_counter = self.mode.initial_counter
+      # Encrypt: use current counter (persists between calls)
 
     result = bytearray()
 
-    for i in range(0, len(data), self._mode.block_size):
+    for i in range(0, len(data), self.mode.block_size):
       # Get the current counter block
-      counter_block = self._mode._get_counter_block(self._mode._counter)
+      counter_block = self.mode.get_counter_block(self.mode.ctr_counter)
 
       # Encrypt the counter block
-      if self._mode._encrypt_func is not None:
-        keystream = self._mode._encrypt_func(counter_block)
+      if self.mode.encrypt_func_ is not None:
+        keystream = self.mode.encrypt_func_(counter_block)
       else:
-        keystream = _encrypt_block(
-          counter_block, self._mode.expanded_key, self._mode.nr
-        )
+        keystream = _encrypt_block(counter_block, self.mode.expanded_key, self.mode.nr)
 
       # XOR keystream with data block
-      block = data[i : i + self._mode.block_size]
+      block = data[i : i + self.mode.block_size]
       xored = bytes([block[j] ^ keystream[j] for j in range(len(block))])
       result.extend(xored)
 
       # Increment counter for next block
       # For encrypt: always increment (including after last block) so counter persists
       # For decrypt: don't increment after last block
-      if not self._is_decrypt or i + self._mode.block_size < len(data):
-        self._mode._counter = self._mode._increment_counter(self._mode._counter)
+      if not self.is_decrypt or i + self.mode.block_size < len(data):
+        self.mode.ctr_counter = self.mode.increment_counter(self.mode.ctr_counter)
 
-    # Reset the flag after operation
-    was_decrypt = self._is_decrypt
-    self._is_decrypt = False
+        # Reset the flag after operation
+    was_decrypt = self.is_decrypt
+    self.is_decrypt = False
 
     # If this was a decrypt operation, reset counter to initial for next time
     if was_decrypt:
-      self._mode._counter = self._mode._initial_counter
+      self.mode.ctr_counter = self.mode.initial_counter
 
     return bytes(result)
 
   def __eq__(self, other):
     """Check equality - needed for 'encrypt == decrypt' test."""
     if isinstance(other, _CTRCrypt):
-      return self._mode is other._mode
+      return self.mode is other.mode
     return False
 
   def __hash__(self):
-    return hash(id(self._mode))
+    return hash(id(self.mode))
 
 
 class CTRMode:
@@ -111,29 +109,29 @@ class CTRMode:
   def __init__(
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
-    decrypt_func: Callable[[bytes], bytes] | None = None,
     block_size: int = 16,
     key: bytes | None = None,
     nonce: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
+    **kwargs: object,
   ):
     """Initialize CTR mode.
 
     Args:
         encrypt_func: Optional external encrypt function.
-        decrypt_func: Optional external decrypt function (not used in CTR).
         block_size: The block size in bytes (default 16 for AES).
         key: The encryption key (required if using AES).
         nonce: The nonce (required, must match block_size).
                For AES, this is 96-bit nonce + 32-bit initial counter.
-        expanded_key: Pre-computed expanded key (optional).
-        nr: Number of rounds (optional, derived from key if not provided).
+        **kwargs: Optional keyword arguments: expanded_key (list[int]),
+                  nr (int), decrypt_func (ignored).
 
     Raises:
         ValueError: If nonce is not provided or has wrong length.
         ValueError: If key is not provided and no external functions are given.
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+
     if nonce is None:
       msg = "Nonce is required for CTR mode"
       raise ValueError(msg)
@@ -143,14 +141,14 @@ class CTRMode:
 
     self.block_size = block_size
     self.nonce = nonce
-    self._encrypt_func = encrypt_func
+    self.encrypt_func_ = encrypt_func
 
     # Extract the initial counter from the last 4 bytes of nonce (big-endian)
-    self._initial_counter = int.from_bytes(nonce[-4:], "big")
+    self.initial_counter = int.from_bytes(nonce[-4:], "big")
     # Single counter that persists between calls
-    self._counter = self._initial_counter
+    self.ctr_counter = self.initial_counter
     # Store the nonce prefix (first 12 bytes for AES)
-    self._nonce_prefix = nonce[:-4]
+    self.nonce_prefix = nonce[:-4]
 
     # If key is provided, use AES
     if key is not None:
@@ -172,9 +170,9 @@ class CTRMode:
       self.nr = 0
 
     # Create the shared crypt function
-    self._crypt = _CTRCrypt(self)
+    self.ctr_crypt = _CTRCrypt(self)
 
-  def _get_counter_block(self, counter: int) -> bytes:
+  def get_counter_block(self, counter: int) -> bytes:
     """Generate the current counter block.
 
     Args:
@@ -192,9 +190,9 @@ class CTRMode:
       raise ModeError(msg)
     # Convert counter to 4 bytes big-endian
     counter_bytes = counter.to_bytes(4, "big")
-    return self._nonce_prefix + counter_bytes
+    return self.nonce_prefix + counter_bytes
 
-  def _increment_counter(self, counter: int) -> int:
+  def increment_counter(self, counter: int) -> int:
     """Increment the counter.
 
     Args:
@@ -208,20 +206,20 @@ class CTRMode:
   @property
   def encrypt(self):
     """Encrypt data using CTR mode."""
-    self._crypt._is_decrypt = False
-    return self._crypt
+    self.ctr_crypt.is_decrypt = False
+    return self.ctr_crypt
 
   @property
   def decrypt(self):
     """Decrypt data using CTR mode."""
-    self._crypt._is_decrypt = True
-    return self._crypt
+    self.ctr_crypt.is_decrypt = True
+    return self.ctr_crypt
 
   @property
   def crypt(self):
     """Encrypt/decrypt data using CTR mode."""
-    self._crypt._is_decrypt = False
-    return self._crypt
+    self.ctr_crypt.is_decrypt = False
+    return self.ctr_crypt
 
 
 def test_ctr_mode():

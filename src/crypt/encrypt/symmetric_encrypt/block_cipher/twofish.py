@@ -575,7 +575,7 @@ def _gf_mul(a: int, b: int) -> int:
   return result & 0xFF
 
 
-def _q_permutation(x: int, q_table: list[int]) -> int:
+def _q_permutation(x: int) -> int:
   """Apply q permutation (q0 or q1).
 
   The q permutation uses a 4-bit substitution structure.
@@ -605,12 +605,12 @@ def _sbox(i: int, x: int, s_key: list[int]) -> int:
       S-box output byte
   """
   if i == 0:
-    return _q_permutation(x, Q0) ^ s_key[0]
+    return _q_permutation(x) ^ s_key[0]
   if i == 1:
-    return _q_permutation(x, Q1) ^ s_key[1]
+    return _q_permutation(x) ^ s_key[1]
   if i == 2:
-    return _q_permutation(x, Q1) ^ s_key[2]
-  return _q_permutation(x, Q0) ^ s_key[3]
+    return _q_permutation(x) ^ s_key[2]
+  return _q_permutation(x) ^ s_key[3]
 
 
 def _mds_multiply(y: list[int]) -> int:

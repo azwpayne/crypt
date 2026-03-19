@@ -49,11 +49,12 @@ def crc16_ccitt(
   crc = init
 
   # Process each byte
-  for byte in data:
+  for byte_val in data:
+    val = byte_val
     if ref_in:
-      byte = _reverse_bits8(byte)
+      val = _reverse_bits8(byte_val)
 
-    crc = crc_table[(crc >> 8) ^ byte] ^ ((crc << 8) & 0xFFFF)
+    crc = crc_table[(crc >> 8) ^ val] ^ ((crc << 8) & 0xFFFF)
     crc &= 0xFFFF
 
   # Output processing

@@ -103,24 +103,14 @@ def test_base32():
   print("测试 Base32 实现:")
   print("-" * 50)
 
-  all_passed = True
-  for i, test_data in enumerate(test_cases):
+  def _run_test_case(i: int, test_data: bytes) -> bool:
+    """Run a single test case; return True if passed."""
     try:
-      # 使用自定义实现编码
       encoded_custom = base32_encode(test_data)
-
-      # 使用标准库编码（作为参考）
       encoded_std = base64.b32encode(test_data).decode("ascii").rstrip("=")
-
-      # 解码验证
       decoded_custom = base32_decode(encoded_custom)
-
-      # 验证编码结果与标准库一致
       encode_match = "✓" if encoded_custom.rstrip("=") == encoded_std else "✗"
-
-      # 验证解码结果与原始数据一致
       decode_match = "✓" if decoded_custom == test_data else "✗"
-
       print(f"测试 {i + 1}:")
       print(f"  原始数据: {test_data!r}")
       print(f"  编码结果: {encoded_custom}")
@@ -128,15 +118,17 @@ def test_base32():
       print(f"  解码结果: {decoded_custom!r}")
       print(f"  编码匹配: {encode_match}  解码正确: {decode_match}")
       print()
-
-      # sourcery skip: no-conditionals-in-tests
-      if encode_match == "✗" or decode_match == "✗":
-        all_passed = False
-
-    except ValueError as e:  # noqa: BLE001, PERF203
+    except ValueError as e:
       print(f"测试 {i + 1} 失败: {e}")
-      all_passed = False
       print()
+      return False
+    else:
+      return encode_match == "✓" and decode_match == "✓"
+
+  all_passed = True
+  for i, test_data in enumerate(test_cases):
+    if not _run_test_case(i, test_data):
+      all_passed = False
 
   # 边缘情况测试
   print("边缘情况测试:")

@@ -8,7 +8,7 @@ ciphertext blocks due to the chaining mechanism.
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,
   _encrypt_block,
   _get_key_params,
@@ -43,8 +43,7 @@ class CBCMode:
     block_size: int = 16,
     key: bytes | None = None,
     iv: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
+    **kwargs: object,
   ):
     """Initialize CBC mode.
 
@@ -61,6 +60,8 @@ class CBCMode:
         ValueError: If IV is not provided or has wrong length.
         ValueError: If key is not provided and no external functions are given.
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     if iv is None:
       msg = "IV is required for CBC mode"
       raise ValueError(msg)

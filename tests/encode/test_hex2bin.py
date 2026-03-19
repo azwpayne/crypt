@@ -76,7 +76,7 @@ class TestBinToHex:
     assert hex2bin.bin_to_hex("0000") == "0"
     assert hex2bin.bin_to_hex("1101000111111") == "1A3F"
 
-  def test_bin_to_hex_with_prefix(self):
+  def test_bin_to_hex_with_0b_prefix(self):
     """Test binary with 0b prefix."""
     assert hex2bin.bin_to_hex("0b11111111") == "FF"
     assert hex2bin.bin_to_hex("0b1010") == "A"

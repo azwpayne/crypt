@@ -16,7 +16,7 @@ class TestRipemd160:
   """Test RIPEMD-160 implementation against known test vectors."""
 
   # RIPEMD-160 test vectors from the original paper
-  TEST_VECTORS: list[tuple[bytes | str, str]] = [  # noqa: RUF012
+  TEST_VECTORS: list[tuple[bytes | str, str]] = [
     (b"", "9c1185a5c5e9fc54612808977ee8f548b2258d31"),
     (b"a", "0bdc9d2d256b3ee9daae347be6f4dc835a467ffe"),
     (b"abc", "8eb208f7e05d987a9b044a8e98c6b087f15a0bfc"),

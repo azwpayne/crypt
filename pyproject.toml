@@ -14,7 +14,6 @@ dependencies = [
 dev = [
     "poethepoet",
     "ruff",
-    "ty",
 ]
 test = [
     "pytest",
@@ -49,16 +48,12 @@ tasks.test-py312 = { shell = "uv run --python 3.12 --group test pytest" }
 tasks.test-py313 = { shell = "uv run --python 3.13 --group test pytest" }
 tasks.test-py314 = { shell = "uv run --python 3.14 --group test pytest" }
 
-
-
-
 tasks.clean = { shell = """
 	rm -rf *.py
 	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 """ }
-
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]

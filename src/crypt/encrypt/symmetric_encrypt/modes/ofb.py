@@ -31,7 +31,7 @@ Usage Examples:
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
@@ -79,12 +79,10 @@ class OFBMode:
   def __init__(
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
-    decrypt_func: Callable[[bytes], bytes] | None = None,
     block_size: int = 16,
     key: bytes | None = None,
     iv: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
+    **kwargs: object,
   ):
     """Initialize OFB mode.
 
@@ -112,6 +110,8 @@ class OFBMode:
         >>> ofb = OFBMode(encrypt_func=cipher.encrypt, block_size=16,
         ...               iv=b'1234567890123456')
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     if iv is None:
       msg = "IV is required for OFB mode"
       raise ValueError(msg)

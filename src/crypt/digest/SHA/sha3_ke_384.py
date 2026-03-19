@@ -1,9 +1,8 @@
+#!/usr/bin/env python3
 # @time    : 2026/1/6 16:51
 # @name    : sha3_ke_384.py
 # @author  : azwpayne
 # @desc    : SHAKE384 eXtendable-Output Function (XOF) implementation
-
-#!/usr/bin/env python3
 """
 SHAKE384 纯函数实现 (非标准扩展)
 基于 Keccak[768] 的 XOF 实现
@@ -100,22 +99,22 @@ def lanes_to_bytes(lanes):
 # ========== Keccak-f 轮函数 ==========
 def theta(state):
   """θ 步骤"""
-  C = [0] * 5
-  D = [0] * 5
+  c = [0] * 5
+  d = [0] * 5
 
-  # 计算 C
+  # 计算 c
   for x in range(5):
-    C[x] = state[x][0] ^ state[x][1] ^ state[x][2] ^ state[x][3] ^ state[x][4]
+    c[x] = state[x][0] ^ state[x][1] ^ state[x][2] ^ state[x][3] ^ state[x][4]
 
-  # 计算 D
+  # 计算 d
   for x in range(5):
-    D[x] = C[(x - 1) % 5] ^ rot64(C[(x + 1) % 5], 1)
+    d[x] = c[(x - 1) % 5] ^ rot64(c[(x + 1) % 5], 1)
 
   # 更新 state
   new_state = [[0] * 5 for _ in range(5)]
   for x in range(5):
     for y in range(5):
-      new_state[x][y] = state[x][y] ^ D[x]
+      new_state[x][y] = state[x][y] ^ d[x]
 
   return new_state
 

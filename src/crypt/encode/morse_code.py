@@ -189,14 +189,14 @@ def morse_decode(encoded: str, *, sep: str = " ", word_sep: str = "/") -> str:
   return " ".join(decoded_words)
 
 
-def morse_encode_binary(  # noqa: PLR0913
+def morse_encode_binary(
   text: str,
   *,
   dot: str = "1",
   dash: str = "111",
   symbol_gap: str = "0",
   char_gap: str = "000",
-  word_gap: str = "0000000",
+  **kwargs: str,
 ) -> str:
   """Encode text to binary Morse code representation.
 
@@ -227,6 +227,7 @@ def morse_encode_binary(  # noqa: PLR0913
       >>> morse_encode_binary("E")
       '1'
   """
+  word_gap: str = kwargs.get("word_gap", "0000000")
   if not isinstance(text, str):
     msg = "text must be a string"
     raise TypeError(msg)
@@ -260,14 +261,40 @@ def morse_encode_binary(  # noqa: PLR0913
   return word_gap.join(binary_words)
 
 
-def morse_decode_binary(  # noqa: PLR0913, PLR0912
+def _decode_binary_char(
+  char_raw: str,
+  dot: str,
+  dash: str,
+  symbol_gap: str,
+) -> str:
+  """Decode a single binary morse character to a morse symbol string."""
+  char_stripped = char_raw.strip()
+  if not char_stripped:
+    return ""
+  symbols = char_stripped.split(symbol_gap)
+  morse_char = ""
+  for symbol in symbols:
+    if symbol == dot:
+      morse_char += "."
+    elif symbol == dash:
+      morse_char += "-"
+    else:
+      msg = f"Invalid binary pattern: {symbol!r}"
+      raise ValueError(msg)
+  if morse_char in REVERSE_MORSE_DICT:
+    return REVERSE_MORSE_DICT[morse_char]
+  msg = f"Invalid Morse code: {morse_char!r}"
+  raise ValueError(msg)
+
+
+def morse_decode_binary(
   binary: str,
   *,
   dot: str = "1",
   dash: str = "111",
   symbol_gap: str = "0",
   char_gap: str = "000",
-  word_gap: str = "0000000",
+  **kwargs: str,
 ) -> str:
   """Decode binary Morse code representation to text.
 
@@ -290,6 +317,7 @@ def morse_decode_binary(  # noqa: PLR0913, PLR0912
       >>> morse_decode_binary("101010001110111011100010101")
       'SOS'
   """
+  word_gap: str = kwargs.get("word_gap", "0000000")
   if not isinstance(binary, str):
     msg = "binary must be a string"
     raise TypeError(msg)
@@ -309,33 +337,13 @@ def morse_decode_binary(  # noqa: PLR0913, PLR0912
     if not word_stripped:
       continue
 
-    # Split characters by char_gap
+    # Split characters by char_gap and decode each
     chars = word_stripped.split(char_gap)
-    decoded_chars = []
-
-    for char_raw in chars:
-      char_stripped = char_raw.strip()
-      if not char_stripped:
-        continue
-
-      # Split symbols by symbol_gap
-      symbols = char_stripped.split(symbol_gap)
-      morse_char = ""
-
-      for symbol in symbols:
-        if symbol == dot:
-          morse_char += "."
-        elif symbol == dash:
-          morse_char += "-"
-        else:
-          msg = f"Invalid binary pattern: {symbol!r}"
-          raise ValueError(msg)
-
-      if morse_char in REVERSE_MORSE_DICT:
-        decoded_chars.append(REVERSE_MORSE_DICT[morse_char])
-      else:
-        msg = f"Invalid Morse code: {morse_char!r}"
-        raise ValueError(msg)
+    decoded_chars = [
+      _decode_binary_char(c, dot, dash, symbol_gap) for c in chars if c.strip()
+    ]
+    # Filter empty results (from stripped empty chars)
+    decoded_chars = [ch for ch in decoded_chars if ch]
 
     if decoded_chars:
       decoded_words.append("".join(decoded_chars))

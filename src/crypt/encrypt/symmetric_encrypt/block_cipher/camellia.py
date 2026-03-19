@@ -531,95 +531,48 @@ class Camellia:
     else:
       self._generate_subkeys_192_256(kl, kr, ka, kb)
 
-  def _generate_subkeys_128(self, kl: list[int], ka: list[int]) -> None:  # noqa: PLR0915
-    """Generate subkeys for 128-bit key per RFC 3713."""
+  @staticmethod
+  def _rol128(high: int, low: int, n: int) -> tuple[int, int]:
+    """Rotate 128-bit value (high<<64)|low left by n bits."""
+    n = n % 128
+    if n < 64:
+      new_high = ((high << n) | (low >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
+      new_low = ((low << n) | (high >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
+    elif n == 64:
+      new_high, new_low = low, high
+    else:
+      n = n - 64
+      new_high = ((low << n) | (high >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
+      new_low = ((high << n) | (low >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
+    return new_high, new_low
 
-    # Helper function to rotate 128-bit value and extract high/low parts
-    def rol128(high: int, low: int, n: int) -> tuple[int, int]:
-      """Rotate 128-bit value (high<<64)|low left by n bits, return (new_high, new_low)."""
-      n = n % 128
-      if n < 64:
-        # Bits rotate from low to high
-        new_high = ((high << n) | (low >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
-        new_low = ((low << n) | (high >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
-      elif n == 64:
-        new_high = low
-        new_low = high
-      else:  # n > 64
-        n = n - 64
-        new_high = ((low << n) | (high >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
-        new_low = ((high << n) | (low >> (64 - n))) & 0xFFFFFFFFFFFFFFFF
-      return new_high, new_low
-
-    # KL = (kl[0] << 64) | kl[1]
-    # KA = (ka[0] << 64) | ka[1]
-
-    # Whitening keys
-    self.kw[0] = kl[0]  # (KL <<< 0) >> 64
-    self.kw[1] = kl[1]  # (KL <<< 0) & MASK64
-
-    # kw3, kw4 from KA <<< 111
-    ka_111_h, ka_111_l = rol128(ka[0], ka[1], 111)
-    self.kw[2] = ka_111_h
-    self.kw[3] = ka_111_l
-
-    # Round keys - derived from rotated KL and KA
-    # k1, k2 from KA <<< 0
+  def _generate_subkeys_128_wk(self, kl: list[int], ka: list[int]) -> None:
+    """Set whitening keys and first round keys for 128-bit key."""
+    r = self._rol128
+    self.kw[0] = kl[0]
+    self.kw[1] = kl[1]
+    self.kw[2], self.kw[3] = r(ka[0], ka[1], 111)
     self.k[0] = ka[0]
     self.k[1] = ka[1]
+    self.k[2], self.k[3] = r(kl[0], kl[1], 15)
+    self.k[4], self.k[5] = r(ka[0], ka[1], 15)
+    self.k[6], self.k[7] = r(kl[0], kl[1], 45)
+    self.k[8], self.k[9] = r(ka[0], ka[1], 45)
 
-    # k3, k4 from KL <<< 15
-    kl_15_h, kl_15_l = rol128(kl[0], kl[1], 15)
-    self.k[2] = kl_15_h
-    self.k[3] = kl_15_l
+  def _generate_subkeys_128_rk(self, kl: list[int], ka: list[int]) -> None:
+    """Set remaining round and FL keys for 128-bit key."""
+    r = self._rol128
+    self.k[10], self.k[11] = r(ka[0], ka[1], 60)
+    self.k[12], self.k[13] = r(kl[0], kl[1], 94)
+    self.k[14], self.k[15] = r(ka[0], ka[1], 94)
+    self.k[16], self.k[17] = r(kl[0], kl[1], 111)
+    self.kl[0], self.kl[1] = r(ka[0], ka[1], 30)
+    self.kl[2], self.kl[3] = r(kl[0], kl[1], 77)
 
-    # k5, k6 from KA <<< 15
-    ka_15_h, ka_15_l = rol128(ka[0], ka[1], 15)
-    self.k[4] = ka_15_h
-    self.k[5] = ka_15_l
-
-    # k7, k8 from KL <<< 45
-    kl_45_h, kl_45_l = rol128(kl[0], kl[1], 45)
-    self.k[6] = kl_45_h
-    self.k[7] = kl_45_l
-
-    # k9, k10 from KA <<< 45
-    ka_45_h, ka_45_l = rol128(ka[0], ka[1], 45)
-    self.k[8] = ka_45_h
-    self.k[9] = ka_45_l
-
-    # k11, k12 from KA <<< 60
-    ka_60_h, ka_60_l = rol128(ka[0], ka[1], 60)
-    self.k[10] = ka_60_h
-    self.k[11] = ka_60_l
-
-    # k13, k14 from KL <<< 94
-    kl_94_h, kl_94_l = rol128(kl[0], kl[1], 94)
-    self.k[12] = kl_94_h
-    self.k[13] = kl_94_l
-
-    # k15, k16 from KA <<< 94
-    ka_94_h, ka_94_l = rol128(ka[0], ka[1], 94)
-    self.k[14] = ka_94_h
-    self.k[15] = ka_94_l
-
-    # k17, k18 from KL <<< 111
-    kl_111_h, kl_111_l = rol128(kl[0], kl[1], 111)
-    self.k[16] = kl_111_h
-    self.k[17] = kl_111_l
-
-    # FL keys (ke1..ke4 in RFC 3713)
-    # ke1, ke2 from KA <<< 30
-    ka_30_h, ka_30_l = rol128(ka[0], ka[1], 30)
-    self.kl[0] = ka_30_h
-    self.kl[1] = ka_30_l
-
-    # ke3, ke4 from KL <<< 77
-    kl_77_h, kl_77_l = rol128(kl[0], kl[1], 77)
-    self.kl[2] = kl_77_h
-    self.kl[3] = kl_77_l
-
-    # Note: kl[4] and kl[5] are not used for 128-bit keys
+  def _generate_subkeys_128(self, kl: list[int], ka: list[int]) -> None:
+    """Generate subkeys for 128-bit key per RFC 3713."""
+    self._generate_subkeys_128_wk(kl, ka)
+    self._generate_subkeys_128_rk(kl, ka)
 
   def _generate_subkeys_192_256(
     self, kl: list[int], kr: list[int], ka: list[int], kb: list[int]

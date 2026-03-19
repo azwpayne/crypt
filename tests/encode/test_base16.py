@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import binascii
-
 from crypt.encode import base16
 
 import pytest

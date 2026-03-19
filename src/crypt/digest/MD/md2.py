@@ -287,14 +287,14 @@ def _padding(message: bytes) -> bytes:
 def _checksum(message: bytes) -> bytes:
   """Compute 16-byte checksum of message."""
   checksum = [0] * 16
-  l = 0
+  checksum_val = 0
 
   for i in range(0, len(message), 16):
     block = message[i : i + 16]
     for j in range(16):
       c = block[j] if j < len(block) else 0
-      checksum[j] ^= _SBOX[c ^ l]
-      l = checksum[j]
+      checksum[j] ^= _SBOX[c ^ checksum_val]
+      checksum_val = checksum[j]
 
   return bytes(checksum)
 

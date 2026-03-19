@@ -1,12 +1,18 @@
 # Crypt
 
-A pure Python implementation of common cryptographic algorithms for educational purposes.
+A pure Python implementation of common cryptographic algorithms for educational
+purposes.
 
 ## Overview
 
-This library provides implementations of various cryptographic algorithms including hash functions, symmetric and asymmetric encryption, and encoding schemes. The focus is on clear, understandable implementations that demonstrate how these algorithms work under the hood.
+This library provides implementations of various cryptographic algorithms including hash
+functions, symmetric and asymmetric encryption, and encoding schemes. The focus is on
+clear, understandable implementations that demonstrate how these algorithms work under
+the hood.
 
-**Note**: This is an educational project. While the implementations are tested against reference libraries, they are not optimized for production use and have not undergone formal security audits.
+**Note**: This is an educational project. While the implementations are tested against
+reference libraries, they are not optimized for production use and have not undergone
+formal security audits.
 
 ## Installation
 
@@ -90,7 +96,9 @@ print(decoded)  # b"Hello, World!"
 ### Asymmetric Encryption
 
 ```python
-from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
+from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt,
+
+rsa_decrypt
 
 # Generate RSA key pair
 public_key, private_key = generate_keypair(key_size=2048)
@@ -108,38 +116,38 @@ print(decrypted.decode())  # Hello, RSA!
 
 ### Hash Functions
 
-| Algorithm | Description | Status |
-|-----------|-------------|--------|
-| **MD Family** | | |
-| MD2 | 128-bit hash (legacy) | Implemented |
-| MD4 | 128-bit hash (legacy) | Implemented |
-| MD5 | 128-bit hash (broken, legacy) | Implemented |
-| MD6 | Variable-length hash | Implemented |
-| **SHA Family** | | |
-| SHA-0 | 160-bit hash (broken) | Implemented |
-| SHA-1 | 160-bit hash (deprecated) | Implemented |
-| SHA-224 | 224-bit hash | Implemented |
-| SHA-256 | 256-bit hash | Implemented |
-| SHA-384 | 384-bit hash | Implemented |
-| SHA-512 | 512-bit hash | Implemented |
-| SHA-512/224 | 224-bit truncated SHA-512 | Implemented |
-| SHA-512/256 | 256-bit truncated SHA-512 | Implemented |
-| SHA3-224 | Keccak-based 224-bit | Implemented |
-| SHA3-256 | Keccak-based 256-bit | Implemented |
-| SHA3-384 | Keccak-based 384-bit | Implemented |
-| SHA3-512 | Keccak-based 512-bit | Implemented |
-| SHAKE128 | Extendable-output function (XOF) | Implemented |
-| SHAKE256 | Extendable-output function (XOF) | Implemented |
-| **Other Hashes** | | |
-| BLAKE2b/BLAKE2s | Fast cryptographic hash | Implemented |
-| BLAKE3 | Modern fast hash | Implemented |
-| CRC8/CRC12/CRC16/CRC32 | Cyclic redundancy checks | Implemented |
-| Tiger | 192-bit hash | Implemented |
-| RIPEMD-160 | 160-bit hash | Implemented |
-| Whirlpool | 512-bit hash | Implemented |
-| SM3 | Chinese national standard hash | Implemented |
-| bcrypt | Password hashing | Implemented |
-| Poly1305 | Message authentication code | Implemented |
+| Algorithm              | Description                      | Status      |
+|------------------------|----------------------------------|-------------|
+| **MD Family**          |                                  |             |
+| MD2                    | 128-bit hash (legacy)            | Implemented |
+| MD4                    | 128-bit hash (legacy)            | Implemented |
+| MD5                    | 128-bit hash (broken, legacy)    | Implemented |
+| MD6                    | Variable-length hash             | Implemented |
+| **SHA Family**         |                                  |             |
+| SHA-0                  | 160-bit hash (broken)            | Implemented |
+| SHA-1                  | 160-bit hash (deprecated)        | Implemented |
+| SHA-224                | 224-bit hash                     | Implemented |
+| SHA-256                | 256-bit hash                     | Implemented |
+| SHA-384                | 384-bit hash                     | Implemented |
+| SHA-512                | 512-bit hash                     | Implemented |
+| SHA-512/224            | 224-bit truncated SHA-512        | Implemented |
+| SHA-512/256            | 256-bit truncated SHA-512        | Implemented |
+| SHA3-224               | Keccak-based 224-bit             | Implemented |
+| SHA3-256               | Keccak-based 256-bit             | Implemented |
+| SHA3-384               | Keccak-based 384-bit             | Implemented |
+| SHA3-512               | Keccak-based 512-bit             | Implemented |
+| SHAKE128               | Extendable-output function (XOF) | Implemented |
+| SHAKE256               | Extendable-output function (XOF) | Implemented |
+| **Other Hashes**       |                                  |             |
+| BLAKE2b/BLAKE2s        | Fast cryptographic hash          | Implemented |
+| BLAKE3                 | Modern fast hash                 | Implemented |
+| CRC8/CRC12/CRC16/CRC32 | Cyclic redundancy checks         | Implemented |
+| Tiger                  | 192-bit hash                     | Implemented |
+| RIPEMD-160             | 160-bit hash                     | Implemented |
+| Whirlpool              | 512-bit hash                     | Implemented |
+| SM3                    | Chinese national standard hash   | Implemented |
+| bcrypt                 | Password hashing                 | Implemented |
+| Poly1305               | Message authentication code      | Implemented |
 
 ### HMAC (Hash-based Message Authentication)
 
@@ -149,112 +157,117 @@ print(decrypted.decode())  # Hello, RSA!
 
 ### Key Derivation Functions (KDF)
 
-| Algorithm | Description |
-|-----------|-------------|
-| PBKDF2 | Password-Based Key Derivation Function 2 |
-| scrypt | Memory-hard password hashing |
-| Argon2 | Modern memory-hard password hashing |
+| Algorithm | Description                              |
+|-----------|------------------------------------------|
+| PBKDF2    | Password-Based Key Derivation Function 2 |
+| scrypt    | Memory-hard password hashing             |
+| Argon2    | Modern memory-hard password hashing      |
 
 ### Symmetric Encryption
 
 #### Block Ciphers
 
-| Algorithm | Block Size | Key Sizes | Description |
-|-----------|------------|-----------|-------------|
-| AES | 128-bit | 128/192/256-bit | Advanced Encryption Standard |
-| DES | 64-bit | 56-bit | Data Encryption Standard (legacy) |
-| 3DES (Triple DES) | 64-bit | 112/168-bit | Triple DES (legacy) |
-| Blowfish | 64-bit | 32-448-bit | Fast block cipher |
-| Twofish | 128-bit | 128/192/256-bit | AES finalist |
-| Serpent | 128-bit | 128/192/256-bit | AES finalist |
-| Camellia | 128-bit | 128/192/256-bit | Japanese standard |
-| CAST5 (CAST-128) | 64-bit | 40-128-bit | Legacy cipher |
-| CAST6 (CAST-256) | 128-bit | 128/192/256-bit | AES candidate |
-| RC5 | 64-bit | Variable | Variable rounds |
-| RC6 | 128-bit | 128/192/256-bit | AES finalist |
-| IDEA | 64-bit | 128-bit | International Data Encryption Algorithm |
-| TEA | 64-bit | 128-bit | Tiny Encryption Algorithm |
-| SM4 | 128-bit | 128-bit | Chinese national standard |
-| PRESENT | 64-bit | 80/128-bit | Lightweight cipher |
-| BELT | 128-bit | 256-bit | Belarusian standard |
-| Simon/Speck | Various | Various | NSA lightweight ciphers |
+| Algorithm         | Block Size | Key Sizes       | Description                             |
+|-------------------|------------|-----------------|-----------------------------------------|
+| AES               | 128-bit    | 128/192/256-bit | Advanced Encryption Standard            |
+| DES               | 64-bit     | 56-bit          | Data Encryption Standard (legacy)       |
+| 3DES (Triple DES) | 64-bit     | 112/168-bit     | Triple DES (legacy)                     |
+| Blowfish          | 64-bit     | 32-448-bit      | Fast block cipher                       |
+| Twofish           | 128-bit    | 128/192/256-bit | AES finalist                            |
+| Serpent           | 128-bit    | 128/192/256-bit | AES finalist                            |
+| Camellia          | 128-bit    | 128/192/256-bit | Japanese standard                       |
+| CAST5 (CAST-128)  | 64-bit     | 40-128-bit      | Legacy cipher                           |
+| CAST6 (CAST-256)  | 128-bit    | 128/192/256-bit | AES candidate                           |
+| RC5               | 64-bit     | Variable        | Variable rounds                         |
+| RC6               | 128-bit    | 128/192/256-bit | AES finalist                            |
+| IDEA              | 64-bit     | 128-bit         | International Data Encryption Algorithm |
+| TEA               | 64-bit     | 128-bit         | Tiny Encryption Algorithm               |
+| SM4               | 128-bit    | 128-bit         | Chinese national standard               |
+| PRESENT           | 64-bit     | 80/128-bit      | Lightweight cipher                      |
+| BELT              | 128-bit    | 256-bit         | Belarusian standard                     |
+| Simon/Speck       | Various    | Various         | NSA lightweight ciphers                 |
 
 #### Block Cipher Modes
 
-| Mode | Description |
-|------|-------------|
-| ECB | Electronic Codebook (not recommended) |
-| CBC | Cipher Block Chaining |
-| CFB | Cipher Feedback |
-| OFB | Output Feedback |
-| CTR | Counter mode |
-| XTS | XEX-based tweaked-codebook with ciphertext stealing |
-| EAX | Authenticated encryption with associated data (AEAD) |
+| Mode | Description                                          |
+|------|------------------------------------------------------|
+| ECB  | Electronic Codebook (not recommended)                |
+| CBC  | Cipher Block Chaining                                |
+| CFB  | Cipher Feedback                                      |
+| OFB  | Output Feedback                                      |
+| CTR  | Counter mode                                         |
+| XTS  | XEX-based tweaked-codebook with ciphertext stealing  |
+| EAX  | Authenticated encryption with associated data (AEAD) |
 
 #### Stream Ciphers
 
-| Algorithm | Description |
-|-----------|-------------|
-| ChaCha20 | Modern stream cipher |
-| Salsa20 | Predecessor to ChaCha20 |
-| RC4 | Legacy stream cipher (deprecated) |
-| SEAL | Software-optimized encryption algorithm |
-| ZUC | Chinese stream cipher (4G/5G) |
+| Algorithm | Description                             |
+|-----------|-----------------------------------------|
+| ChaCha20  | Modern stream cipher                    |
+| Salsa20   | Predecessor to ChaCha20                 |
+| RC4       | Legacy stream cipher (deprecated)       |
+| SEAL      | Software-optimized encryption algorithm |
+| ZUC       | Chinese stream cipher (4G/5G)           |
 
 #### Classical Ciphers
 
-| Algorithm | Type |
-|-----------|------|
-| Vigenere | Polyalphabetic substitution |
-| Atbash | Monoalphabetic substitution |
-| Affine | Mathematical substitution |
-| ROT13 | Caesar cipher variant |
-| Simple Substitution | Character substitution |
-| Playfair | Digraph substitution |
-| Rail Fence | Transposition cipher |
+| Algorithm           | Type                        |
+|---------------------|-----------------------------|
+| Vigenere            | Polyalphabetic substitution |
+| Atbash              | Monoalphabetic substitution |
+| Affine              | Mathematical substitution   |
+| ROT13               | Caesar cipher variant       |
+| Simple Substitution | Character substitution      |
+| Playfair            | Digraph substitution        |
+| Rail Fence          | Transposition cipher        |
 
 ### Asymmetric Encryption
 
-| Algorithm | Description |
-|-----------|-------------|
-| RSA | Rivest-Shamir-Adleman encryption and signatures |
-| RSA-PSS | Probabilistic Signature Scheme |
-| DSA | Digital Signature Algorithm |
-| ECC | Elliptic Curve Cryptography |
-| ECDH | Elliptic Curve Diffie-Hellman |
-| Ed25519 | Edwards-curve Digital Signature Algorithm |
-| X25519 | Elliptic Curve Diffie-Hellman (Curve25519) |
-| Diffie-Hellman | Key exchange protocol |
+| Algorithm      | Description                                     |
+|----------------|-------------------------------------------------|
+| RSA            | Rivest-Shamir-Adleman encryption and signatures |
+| RSA-PSS        | Probabilistic Signature Scheme                  |
+| DSA            | Digital Signature Algorithm                     |
+| ECC            | Elliptic Curve Cryptography                     |
+| ECDH           | Elliptic Curve Diffie-Hellman                   |
+| Ed25519        | Edwards-curve Digital Signature Algorithm       |
+| X25519         | Elliptic Curve Diffie-Hellman (Curve25519)      |
+| Diffie-Hellman | Key exchange protocol                           |
 
 ### Encoding Schemes
 
-| Encoding | Description |
-|----------|-------------|
-| Base16 (Hex) | Hexadecimal encoding |
-| Base32 | RFC 4648 Base32 |
-| Base58 | Bitcoin-style encoding (no 0/O/I/l) |
-| Base62 | Alphanumeric encoding |
-| Base64 | RFC 4648 Base64 |
-| Base85 | ASCII85 encoding |
-| Base91 | High-density encoding |
-| Base92 | Dense binary-to-text |
-| ASCII85 | Adobe-style encoding |
-| Hex2Bin | Binary-hexadecimal conversion |
-| Morse Code | Telegraph encoding |
-| URL Encoding | Percent-encoding |
-| HTML Entities | Character encoding |
+| Encoding      | Description                         |
+|---------------|-------------------------------------|
+| Base16 (Hex)  | Hexadecimal encoding                |
+| Base32        | RFC 4648 Base32                     |
+| Base58        | Bitcoin-style encoding (no 0/O/I/l) |
+| Base62        | Alphanumeric encoding               |
+| Base64        | RFC 4648 Base64                     |
+| Base85        | ASCII85 encoding                    |
+| Base91        | High-density encoding               |
+| Base92        | Dense binary-to-text                |
+| ASCII85       | Adobe-style encoding                |
+| Hex2Bin       | Binary-hexadecimal conversion       |
+| Morse Code    | Telegraph encoding                  |
+| URL Encoding  | Percent-encoding                    |
+| HTML Entities | Character encoding                  |
 
 ## Security Notice
 
 **IMPORTANT**: This library is intended for educational purposes only.
 
-1. **Not for Production**: These implementations are not optimized for performance and have not undergone formal security audits.
-2. **Timing Attacks**: Pure Python implementations may be vulnerable to timing attacks due to non-constant-time operations.
-3. **Deprecated Algorithms**: Some implemented algorithms (MD5, SHA-1, DES, RC4) are cryptographically broken or deprecated. They are included for educational and legacy compatibility purposes only.
-4. **Use Established Libraries**: For production use, please use well-established libraries such as:
-   - [cryptography](https://cryptography.io/)
-   - [pycryptodome](https://www.pycryptodome.org/)
-   - Python's built-in `hashlib` and `secrets` modules
+1. **Not for Production**: These implementations are not optimized for performance and
+   have not undergone formal security audits.
+2. **Timing Attacks**: Pure Python implementations may be vulnerable to timing attacks
+   due to non-constant-time operations.
+3. **Deprecated Algorithms**: Some implemented algorithms (MD5, SHA-1, DES, RC4) are
+   cryptographically broken or deprecated. They are included for educational and legacy
+   compatibility purposes only.
+4. **Use Established Libraries**: For production use, please use well-established
+   libraries such as:
+    - [cryptography](https://cryptography.io/)
+    - [pycryptodome](https://www.pycryptodome.org/)
+    - Python's built-in `hashlib` and `secrets` modules
 
 ## Testing
 
@@ -274,7 +287,8 @@ uv run pytest -n0
 uv run pytest -v
 ```
 
-Tests validate implementations against reference libraries (`hashlib`, `pycryptodome`, `cryptography`) to ensure correctness.
+Tests validate implementations against reference libraries (`hashlib`, `pycryptodome`,
+`cryptography`) to ensure correctness.
 
 ## Development
 
@@ -336,14 +350,18 @@ Contributions are welcome! Please follow these guidelines:
 
 ## References
 
-- [FIPS 180-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf) - Secure Hash Standard (SHS)
-- [FIPS 197](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf) - Advanced Encryption Standard (AES)
+- [FIPS 180-4](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf) - Secure Hash
+  Standard (SHS)
+- [FIPS 197](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf) - Advanced
+  Encryption Standard (AES)
 - [RFC 1321](https://tools.ietf.org/html/rfc1321) - The MD5 Message-Digest Algorithm
-- [RFC 2104](https://tools.ietf.org/html/rfc2104) - HMAC: Keyed-Hashing for Message Authentication
+- [RFC 2104](https://tools.ietf.org/html/rfc2104) - HMAC: Keyed-Hashing for Message
+  Authentication
 - [RFC 2898](https://tools.ietf.org/html/rfc2898) - PKCS #5: Password-Based Cryptography
 - [RFC 4648](https://tools.ietf.org/html/rfc4648) - Base16, Base32, and Base64 Encodings
 - [RFC 7748](https://tools.ietf.org/html/rfc7748) - Elliptic Curves for Security
-- [RFC 8032](https://tools.ietf.org/html/rfc8032) - Edwards-Curve Digital Signature Algorithm
+- [RFC 8032](https://tools.ietf.org/html/rfc8032) - Edwards-Curve Digital Signature
+  Algorithm
 
 ## License
 
@@ -352,10 +370,13 @@ This project is open source. Please see the repository for license information.
 ## Acknowledgments
 
 This project is inspired by and references implementations from:
+
 - [pycryptodome](https://www.pycryptodome.org/)
 - [cryptography](https://cryptography.io/)
 - Various academic papers and RFC specifications
 
 ---
 
-**Disclaimer**: The authors are not responsible for any misuse of this software. Always consult with security professionals when implementing cryptography in production systems.
+**Disclaimer**: The authors are not responsible for any misuse of this software. Always
+consult with security professionals when implementing cryptography in production
+systems.

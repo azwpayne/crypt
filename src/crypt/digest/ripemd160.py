@@ -566,4 +566,4 @@ def ripemd160(data: bytes | str) -> str:
 
 
 # Backward compatibility alias
-hash = ripemd160
+ripemd160_hash = ripemd160

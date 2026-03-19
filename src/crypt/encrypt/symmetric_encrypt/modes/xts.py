@@ -9,7 +9,7 @@ well-established cryptographic libraries.
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,
   _encrypt_block,
   _get_key_params,
@@ -20,16 +20,17 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
 class XTSMode:
   """XTS (XEX-based Tweaked Codebook) mode of operation."""
 
-  def __init__(  # noqa: PLR0913
+  def __init__(
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
     decrypt_func: Callable[[bytes], bytes] | None = None,
     block_size: int = 16,
     key: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
+    **kwargs: object,
   ):
     """Initialize XTS mode."""
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     self.block_size = block_size
     self._encrypt_func = encrypt_func
     self._decrypt_func = decrypt_func

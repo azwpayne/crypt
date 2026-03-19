@@ -20,23 +20,25 @@ class Point:
   def __eq__(self, other):
     return self.x == other.x and self.y == other.y and self.infinity == other.infinity
 
+  __hash__ = None
+
 
 INFINITY = Point(0, 0, infinity=True)
 
 
-def point_add(P1, P2):
-  if P1.infinity:
-    return P2
-  if P2.infinity:
-    return P1
-  if P1.x == P2.x and P1.y != P2.y:
+def point_add(p1, p2):
+  if p1.infinity:
+    return p2
+  if p2.infinity:
+    return p1
+  if p1.x == p2.x and p1.y != p2.y:
     return INFINITY
-  if P1 == P2:
-    m = (3 * P1.x * P1.x + A) * pow(2 * P1.y, -1, P) % P
+  if p1 == p2:
+    m = (3 * p1.x * p1.x + A) * pow(2 * p1.y, -1, P) % P
   else:
-    m = (P2.y - P1.y) * pow(P2.x - P1.x, -1, P) % P
-  x3 = (m * m - P1.x - P2.x) % P
-  y3 = (m * (P1.x - x3) - P1.y) % P
+    m = (p2.y - p1.y) * pow(p2.x - p1.x, -1, P) % P
+  x3 = (m * m - p1.x - p2.x) % P
+  y3 = (m * (p1.x - x3) - p1.y) % P
   return Point(x3, y3)
 
 
@@ -67,8 +69,8 @@ def ecdsa_sign(message, private_key):
     message = message.encode()
   z = int.from_bytes(hashlib.sha256(message).digest(), "big")
   k = secrets.randbelow(N - 1) + 1
-  R = scalar_mult(k, Point(Gx, Gy))
-  r = R.x % N
+  r_point = scalar_mult(k, Point(Gx, Gy))
+  r = r_point.x % N
   s = (pow(k, -1, N) * (z + r * private_key)) % N
   return r, s
 
@@ -83,7 +85,7 @@ def ecdsa_verify(message, signature, public_key):
   w = pow(s, -1, N)
   u1 = (z * w) % N
   u2 = (r * w) % N
-  P1 = scalar_mult(u1, Point(Gx, Gy))
-  P2 = scalar_mult(u2, public_key)
-  R = point_add(P1, P2)
-  return R.x % N == r
+  pt1 = scalar_mult(u1, Point(Gx, Gy))
+  pt2 = scalar_mult(u2, public_key)
+  r_point = point_add(pt1, pt2)
+  return r_point.x % N == r

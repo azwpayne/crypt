@@ -29,7 +29,7 @@ def _compute_hmac(
   data: bytes,
   hash_func: Callable[[bytes], str],
   block_size: int,
-  hash_len: int,
+  _hash_len: int,
 ) -> bytes:
   """Compute HMAC using the specified hash function.
 

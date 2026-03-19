@@ -168,7 +168,7 @@ def schedule(block: list[int]) -> list[int]:
   """
 
   def extend(w: list[int], t: int) -> list[int]:
-    if t >= 64:  # noqa: PLR2004
+    if t >= 64:
       return w
     s0 = gamma0(w[t - 15])
     s1 = gamma1(w[t - 2])
@@ -191,16 +191,10 @@ def compress_block(
   def round_iter(
     ws: list[int],
     ks: list[int],
-    a: int,
-    b: int,
-    c: int,
-    d: int,
-    e: int,
-    f: int,
-    g: int,
-    h: int,
+    abcdefgh: tuple[int, int, int, int, int, int, int, int],
   ) -> tuple[int, int, int, int, int, int, int, int]:
     """递归处理64轮"""
+    a, b, c, d, e, f, g, h = abcdefgh
     if not ws:
       return a, b, c, d, e, f, g, h
 
@@ -222,14 +216,14 @@ def compress_block(
     new_a = (t1 + t2) & 0xFFFFFFFF
 
     return round_iter(
-      ws_rest, ks_rest, new_a, new_b, new_c, new_d, new_e, new_f, new_g, new_h
+      ws_rest, ks_rest, (new_a, new_b, new_c, new_d, new_e, new_f, new_g, new_h)
     )
 
   # 生成消息调度
   w_schedule = schedule(block)
 
   # 执行64轮压缩
-  a, b, c, d, e, f, g, h = round_iter(w_schedule, k_values, a, b, c, d, e, f, g, h)
+  a, b, c, d, e, f, g, h = round_iter(w_schedule, k_values, (a, b, c, d, e, f, g, h))
 
   # 更新哈希值
   return [

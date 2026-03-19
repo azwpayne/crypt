@@ -223,7 +223,7 @@ def verify(signature: bytes, message: bytes, public_key: tuple) -> bool:
 
     # Compare with original message
     m = bytes_to_int(message)
-  except Exception:
+  except (TypeError, ValueError, OverflowError):
     return False
   else:
     return m_prime == m

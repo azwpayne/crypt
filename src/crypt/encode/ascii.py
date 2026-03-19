@@ -272,7 +272,7 @@ def is_ascii_printable(character: str) -> bool:
     raise TypeError(msg)
 
   code = ord(character)
-  return 32 <= code <= 126  # noqa: PLR2004
+  return 32 <= code <= 126
 
 
 if __name__ == "__main__":

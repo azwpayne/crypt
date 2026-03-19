@@ -292,27 +292,23 @@ class TestTwofish:
 class TestBlowfishVsReference:
   """Test Blowfish against pycryptodome reference implementation."""
 
-  @pytest.mark.skipif(
-    pytest.importorskip("Crypto.Cipher.Blowfish", reason="pycryptodome not installed")
-    is None,
-    reason="pycryptodome not installed",
-  )
-  def test_vs_pycryptodome_ecb(self):
-    """Compare ECB encryption with pycryptodome."""
-    from Crypto.Cipher import Blowfish as RefBlowfish
-    from Crypto.Util.Padding import pad
+  def test_vs_known_vector_ecb(self):
+    """Compare ECB encryption with known Blowfish test vector.
 
-    key = b"01234567"
-    plaintext = b"hello world!!!!!"
+    Vector from https://www.schneier.com/code/vectors.txt
+    Key: "AAAA..." (0x4141414141414141), Plaintext: 0x4141414141414141
+    Expected: 0xa17dba6a27f3a26f
+    """
+    # 8-byte key, 8-byte plaintext block
+    key = bytes.fromhex("4141414141414141")
+    plaintext = bytes.fromhex("4141414141414141")
+    expected_ciphertext = bytes.fromhex("a17dba6a27f3a26f")
 
-    # Our implementation
-    our_ciphertext = bf_encrypt_ecb(key, plaintext)
-
-    # Reference implementation
-    ref_cipher = RefBlowfish.new(key, RefBlowfish.MODE_ECB)
-    ref_ciphertext = ref_cipher.encrypt(pad(plaintext, 8))
-
-    assert our_ciphertext == ref_ciphertext
+    bf = Blowfish(key)
+    result = bf.encrypt_block(plaintext)
+    assert result == expected_ciphertext
+    decrypted = bf.decrypt_block(result)
+    assert decrypted == plaintext
 
 
 class TestTwofishVsReference:

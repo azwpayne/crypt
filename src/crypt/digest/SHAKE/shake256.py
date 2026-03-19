@@ -175,10 +175,10 @@ class SHAKE256:
         A new SHAKE256 instance with the same state.
     """
     new_shake = SHAKE256.__new__(SHAKE256)
-    new_shake._state = self._state.copy()
-    new_shake._buffer = self._buffer
-    new_shake._absorbing = self._absorbing
-    new_shake._squeeze_offset = self._squeeze_offset
+    object.__setattr__(new_shake, "_state", self._state.copy())
+    object.__setattr__(new_shake, "_buffer", self._buffer)
+    object.__setattr__(new_shake, "_absorbing", self._absorbing)
+    object.__setattr__(new_shake, "_squeeze_offset", self._squeeze_offset)
     return new_shake
 
 

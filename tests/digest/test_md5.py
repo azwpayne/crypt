@@ -1,4 +1,4 @@
-# @author  : azwpayne(https://github.com/azwpayne)  # noqa: INP001
+# @author  : azwpayne(https://github.com/azwpayne)
 # @name    : test_md5.py
 # @time    : 2026/3/13
 # @desc    : Tests for MD5 digest
@@ -14,7 +14,7 @@ class TestMD5:
   """Test MD5 implementation against hashlib reference."""
 
   # RFC 1321 test vectors
-  RFC1321_TEST_VECTORS = [  # noqa: RUF012
+  RFC1321_TEST_VECTORS = [
     (b"", "d41d8cd98f00b204e9800998ecf8427e"),
     (b"a", "0cc175b9c0f1b6a831c399e269772661"),
     (b"abc", "900150983cd24fb0d6963f7d28e17f72"),

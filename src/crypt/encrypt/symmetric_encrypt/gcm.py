@@ -8,13 +8,13 @@ import hashlib
 
 
 def _constant_time_compare(a: bytes, b: bytes) -> bool:
-    """Compare two byte strings in constant time to prevent timing attacks."""
-    if len(a) != len(b):
-        return False
-    result = 0
-    for x, y in zip(a, b):
-        result |= x ^ y
-    return result == 0
+  """Compare two byte strings in constant time to prevent timing attacks."""
+  if len(a) != len(b):
+    return False
+  result = 0
+  for x, y in zip(a, b, strict=False):
+    result |= x ^ y
+  return result == 0
 
 
 def _xor_bytes(a: bytes, b: bytes) -> bytes:
@@ -77,7 +77,7 @@ def gcm_decrypt(
   ciphertext: bytes,
   tag: bytes,
   aad: bytes = b"",
-  block_cipher=None,
+  **kwargs: object,
 ) -> bytes | None:
   """
   Decrypt using GCM mode.
@@ -88,11 +88,12 @@ def gcm_decrypt(
       ciphertext: Data to decrypt
       tag: Authentication tag
       aad: Additional authenticated data
-      block_cipher: Block cipher function
+      block_cipher: Block cipher function (passed via **kwargs)
 
   Returns:
       Decrypted plaintext if authentication succeeds, None otherwise
   """
+  block_cipher = kwargs.get("block_cipher")
   # This is a simplified placeholder implementation
   if block_cipher is None:
     # Verify tag first

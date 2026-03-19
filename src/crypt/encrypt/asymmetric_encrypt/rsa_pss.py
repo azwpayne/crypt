@@ -120,16 +120,10 @@ def _emsa_pss_verify(
       True if valid, False otherwise
   """
   hash_len = hash_func().digest_size
-
-  if em_bits < 8 * hash_len + 8 * salt_len + 9:
-    return False
-
   em_len = (em_bits + 7) // 8
 
-  if len(em) != em_len:
-    return False
-
-  if em[-1] != 0xBC:
+  # Basic length and format checks
+  if em_bits < 8 * hash_len + 8 * salt_len + 9 or len(em) != em_len or em[-1] != 0xBC:
     return False
 
   # Split EM
@@ -150,10 +144,7 @@ def _emsa_pss_verify(
 
   # Check padding
   ps_len = em_len - salt_len - hash_len - 2
-  if db[:ps_len] != b"\x00" * ps_len:
-    return False
-
-  if db[ps_len] != 0x01:
+  if db[:ps_len] != b"\x00" * ps_len or db[ps_len] != 0x01:
     return False
 
   # Extract salt

@@ -4,14 +4,14 @@
 # @desc    :
 
 
-def crc8(  # noqa: PLR0913
+def crc8(
   data: bytes,
   poly: int = 0x07,
   init: int = 0x00,
   *,
   ref_in: bool = False,
   ref_out: bool = False,
-  xor_out: int = 0x00,
+  **kwargs: int,
 ) -> int:
   """
   通用CRC8计算函数 - 支持所有标准参数
@@ -22,11 +22,12 @@ def crc8(  # noqa: PLR0913
       init: 初始值 (通常为 0x00 或 0xFF)
       ref_in: 输入是否按位反转 (boolean)
       ref_out: 输出是否按位反转 (boolean)
-      xor_out: 最终异或值 (通常为 0x00 或 0xFF)
+      xor_out: 最终异或值 (通常为 0x00 或 0xFF), passed via **kwargs
 
   返回:
       CRC8校验值 (0-255)
   """
+  xor_out: int = kwargs.get("xor_out", 0x00)
 
   # 生成CRC查找表
   crc_table = [0] * 256
@@ -76,7 +77,7 @@ def crc8_maxim(data: bytes) -> int:
   poly=0x31 init=0x00 refin=true refout=true xorout=0x00
   用于Maxim 1-Wire设备
   """
-  return crc8(data, poly=0x31, init=0x00, ref_in=True, ref_out=True, xor_out=0x00)
+  return crc8(data=data, poly=0x31, init=0x00, ref_in=True, ref_out=True, xor_out=0x00)
 
 
 def crc8_autosar(data: bytes) -> int:
@@ -85,7 +86,9 @@ def crc8_autosar(data: bytes) -> int:
   poly=0x2F init=0xFF refin=false refout=false xorout=0xFF
   汽车电子标准
   """
-  return crc8(data, poly=0x2F, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF)
+  return crc8(
+    data=data, poly=0x2F, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF
+  )
 
 
 def crc8_lte(data: bytes) -> int:
@@ -94,7 +97,9 @@ def crc8_lte(data: bytes) -> int:
   poly=0x9B init=0x00 refin=false refout=false xorout=0x00
   移动通信标准
   """
-  return crc8(data, poly=0x9B, init=0x00, ref_in=False, ref_out=False, xor_out=0x00)
+  return crc8(
+    data=data, poly=0x9B, init=0x00, ref_in=False, ref_out=False, xor_out=0x00
+  )
 
 
 def crc8_smbus(data: bytes) -> int:
@@ -103,7 +108,9 @@ def crc8_smbus(data: bytes) -> int:
   poly=0x07 init=0x00 refin=false refout=false xorout=0x00
   系统管理总线
   """
-  return crc8(data, poly=0x07, init=0x00, ref_in=False, ref_out=False, xor_out=0x00)
+  return crc8(
+    data=data, poly=0x07, init=0x00, ref_in=False, ref_out=False, xor_out=0x00
+  )
 
 
 def crc8_bluetooth(data: bytes) -> int:
@@ -112,7 +119,7 @@ def crc8_bluetooth(data: bytes) -> int:
   poly=0xA7 init=0x00 refin=true refout=true xorout=0x00
   蓝牙头部错误检测
   """
-  return crc8(data, poly=0xA7, init=0x00, ref_in=True, ref_out=True, xor_out=0x00)
+  return crc8(data=data, poly=0xA7, init=0x00, ref_in=True, ref_out=True, xor_out=0x00)
 
 
 def crc8_j1850(data: bytes) -> int:
@@ -121,7 +128,9 @@ def crc8_j1850(data: bytes) -> int:
   poly=0x1D init=0xFF refin=false refout=false xorout=0xFF
   汽车总线标准
   """
-  return crc8(data, poly=0x1D, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF)
+  return crc8(
+    data=data, poly=0x1D, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF
+  )
 
 
 # ============= 验证测试 =============
@@ -133,46 +142,47 @@ def crc8_j1850(data: bytes) -> int:
 #   test_data = b"123456789"
 #
 #   # CRC-8/MAXIM - 期望值来自Maxim官方文档
-#   assert crc8_maxim(test_data) == 0xA1, "CRC-8/MAXIM 测试失败"  # noqa: PLR2004, S101
+#   assert crc8_maxim(test_data) == 0xA1, "CRC-8/MAXIM 测试失败"
 #   print(f"✓ CRC-8/MAXIM: 0x{crc8_maxim(test_data):02X}")
 #
 #   # CRC-8/AUTOSAR - 期望值来自AUTOSAR规范
-#   assert crc8_autosar(test_data) == 0xDF, "CRC-8/AUTOSAR 测试失败" # noqa: PLR2004, S101
+#   assert crc8_autosar(test_data) == 0xDF, "CRC-8/AUTOSAR 测试失败"
 #   print(f"✓ CRC-8/AUTOSAR: 0x{crc8_autosar(test_data):02X}")
 #
 #   # CRC-8/LTE - 期望值来自3GPP规范
-#   assert crc8_lte(test_data) == 0xEA, "CRC-8/LTE 测试失败" # noqa: PLR2004, S101
+#   assert crc8_lte(test_data) == 0xEA, "CRC-8/LTE 测试失败"
 #   print(f"✓ CRC-8/LTE: 0x{crc8_lte(test_data):02X}")
 #
 #   # CRC-8/SMBUS - 期望值来自SMBus规范
-#   assert crc8_smbus(test_data) == 0xF4, "CRC-8/SMBUS 测试失败" # noqa: PLR2004, S101
+#   assert crc8_smbus(test_data) == 0xF4, "CRC-8/SMBUS 测试失败"
 #   print(f"✓ CRC-8/SMBUS: 0x{crc8_smbus(test_data):02X}")
 #
 #   # CRC-8/BLUETOOTH - 期望值来自蓝牙规范
-#   assert crc8_bluetooth(test_data) == 0x26, "CRC-8/BLUETOOTH 测试失败" # noqa: PLR2004, S101
+#   assert crc8_bluetooth(test_data) == 0x26, "CRC-8/BLUETOOTH 测试失败"
 #   print(f"✓ CRC-8/BLUETOOTH: 0x{crc8_bluetooth(test_data):02X}")
 #
 #   # CRC-8/SAE-J1850 - 期望值来自SAE J1850规范
-#   assert crc8_j1850(test_data) == 0x4B, "CRC-8/SAE-J1850 测试失败" # noqa: PLR2004, S101
+#   assert crc8_j1850(test_data) == 0x4B, "CRC-8/SAE-J1850 测试失败"
 #   print(f"✓ CRC-8/SAE-J1850: 0x{crc8_j1850(test_data):02X}")
 #
 #   print("\n所有CRC8实现通过验证! ✓")
 
 
-def crc8_manual_calculation(  # noqa: PLR0913
+def crc8_manual_calculation(
   data: bytes,
   poly: int,
   init: int,
   *,
   ref_in: bool,
   ref_out: bool,
-  xor_out: int,
+  **kwargs: int,
 ) -> int:
   """
   纯位操作实现（无查找表），用于交叉验证
 
   参考算法来源: https://reveng.sourceforge.io/crc-catalogue/
   """
+  xor_out: int = kwargs.get("xor_out", 0x00)
   crc = init
 
   for byte in data:

@@ -11,7 +11,7 @@ from __future__ import annotations
 from crypt.encrypt.symmetric_encrypt.modes.eax import EAXMode
 
 import pytest
-from Crypto.Cipher import AES as CryptoAES  # noqa: N811
+from Crypto.Cipher import AES as CRYPTO_AES
 
 # NIST-style test vectors for EAX mode
 # These are verified against pycryptodome implementation
@@ -328,7 +328,7 @@ class TestEAXAgainstPyCryptodome:
     our_ciphertext, our_tag = eax.encrypt(plaintext, nonce)
 
     # PyCryptodome implementation
-    cipher = CryptoAES.new(key, CryptoAES.MODE_EAX, nonce=nonce)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     pycryptodome_ciphertext, pycryptodome_tag = cipher.encrypt_and_digest(plaintext)
 
     # Both should produce valid results (may differ due to different CMAC implementations)
@@ -337,7 +337,7 @@ class TestEAXAgainstPyCryptodome:
     assert our_decrypted == plaintext
 
     # Verify with PyCryptodome
-    cipher_verify = CryptoAES.new(key, CryptoAES.MODE_EAX, nonce=nonce)
+    cipher_verify = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     try:
       pycryptodome_decrypted = cipher_verify.decrypt_and_verify(
         pycryptodome_ciphertext, pycryptodome_tag
@@ -361,12 +361,12 @@ class TestEAXAgainstPyCryptodome:
     assert our_decrypted == plaintext
 
     # PyCryptodome implementation
-    cipher = CryptoAES.new(key, CryptoAES.MODE_EAX, nonce=nonce)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     cipher.update(aad)
     pycryptodome_ciphertext, pycryptodome_tag = cipher.encrypt_and_digest(plaintext)
 
     # Verify with PyCryptodome
-    cipher_verify = CryptoAES.new(key, CryptoAES.MODE_EAX, nonce=nonce)
+    cipher_verify = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     cipher_verify.update(aad)
     try:
       pycryptodome_decrypted = cipher_verify.decrypt_and_verify(
@@ -491,7 +491,7 @@ class TestEAXWithExternalCipher:
 
     # Create an external encrypt function using AES
     _nk, nr = EAXMode.__init__.__defaults__[4] if False else (4, 10)
-    from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
       _encrypt_block,
       key_expansion,
     )

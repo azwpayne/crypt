@@ -7,7 +7,7 @@
 import hashlib
 
 import pytest
-from Crypto.Hash import (  # noqa: F401
+from Crypto.Hash import (
   SHA1,
   SHA3_224,
   SHA3_256,
@@ -16,7 +16,6 @@ from Crypto.Hash import (  # noqa: F401
   SHA224,
   SHA256,
   SHA384,
-  SHA512,
   SHAKE128,
   SHAKE256,
 )
@@ -47,7 +46,7 @@ class TestSha:
     from crypt.digest.SHA import sha1
 
     result_custom = sha1.sha1(msg)
-    result_hashlib = hashlib.sha1(msg).hexdigest()  # noqa: S324
+    result_hashlib = hashlib.sha1(msg).hexdigest()
     result_crypto = SHA1.new(msg).hexdigest()
 
     assert result_custom == result_hashlib == result_crypto, (

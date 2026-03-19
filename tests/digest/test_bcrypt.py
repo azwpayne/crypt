@@ -6,7 +6,7 @@ Test vectors are sourced from:
 - Known test vectors from BCrypt specification
 """
 
-# ruff: noqa: S105  # Hardcoded passwords are expected in test files
+# Hardcoded passwords are expected in test files
 
 from __future__ import annotations
 
@@ -129,20 +129,20 @@ class TestBCryptHashing:
 
   def test_hash_different_costs(self):
     """Test hashing with different cost factors."""
-    password = "test_password"
+    test_pw = "test_password"
     for cost in [4, 5, 6]:
-      hashed = bcrypt_hash(password, cost=cost)
+      hashed = bcrypt_hash(test_pw, cost=cost)
       assert f"$2b${cost:02d}$" in hashed
-      assert bcrypt_verify(password, hashed)
+      assert bcrypt_verify(test_pw, hashed)
 
   def test_hash_with_provided_salt(self):
     """Test hashing with a provided salt."""
-    password = "password"
+    test_pw = "password"
     salt = generate_salt(cost=4)
-    hashed1 = bcrypt_hash(password, salt=salt)
-    hashed2 = bcrypt_hash(password, salt=salt)
+    hashed1 = bcrypt_hash(test_pw, salt=salt)
+    hashed2 = bcrypt_hash(test_pw, salt=salt)
     assert hashed1 == hashed2
-    assert bcrypt_verify(password, hashed1)
+    assert bcrypt_verify(test_pw, hashed1)
 
   def test_hash_bytes_password(self):
     """Test hashing with bytes password."""
@@ -153,26 +153,26 @@ class TestBCryptHashing:
 
   def test_hash_unicode_password(self):
     """Test hashing with unicode password."""
-    password = "hunter2"
-    hashed = bcrypt_hash(password, cost=4)
-    assert bcrypt_verify(password, hashed)
+    test_pw = "hunter2"
+    hashed = bcrypt_hash(test_pw, cost=4)
+    assert bcrypt_verify(test_pw, hashed)
     assert bcrypt_verify("hunter2", hashed)
 
   def test_hash_long_password(self):
     """Test hashing with long password (truncated at 72 bytes)."""
-    password = "a" * 100
-    hashed = bcrypt_hash(password, cost=4)
+    test_pw = "a" * 100
+    hashed = bcrypt_hash(test_pw, cost=4)
     # Passwords longer than 72 bytes are truncated
     # So the first 72 chars produce the same hash
     assert bcrypt_verify("a" * 72, hashed) is True
-    # The full 100-char password should also verify (because it's truncated)
-    assert bcrypt_verify(password, hashed) is True
+    # The full 100-char test_pw should also verify (because it's truncated)
+    assert bcrypt_verify(test_pw, hashed) is True
 
   def test_hash_empty_password(self):
     """Test hashing with empty password."""
-    password = ""
-    hashed = bcrypt_hash(password, cost=4)
-    assert bcrypt_verify(password, hashed)
+    test_pw = ""
+    hashed = bcrypt_hash(test_pw, cost=4)
+    assert bcrypt_verify(test_pw, hashed)
 
   def test_hash_binary_password(self):
     """Test hashing with binary/non-ASCII password."""
@@ -182,12 +182,12 @@ class TestBCryptHashing:
 
   def test_hash_all_prefixes(self):
     """Test hashing with all BCrypt prefixes."""
-    password = "password"
+    test_pw = "password"
     for prefix in ["$2a$", "$2b$", "$2x$", "$2y$"]:
       salt = generate_salt(cost=4, prefix=prefix)
-      hashed = bcrypt_hash(password, salt=salt)
+      hashed = bcrypt_hash(test_pw, salt=salt)
       assert hashed.startswith(prefix)
-      assert bcrypt_verify(password, hashed)
+      assert bcrypt_verify(test_pw, hashed)
 
   def test_hash_invalid_salt_format(self):
     """Test hashing with invalid salt format."""
@@ -214,20 +214,20 @@ class TestBCryptVerification:
 
   def test_verify_correct_password(self):
     """Test verification with correct password."""
-    password = "correct_password"
-    hashed = bcrypt_hash(password, cost=4)
-    assert bcrypt_verify(password, hashed) is True
+    test_pw = "correct_password"
+    hashed = bcrypt_hash(test_pw, cost=4)
+    assert bcrypt_verify(test_pw, hashed) is True
 
   def test_verify_incorrect_password(self):
     """Test verification with incorrect password."""
-    password = "correct_password"
-    hashed = bcrypt_hash(password, cost=4)
+    test_pw = "correct_password"
+    hashed = bcrypt_hash(test_pw, cost=4)
     assert bcrypt_verify("wrong_password", hashed) is False
-    # Note: Empty password is a valid password in BCrypt
+    # Note: Empty test_pw is a valid test_pw in BCrypt
     # (though not recommended for security)
     # Passwords longer than 72 bytes are truncated, so "extra" won't change the hash
-    # if password is already 72+ chars, but here it will fail
-    assert bcrypt_verify(password + "extra", hashed) is False
+    # if test_pw is already 72+ chars, but here it will fail
+    assert bcrypt_verify(test_pw + "extra", hashed) is False
 
   def test_verify_different_passwords_same_salt(self):
     """Test that different passwords with same salt don't match."""
@@ -242,12 +242,12 @@ class TestBCryptVerification:
 
   def test_verify_same_password_different_salts(self):
     """Test that same password with different salts produces different hashes."""
-    password = "same_password"
-    hash1 = bcrypt_hash(password, cost=4)
-    hash2 = bcrypt_hash(password, cost=4)
+    test_pw = "same_password"
+    hash1 = bcrypt_hash(test_pw, cost=4)
+    hash2 = bcrypt_hash(test_pw, cost=4)
     assert hash1 != hash2
-    assert bcrypt_verify(password, hash1) is True
-    assert bcrypt_verify(password, hash2) is True
+    assert bcrypt_verify(test_pw, hash1) is True
+    assert bcrypt_verify(test_pw, hash2) is True
 
   def test_verify_invalid_hash_format(self):
     """Test verification with invalid hash format."""
@@ -257,18 +257,18 @@ class TestBCryptVerification:
 
   def test_verify_truncated_hash(self):
     """Test verification with truncated hash."""
-    password = "password"
-    hashed = bcrypt_hash(password, cost=4)
+    test_pw = "password"
+    hashed = bcrypt_hash(test_pw, cost=4)
     # Truncated hash should fail
-    assert bcrypt_verify(password, hashed[:-10]) is False
+    assert bcrypt_verify(test_pw, hashed[:-10]) is False
 
   def test_verify_modified_hash(self):
     """Test verification with modified hash."""
-    password = "password"
-    hashed = bcrypt_hash(password, cost=4)
+    test_pw = "password"
+    hashed = bcrypt_hash(test_pw, cost=4)
     # Modify a character in the middle
     modified = hashed[:20] + ("X" if hashed[20] != "X" else "Y") + hashed[21:]
-    assert bcrypt_verify(password, modified) is False
+    assert bcrypt_verify(test_pw, modified) is False
 
 
 class TestBCryptConstantTimeCompare:
@@ -329,11 +329,11 @@ class TestBCryptKnownVectors:
 
   def test_vector_with_all_prefixes(self):
     """Test same password with all BCrypt prefixes."""
-    password = "test"
+    test_pw = "test"
 
     for prefix in ["$2a$", "$2b$", "$2x$", "$2y$"]:
       salt = generate_salt(cost=4, prefix=prefix)
-      hashed = bcrypt_hash(password, salt=salt)
+      hashed = bcrypt_hash(test_pw, salt=salt)
 
       # Structure verification
       parts = hashed.split("$")
@@ -368,23 +368,23 @@ class TestBCryptEdgeCases:
 
   def test_password_exactly_72_bytes(self):
     """Test password exactly 72 bytes (BCrypt limit)."""
-    password = "a" * 72
-    hashed = bcrypt_hash(password, cost=4)
+    test_pw = "a" * 72
+    hashed = bcrypt_hash(test_pw, cost=4)
     # Exact match should work
-    assert bcrypt_verify(password, hashed) is True
-    # Note: BCrypt doesn't include password length in the hash.
+    assert bcrypt_verify(test_pw, hashed) is True
+    # Note: BCrypt doesn't include test_pw length in the hash.
     # Passwords that produce the same key schedule (like 71 'a's vs 72 'a's)
     # will produce the same hash because the cyclic XOR produces identical results.
     # This is a known characteristic of BCrypt, not a bug.
 
   def test_password_73_bytes(self):
     """Test password 73 bytes (truncated to 72)."""
-    password = "a" * 73
-    hashed = bcrypt_hash(password, cost=4)
-    # 73-byte password is truncated to 72 bytes, so should match 72 'a's
+    test_pw = "a" * 73
+    hashed = bcrypt_hash(test_pw, cost=4)
+    # 73-byte test_pw is truncated to 72 bytes, so should match 72 'a's
     assert bcrypt_verify("a" * 72, hashed) is True
     # Full 73 bytes should also work (gets truncated to same 72 bytes)
-    assert bcrypt_verify(password, hashed) is True
+    assert bcrypt_verify(test_pw, hashed) is True
     # Note: 71 'a's may or may not match depending on the cyclic key schedule
     # This is a characteristic of BCrypt's key schedule, not a bug
 
@@ -436,16 +436,16 @@ class TestBCryptPerformance:
     """Test that higher cost takes more iterations."""
     import time
 
-    password = "test"
+    test_pw = "test"
 
     # Time cost=4
     start = time.perf_counter()
-    bcrypt_hash(password, cost=4)
+    bcrypt_hash(test_pw, cost=4)
     time_4 = time.perf_counter() - start
 
     # Time cost=8 (16x more iterations)
     start = time.perf_counter()
-    bcrypt_hash(password, cost=8)
+    bcrypt_hash(test_pw, cost=8)
     time_8 = time.perf_counter() - start
 
     # cost=8 should be significantly slower than cost=4

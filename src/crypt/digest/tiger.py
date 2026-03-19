@@ -1063,3 +1063,18 @@ def tiger2(data: bytes | str) -> str:
       'd4191eeba3ec6e6d87ca4e5a5c4b13e5c3a5a8b8b2a1e8e3f3c2d1b0a'
   """
   return _tiger_hash(data, tiger2_mode=True)
+
+
+# Public aliases for internal functions (used by tests)
+pad_message_tiger = _pad_message_tiger
+pad_message_tiger2 = _pad_message_tiger2
+round_func = _round
+key_schedule = _key_schedule
+compress_block = _compress_block
+INITIAL_A = _INITIAL_A
+INITIAL_B = _INITIAL_B
+INITIAL_C = _INITIAL_C
+S0 = _S0
+S1 = _S1
+S2 = _S2
+S3 = _S3

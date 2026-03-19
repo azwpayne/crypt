@@ -48,7 +48,7 @@ WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
@@ -100,16 +100,13 @@ class EAXMode:
       Authentication failed!
   """
 
-  # ruff: noqa: PLR0913
   def __init__(
     self,
     encrypt_func: Callable[[bytes], bytes] | None = None,
-    decrypt_func: Callable[[bytes], bytes] | None = None,  # noqa: ARG002
     block_size: int = 16,
     key: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
     tag_length: int = 16,
+    **kwargs: object,
   ):
     """Initialize EAX mode.
 
@@ -138,6 +135,8 @@ class EAXMode:
         >>> cipher = AES.new(b'0123456789abcdef', AES.MODE_ECB)
         >>> eax = EAXMode(encrypt_func=cipher.encrypt, block_size=16)
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     if tag_length < 1 or tag_length > block_size:
       msg = f"tag_length must be between 1 and {block_size}"
       raise ValueError(msg)

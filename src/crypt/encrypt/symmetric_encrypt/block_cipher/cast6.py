@@ -2231,20 +2231,20 @@ def key_schedule(key: bytes) -> tuple[list, list, list, list]:
   return kr_f, kr_b, tm_f, tm_b
 
 
-def _forward_quad_round(  # noqa: PLR0913
-  x0: int, x1: int, x2: int, x3: int, kr: list, tm: int
+def _forward_quad_round(
+  words: tuple[int, int, int, int], kr: list[int], tm: int
 ) -> tuple[int, int, int, int]:
   """Perform one forward quad-round.
 
   Args:
-      x0, x1, x2, x3: Four 32-bit input words
+      words: Tuple of four 32-bit input words (x0, x1, x2, x3)
       kr: List of 4 rotation keys for this round
       tm: Truncation mask
 
   Returns:
       Tuple of (x0, x1, x2, x3) after quad-round
   """
-  # Round 1 of quad-round
+  x0, x1, x2, x3 = words
   f = _f_function(x3, kr[0], tm)
   x2 = (x2 ^ f) & 0xFFFFFFFF
   x1 = (x1 + _f_function(x2, kr[1], tm)) & 0xFFFFFFFF
@@ -2254,20 +2254,20 @@ def _forward_quad_round(  # noqa: PLR0913
   return x0, x1, x2, x3
 
 
-def _backward_quad_round(  # noqa: PLR0913
-  x0: int, x1: int, x2: int, x3: int, kr: list, tm: int
+def _backward_quad_round(
+  words: tuple[int, int, int, int], kr: list[int], tm: int
 ) -> tuple[int, int, int, int]:
   """Perform one backward quad-round (inverse of forward).
 
   Args:
-      x0, x1, x2, x3: Four 32-bit input words
+      words: Tuple of four 32-bit input words (x0, x1, x2, x3)
       kr: List of 4 rotation keys for this round
       tm: Truncation mask
 
   Returns:
       Tuple of (x0, x1, x2, x3) after quad-round
   """
-  # Inverse operations in reverse order
+  x0, x1, x2, x3 = words
   x3 = (x3 + _f_function(x0, kr[3], tm)) & 0xFFFFFFFF
   x0 = (x0 ^ _f_function(x1, kr[2], tm)) & 0xFFFFFFFF
   x1 = (x1 - _f_function(x2, kr[1], tm)) & 0xFFFFFFFF
@@ -2304,7 +2304,7 @@ def encrypt_block(block: bytes, key: bytes) -> bytes:
 
   # Perform 12 forward quad-rounds
   for qr in range(12):
-    x0, x1, x2, x3 = _forward_quad_round(x0, x1, x2, x3, kr_f[qr], tm_f[qr])
+    x0, x1, x2, x3 = _forward_quad_round((x0, x1, x2, x3), kr_f[qr], tm_f[qr])
 
   # Store result (big-endian)
   return (
@@ -2340,7 +2340,7 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
 
   # Perform 12 backward quad-rounds (in reverse order)
   for qr in range(11, -1, -1):
-    x0, x1, x2, x3 = _backward_quad_round(x0, x1, x2, x3, kr_f[qr], tm_f[qr])
+    x0, x1, x2, x3 = _backward_quad_round((x0, x1, x2, x3), kr_f[qr], tm_f[qr])
 
   # Store result (big-endian)
   return (

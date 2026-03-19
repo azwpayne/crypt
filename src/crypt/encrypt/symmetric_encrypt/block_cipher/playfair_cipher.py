@@ -24,17 +24,14 @@ def _create_matrix(key: str) -> list[list[str]]:
   # 清理密钥：去重、转大写、J替换为I
   seen = set()
   cleaned_key = []
-  for c in key.upper():
-    if c == "J":
-      c = "I"
-    if c.isalpha() and c not in seen:
-      seen.add(c)
-      cleaned_key.append(c)
+  for raw_char in key.upper():
+    normalized = "I" if raw_char == "J" else raw_char
+    if normalized.isalpha() and normalized not in seen:
+      seen.add(normalized)
+      cleaned_key.append(normalized)
 
   # 填充剩余字母
-  for c in alphabet:
-    if c not in seen:
-      cleaned_key.append(c)
+  cleaned_key.extend(c for c in alphabet if c not in seen)
 
   # 创建5x5矩阵
   return [cleaned_key[i * 5 : (i + 1) * 5] for i in range(5)]
@@ -79,11 +76,10 @@ def _prepare_text(text: str) -> list[str]:
   """
   # 清理文本：只保留字母，转大写，J替换为I
   cleaned = []
-  for c in text.upper():
-    if c.isalpha():
-      if c == "J":
-        c = "I"
-      cleaned.append(c)
+  for raw_char in text.upper():
+    if raw_char.isalpha():
+      normalized = "I" if raw_char == "J" else raw_char
+      cleaned.append(normalized)
 
   # 处理双字母组
   digraphs = []

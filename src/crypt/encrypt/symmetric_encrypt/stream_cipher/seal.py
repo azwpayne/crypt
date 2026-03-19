@@ -58,8 +58,8 @@ def _initialize_tables(key: bytes) -> tuple[list[int], list[int], list[int]]:
   h = hashlib.sha1(key).digest()
 
   # Create tables T and S
-  T = [0] * T_SIZE
-  S = [0] * S_SIZE
+  table_t = [0] * T_SIZE
+  table_s = [0] * S_SIZE
 
   # Fill T and S using iterated SHA-1
   j = 0
@@ -71,14 +71,14 @@ def _initialize_tables(key: bytes) -> tuple[list[int], list[int], list[int]]:
 
     word = int.from_bytes(h[(i % 5) * 4 : (i % 5 + 1) * 4], "big")
     if i < T_SIZE:
-      T[i] = word
+      table_t[i] = word
     else:
-      S[i - T_SIZE] = word
+      table_s[i - T_SIZE] = word
 
   # Create R table
   r_table = [0] * (4 * (NUM_ROUNDS + 1))
 
-  return T, S, r_table
+  return table_t, table_s, r_table
 
 
 class SEALState:
@@ -124,33 +124,35 @@ class SEALState:
     output = []
 
     # Save initial values
-    A = self.R[4 * NUM_ROUNDS]
-    B = self.R[4 * NUM_ROUNDS + 1]
-    C = self.R[4 * NUM_ROUNDS + 2]
-    D = self.R[4 * NUM_ROUNDS + 3]
+    reg_a = self.R[4 * NUM_ROUNDS]
+    reg_b = self.R[4 * NUM_ROUNDS + 1]
+    reg_c = self.R[4 * NUM_ROUNDS + 2]
+    reg_d = self.R[4 * NUM_ROUNDS + 3]
     n = self.n
 
     for _ in range(64):  # Generate 64 * 4 = 256 bytes? No, let me fix this
-      # F function - mix A, B, C, D using T table
+      # F function - mix reg_a, reg_b, reg_c, reg_d using T table
       for _ in range(2):
-        p0, p1 = (A >> 9) & 0x1FF, (A >> 0) & 0x1FF
-        q0, q1 = (A >> 23) & 0x1FF, (A >> 14) & 0x1FF
+        p0, p1 = (reg_a >> 9) & 0x1FF, (reg_a >> 0) & 0x1FF
+        q0, q1 = (reg_a >> 23) & 0x1FF, (reg_a >> 14) & 0x1FF
 
-        B = (B + self.T[p0]) & 0xFFFFFFFF
-        C = (C + self.T[p1]) & 0xFFFFFFFF
-        D = (D ^ self.T[q0]) & 0xFFFFFFFF
-        A = (A >> 16) | ((D ^ self.T[q1]) << 16)
+        reg_b = (reg_b + self.T[p0]) & 0xFFFFFFFF
+        reg_c = (reg_c + self.T[p1]) & 0xFFFFFFFF
+        reg_d = (reg_d ^ self.T[q0]) & 0xFFFFFFFF
+        reg_a = (reg_a >> 16) | ((reg_d ^ self.T[q1]) << 16)
 
-      output.extend((B & 0xFFFFFFFF, C & 0xFFFFFFFF, D & 0xFFFFFFFF, A & 0xFFFFFFFF))
+      output.extend(
+        (reg_b & 0xFFFFFFFF, reg_c & 0xFFFFFFFF, reg_d & 0xFFFFFFFF, reg_a & 0xFFFFFFFF)
+      )
       # Update n for next iteration
       n = (n + 1) & 0xFFFFFFFF
       self._initialize_register(n)
-      A = self.R[4 * NUM_ROUNDS]
-      B = self.R[4 * NUM_ROUNDS + 1]
-      C = self.R[4 * NUM_ROUNDS + 2]
-      D = self.R[4 * NUM_ROUNDS + 3]
+      reg_a = self.R[4 * NUM_ROUNDS]
+      reg_b = self.R[4 * NUM_ROUNDS + 1]
+      reg_c = self.R[4 * NUM_ROUNDS + 2]
+      reg_d = self.R[4 * NUM_ROUNDS + 3]
 
-    # Convert to bytes
+      # Convert to bytes
     keystream = b""
     for word in output[:L]:  # Only take L words
       keystream += word.to_bytes(4, "big")

@@ -56,6 +56,8 @@ class Point:
       return NotImplemented
     return self.x == other.x and self.y == other.y
 
+  __hash__ = None
+
   def is_valid(self) -> bool:
     """Check if point is on the curve."""
     x2 = (self.x * self.x) % P
@@ -69,10 +71,10 @@ class Point:
 B = Point(BX, BY)
 
 
-def point_add(P1: Point, P2: Point) -> Point:
+def point_add(p1: Point, p2: Point) -> Point:
   """Add two points on the Edwards curve."""
-  x1, y1 = P1.x, P1.y
-  x2, y2 = P2.x, P2.y
+  x1, y1 = p1.x, p1.y
+  x2, y2 = p2.x, p2.y
 
   # Edwards addition formula
   x3 = ((x1 * y2 + x2 * y1) * _modp_inv(1 + D * x1 * x2 * y1 * y2)) % P
@@ -176,9 +178,9 @@ def generate_public_key(private_key: bytes) -> bytes:
   a |= 1 << 254  # Set bit 254
 
   # Compute public key A = a * B
-  A = scalar_mult(a, B)
+  a_point = scalar_mult(a, B)
 
-  return encode_point(A)
+  return encode_point(a_point)
 
 
 def sign(message: bytes, private_key: bytes) -> bytes:
@@ -204,23 +206,23 @@ def sign(message: bytes, private_key: bytes) -> bytes:
   a |= 1 << 254
 
   # Compute public key
-  A = scalar_mult(a, B)
-  public_key = encode_point(A)
+  a_point = scalar_mult(a, B)
+  public_key = encode_point(a_point)
 
   # Compute r = H(h[32:64] || message)
   r = int.from_bytes(_h(h[32:64] + message), "little") % L
 
   # Compute R = r * B
-  R = scalar_mult(r, B)
+  r_point = scalar_mult(r, B)
 
   # Compute k = H(R || A || message)
-  k = int.from_bytes(_h(encode_point(R) + public_key + message), "little") % L
+  k = int.from_bytes(_h(encode_point(r_point) + public_key + message), "little") % L
 
   # Compute s = (r + k * a) mod L
   s = (r + k * a) % L
 
   # Signature is R || s
-  return encode_point(R) + s.to_bytes(32, "little")
+  return encode_point(r_point) + s.to_bytes(32, "little")
 
 
 def verify(signature: bytes, message: bytes, public_key: bytes) -> bool:
@@ -240,24 +242,24 @@ def verify(signature: bytes, message: bytes, public_key: bytes) -> bool:
     return False
 
   # Decode R and s
-  R_bytes = signature[:32]
+  r_bytes = signature[:32]
   s = int.from_bytes(signature[32:], "little")
 
   if s >= L:
     return False
 
   # Decode points
-  R = decode_point(R_bytes)
-  A = decode_point(public_key)
+  r_point = decode_point(r_bytes)
+  a_point = decode_point(public_key)
 
-  if R is None or A is None:
+  if r_point is None or a_point is None:
     return False
 
   # Compute k = H(R || A || message)
-  k = int.from_bytes(_h(R_bytes + public_key + message), "little") % L
+  k = int.from_bytes(_h(r_bytes + public_key + message), "little") % L
 
   # Verify: s * B == R + k * A
   lhs = scalar_mult(s, B)
-  rhs = point_add(R, scalar_mult(k, A))
+  rhs = point_add(r_point, scalar_mult(k, a_point))
 
   return lhs == rhs

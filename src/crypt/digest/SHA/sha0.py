@@ -65,6 +65,9 @@ def sha0(data):
 
     a, b, c, d, e = h0, h1, h2, h3, h4
 
+    # Initialize f and k to satisfy type checker
+    f = k = 0
+
     # 主循环
     for j in range(80):
       if 0 <= j <= 19:

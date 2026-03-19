@@ -7,7 +7,7 @@ This implementation is provided for educational purposes only.
 
 import warnings
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.AES import (
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,
   _encrypt_block,
   _get_key_params,
@@ -39,8 +39,7 @@ class ECBMode:
     decrypt_func: Callable[[bytes], bytes] | None = None,
     block_size: int = 16,
     key: bytes | None = None,
-    expanded_key: list[int] | None = None,
-    nr: int | None = None,
+    **kwargs: object,
   ):
     """Initialize ECB mode.
 
@@ -49,12 +48,13 @@ class ECBMode:
         decrypt_func: Optional external decrypt function.
         block_size: The block size in bytes (default 16 for AES).
         key: The encryption key (required if using AES).
-        expanded_key: Pre-computed expanded key (optional).
-        nr: Number of rounds (optional, derived from key if not provided).
+        **kwargs: Optional: expanded_key (list[int]), nr (int).
 
     Raises:
         ValueError: If key is not provided and no external functions are given.
     """
+    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
+    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
     warnings.warn(
       "ECB mode is not secure for most applications. "
       "Identical plaintext blocks produce identical ciphertext blocks, "

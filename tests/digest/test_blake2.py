@@ -17,7 +17,7 @@ class TestBlake2b:
   """Test BLAKE2b implementation against hashlib reference."""
 
   # RFC 7693 test vectors
-  RFC7693_VECTORS: list[tuple[bytes, int, str]] = [  # noqa: RUF012
+  RFC7693_VECTORS: list[tuple[bytes, int, str]] = [
     # (message, digest_size, expected_hash)
     (
       b"",
@@ -37,7 +37,7 @@ class TestBlake2b:
   ]
 
   # Known test vectors for BLAKE2b
-  TEST_VECTORS: list[tuple[bytes, str]] = [  # noqa: RUF012
+  TEST_VECTORS: list[tuple[bytes, str]] = [
     (
       b"",
       "786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce",

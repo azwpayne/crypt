@@ -3,7 +3,7 @@
 from crypt.encrypt.symmetric_encrypt.modes.cbc import CBCMode
 
 import pytest
-from Crypto.Cipher import AES as CryptoAES
+from Crypto.Cipher import AES as CRYPTO_AES
 
 AES_KEY = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c")
 NIST_IV = bytes.fromhex("000102030405060708090a0b0c0d0e0f")
@@ -52,13 +52,13 @@ class TestCBC:
 
     # PyCryptodome implementation (requires padded plaintext)
     padded_plaintext = pad(plaintext, 16)
-    cipher = CryptoAES.new(key, CryptoAES.MODE_CBC, iv=iv)
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CBC, iv=iv)
     pycryptodome_ciphertext = cipher.encrypt(padded_plaintext)
 
     assert our_ciphertext == pycryptodome_ciphertext
 
     # Also test decryption - PyCryptodome returns padded plaintext
-    cipher_decrypt = CryptoAES.new(key, CryptoAES.MODE_CBC, iv=iv)
+    cipher_decrypt = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CBC, iv=iv)
     pycryptodome_padded = cipher_decrypt.decrypt(our_ciphertext)
     # Remove padding to compare
     from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import unpad

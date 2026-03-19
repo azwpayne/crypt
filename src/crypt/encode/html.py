@@ -57,7 +57,7 @@ DEFAULT_ESCAPE_CHARS = {
 }
 
 
-def html_encode(text: str, quote: bool = True) -> str:
+def html_encode(text: str, *, quote: bool = True) -> str:
   """Encode special characters to HTML entities.
 
   Encodes the characters &, <, and > to their corresponding HTML entities.

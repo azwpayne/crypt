@@ -113,10 +113,10 @@ class TestRC6:
     """Test that invalid block size raises error."""
     key = b"SecretKey1234567890123456789012"
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Block must be"):
       encrypt_block(b"short", key)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Block must be"):
       decrypt_block(b"short", key)
 
   def test_cbc_invalid_iv(self):
@@ -125,7 +125,7 @@ class TestRC6:
     iv = b"short"
     plaintext = b"Test data"
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="IV must be"):
       rc6_cbc_encrypt(plaintext, key, iv)
 
   def test_variable_key_lengths(self):

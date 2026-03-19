@@ -334,17 +334,17 @@ class TestX25519:
 
   def test_invalid_private_key_length(self):
     """Test that invalid private key length raises error."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="32"):
       generate_public_key(b"short")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="32"):
       generate_public_key(b"x" * 33)
 
   def test_invalid_public_key_length(self):
     """Test that invalid public key length raises error."""
     private_key = generate_private_key()
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="32"):
       compute_shared_secret(private_key, b"short")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="32"):
       compute_shared_secret(private_key, b"x" * 33)

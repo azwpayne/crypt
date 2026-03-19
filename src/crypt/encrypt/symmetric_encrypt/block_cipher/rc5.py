@@ -52,28 +52,28 @@ def key_schedule(key: bytes, rounds: int = ROUNDS) -> list[int]:
 
   # Convert key to word array L
   c = max(1, (key_len + 3) // 4)  # Number of words
-  L = [0] * c
+  l_arr = [0] * c
 
   for i in range(key_len - 1, -1, -1):
-    L[i // 4] = (L[i // 4] << 8) | key[i]
+    l_arr[i // 4] = (l_arr[i // 4] << 8) | key[i]
 
   # Initialize S array with constants
   t = 2 * (rounds + 1)
-  S = [0] * t
-  S[0] = P32
+  s_arr = [0] * t
+  s_arr[0] = P32
   for i in range(1, t):
-    S[i] = (S[i - 1] + Q32) & MASK32
+    s_arr[i] = (s_arr[i - 1] + Q32) & MASK32
 
   # Mix key into S
   i = j = 0
-  A = B = 0
+  a_val = b_val = 0
   for _ in range(3 * max(t, c)):
-    A = S[i] = _rotl((S[i] + A + B) & MASK32, 3)
-    B = L[j] = _rotl((L[j] + A + B) & MASK32, (A + B) % 32)
+    a_val = s_arr[i] = _rotl((s_arr[i] + a_val + b_val) & MASK32, 3)
+    b_val = l_arr[j] = _rotl((l_arr[j] + a_val + b_val) & MASK32, (a_val + b_val) % 32)
     i = (i + 1) % t
     j = (j + 1) % c
 
-  return S
+  return s_arr
 
 
 def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
@@ -91,23 +91,23 @@ def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
     raise ValueError(msg)
 
-  S = key_schedule(key, rounds)
+  s_arr = key_schedule(key, rounds)
 
   # Split into two 32-bit words (little endian)
-  A = int.from_bytes(block[0:4], "little")
-  B = int.from_bytes(block[4:8], "little")
+  a_val = int.from_bytes(block[0:4], "little")
+  b_val = int.from_bytes(block[4:8], "little")
 
   # Initial whitening
-  A = (A + S[0]) & MASK32
-  B = (B + S[1]) & MASK32
+  a_val = (a_val + s_arr[0]) & MASK32
+  b_val = (b_val + s_arr[1]) & MASK32
 
   # Rounds
   for i in range(1, rounds + 1):
-    A = (_rotl(A ^ B, B % 32) + S[2 * i]) & MASK32
-    B = (_rotl(B ^ A, A % 32) + S[2 * i + 1]) & MASK32
+    a_val = (_rotl(a_val ^ b_val, b_val % 32) + s_arr[2 * i]) & MASK32
+    b_val = (_rotl(b_val ^ a_val, a_val % 32) + s_arr[2 * i + 1]) & MASK32
 
-  # Combine result (little endian)
-  return A.to_bytes(4, "little") + B.to_bytes(4, "little")
+    # Combine result (little endian)
+  return a_val.to_bytes(4, "little") + b_val.to_bytes(4, "little")
 
 
 def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
@@ -125,23 +125,23 @@ def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
     msg = f"Block must be {BLOCK_SIZE} bytes, got {len(block)}"
     raise ValueError(msg)
 
-  S = key_schedule(key, rounds)
+  s_arr = key_schedule(key, rounds)
 
   # Split into two 32-bit words (little endian)
-  A = int.from_bytes(block[0:4], "little")
-  B = int.from_bytes(block[4:8], "little")
+  a_val = int.from_bytes(block[0:4], "little")
+  b_val = int.from_bytes(block[4:8], "little")
 
   # Reverse rounds
   for i in range(rounds, 0, -1):
-    B = _rotr((B - S[2 * i + 1]) & MASK32, A % 32) ^ A
-    A = _rotr((A - S[2 * i]) & MASK32, B % 32) ^ B
+    b_val = _rotr((b_val - s_arr[2 * i + 1]) & MASK32, a_val % 32) ^ a_val
+    a_val = _rotr((a_val - s_arr[2 * i]) & MASK32, b_val % 32) ^ b_val
 
-  # Reverse whitening
-  B = (B - S[1]) & MASK32
-  A = (A - S[0]) & MASK32
+    # Reverse whitening
+  b_val = (b_val - s_arr[1]) & MASK32
+  a_val = (a_val - s_arr[0]) & MASK32
 
   # Combine result (little endian)
-  return A.to_bytes(4, "little") + B.to_bytes(4, "little")
+  return a_val.to_bytes(4, "little") + b_val.to_bytes(4, "little")
 
 
 # PKCS7 padding helpers

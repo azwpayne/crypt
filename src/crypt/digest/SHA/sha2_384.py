@@ -149,7 +149,7 @@ def _pad_message(message: bytes) -> bytes:
   message += b"\x80"  # 追加 1 位
 
   # 填充 0 直到长度 ≡ 112 mod 128
-  while (len(message) % 128) != 112:  # noqa: PLR2004
+  while (len(message) % 128) != 112:
     message += b"\x00"
 
   # 追加 128 位消息长度（大端序）

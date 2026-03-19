@@ -116,7 +116,7 @@ def verify_k_table():
   generated = generate_sha2_k_table()
 
   if generated == expected:
-    print("✓ 验证通过: 生成的 K 表与 FIPS 180-4 标准完全一致")  # noqa: RUF001
+    print("✓ 验证通过: 生成的 K 表与 FIPS 180-4 标准完全一致")
     return True
   print("✗ 验证失败")
   for i, (g, e) in enumerate(zip(generated, expected, strict=False)):

@@ -146,16 +146,12 @@ class TestBCryptHashing:
 
   def test_hash_bytes_password(self):
     """Test hashing with bytes password."""
-    password = b"password"
-    hashed = bcrypt_hash(password, cost=4)
-    assert bcrypt_verify(password, hashed)
+    hashed = self._extracted_from_test_hash_binary_password_3(b"password")
     assert bcrypt_verify("password", hashed)
 
   def test_hash_unicode_password(self):
     """Test hashing with unicode password."""
-    test_pw = "hunter2"
-    hashed = bcrypt_hash(test_pw, cost=4)
-    assert bcrypt_verify(test_pw, hashed)
+    hashed = self._extracted_from_test_hash_binary_password_3("hunter2")
     assert bcrypt_verify("hunter2", hashed)
 
   def test_hash_long_password(self):
@@ -170,15 +166,20 @@ class TestBCryptHashing:
 
   def test_hash_empty_password(self):
     """Test hashing with empty password."""
-    test_pw = ""
-    hashed = bcrypt_hash(test_pw, cost=4)
-    assert bcrypt_verify(test_pw, hashed)
+    hashed = self._extracted_from_test_hash_binary_password_3("")
 
   def test_hash_binary_password(self):
     """Test hashing with binary/non-ASCII password."""
-    password = b"\x00\x01\x02\x03\xff\xfe\xfd\xfc"
-    hashed = bcrypt_hash(password, cost=4)
-    assert bcrypt_verify(password, hashed)
+    hashed = self._extracted_from_test_hash_binary_password_3(
+      b"\x00\x01\x02\x03\xff\xfe\xfd\xfc"
+    )
+
+  # NOTE: Rename this here and in `test_hash_bytes_password`, `test_hash_unicode_password`, `test_hash_empty_password` and `test_hash_binary_password`
+  def _extracted_from_test_hash_binary_password_3(self, arg0):
+    password = arg0
+    result = bcrypt_hash(password, cost=4)
+    assert bcrypt_verify(password, result)
+    return result
 
   def test_hash_all_prefixes(self):
     """Test hashing with all BCrypt prefixes."""
@@ -227,7 +228,7 @@ class TestBCryptVerification:
     # (though not recommended for security)
     # Passwords longer than 72 bytes are truncated, so "extra" won't change the hash
     # if test_pw is already 72+ chars, but here it will fail
-    assert bcrypt_verify(test_pw + "extra", hashed) is False
+    assert bcrypt_verify(f"{test_pw}extra", hashed) is False
 
   def test_verify_different_passwords_same_salt(self):
     """Test that different passwords with same salt don't match."""
@@ -325,7 +326,7 @@ class TestBCryptKnownVectors:
       assert bcrypt_verify(password, hashed) is True
 
       # Verify wrong password fails
-      assert bcrypt_verify(password + "wrong", hashed) is False
+      assert bcrypt_verify(f"{password}wrong", hashed) is False
 
   def test_vector_with_all_prefixes(self):
     """Test same password with all BCrypt prefixes."""

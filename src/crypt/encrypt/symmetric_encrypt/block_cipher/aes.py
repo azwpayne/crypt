@@ -714,13 +714,13 @@ def key_expansion(key: bytes) -> list[int]:
     temp = w[i - 1]
     if i % nk == 0:
       # RotWord and SubWord
-      temp = bytes([S_BOX[b] for b in temp[1:] + temp[:1]])
+      temp = bytes(S_BOX[b] for b in temp[1:] + temp[:1])
       # XOR with Rcon
-      temp = bytes([temp[j] ^ (RCON[(i // nk) - 1] if j == 0 else 0) for j in range(4)])
+      temp = bytes(temp[j] ^ (RCON[(i // nk) - 1] if j == 0 else 0) for j in range(4))
     elif nk > 6 and i % nk == 4:
       # Additional SubWord for AES-256
-      temp = bytes([S_BOX[b] for b in temp])
-    w.append(bytes([w[i - nk][j] ^ temp[j] for j in range(4)]))
+      temp = bytes(S_BOX[b] for b in temp)
+    w.append(bytes(w[i - nk][j] ^ temp[j] for j in range(4)))
 
   # Flatten to list of bytes
   expanded = []
@@ -744,7 +744,7 @@ def _encrypt_block(block: bytes, expanded_key: list[int], nr: int) -> bytes:
   state = bytearray(block)
 
   # Initial round
-  add_round_key(state, bytes(expanded_key[0:16]))
+  add_round_key(state, bytes(expanded_key[:16]))
 
   # Main rounds
   for round_num in range(1, nr):
@@ -788,7 +788,7 @@ def _decrypt_block(block: bytes, expanded_key: list[int], nr: int) -> bytes:
   # Final round
   shift_rows(state, inv=True)
   sub_bytes(state, inv=True)
-  add_round_key(state, bytes(expanded_key[0:16]))
+  add_round_key(state, bytes(expanded_key[:16]))
 
   return bytes(state)
 
@@ -891,7 +891,7 @@ def aes_cbc_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
   for i in range(0, len(padded), 16):
     block = padded[i : i + 16]
     # XOR with previous ciphertext block (or IV for first block)
-    xored = bytes([block[j] ^ prev_block[j] for j in range(16)])
+    xored = bytes(block[j] ^ prev_block[j] for j in range(16))
     encrypted = _encrypt_block(xored, expanded_key, nr)
     ciphertext.extend(encrypted)
     prev_block = encrypted
@@ -928,7 +928,7 @@ def aes_cbc_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     block = ciphertext[i : i + 16]
     decrypted = _decrypt_block(block, expanded_key, nr)
     # XOR with previous ciphertext block (or IV for first block)
-    xored = bytes([decrypted[j] ^ prev_block[j] for j in range(16)])
+    xored = bytes(decrypted[j] ^ prev_block[j] for j in range(16))
     plaintext.extend(xored)
     prev_block = block
 

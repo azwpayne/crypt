@@ -28,9 +28,12 @@ def encrypt(text: str, rails: int) -> str:
       . E . L . W . R . D .
       . . L . . . O . . . L
   """
-  if rails < 2:
-    msg = "栅栏数必须大于等于2"
+  if rails < 1:
+    msg = "栅栏数必须大于等于1"
     raise ValueError(msg)
+
+  if rails == 1:
+    return text
 
   if len(text) <= rails:
     return text
@@ -65,9 +68,12 @@ def decrypt(text: str, rails: int) -> str:
   返回:
       解密后的字符串
   """
-  if rails < 2:
-    msg = "栅栏数必须大于等于2"
+  if rails < 1:
+    msg = "栅栏数必须大于等于1"
     raise ValueError(msg)
+
+  if rails == 1:
+    return text
 
   if len(text) <= rails:
     return text

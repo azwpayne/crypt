@@ -8,12 +8,15 @@ dependencies = [
     "blake3>=1.0.8",
     "cryptography",
     "pycryptodome",
+    "ruff>=0.15.6",
 ]
 
 [dependency-groups]
 dev = [
     "poethepoet",
+    "pyrefly",
     "ruff",
+    "ty",
 ]
 test = [
     "pytest",
@@ -70,7 +73,9 @@ addopts = """\
     --cov-report=xml \
     --cov-branch \
     """
-
+filterwarnings = [
+    "ignore::pytest_benchmark.logger.PytestBenchmarkWarning"
+]
 [tool.pytest_benchmark]
 min_rounds = 5
 min_time = 0.000005

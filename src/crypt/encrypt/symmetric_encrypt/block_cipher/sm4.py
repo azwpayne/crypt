@@ -308,25 +308,35 @@ def _tau(a):
 
 
 def _l(b):
+  b &= 0xFFFFFFFF
   return (
     b
     ^ ((b << 2) | (b >> 30))
     ^ ((b << 10) | (b >> 22))
     ^ ((b << 18) | (b >> 14))
     ^ ((b << 24) | (b >> 8))
-  )
+  ) & 0xFFFFFFFF
+
+
+def _l_prime(b):
+  b &= 0xFFFFFFFF
+  return (
+    b
+    ^ ((b << 13) | (b >> 19))
+    ^ ((b << 23) | (b >> 9))
+  ) & 0xFFFFFFFF
 
 
 def _f(x0, x1, x2, x3, rk):
-  return x0 ^ _l(_tau(x1 ^ x2 ^ x3 ^ rk))
+  return (x0 ^ _l(_tau(x1 ^ x2 ^ x3 ^ rk))) & 0xFFFFFFFF
 
 
 def _key_expand(key):
-  k_vals = [int.from_bytes(key[i : i + 4], "big") ^ FK[i] for i in range(4)]
+  k_vals = [int.from_bytes(key[i * 4 : i * 4 + 4], "big") ^ FK[i] for i in range(4)]
   rk = []
   for i in range(32):
     k_vals.append(
-      k_vals[i] ^ _l(_tau(k_vals[i + 1] ^ k_vals[i + 2] ^ k_vals[i + 3] ^ CK[i]))
+      k_vals[i] ^ _l_prime(_tau(k_vals[i + 1] ^ k_vals[i + 2] ^ k_vals[i + 3] ^ CK[i]))
     )
     rk.append(k_vals[i + 4])
   return rk
@@ -334,7 +344,7 @@ def _key_expand(key):
 
 def sm4_encrypt(block, key):
   rk = _key_expand(key)
-  x_vals = [int.from_bytes(block[i : i + 4], "big") for i in range(4)]
+  x_vals = [int.from_bytes(block[i * 4 : i * 4 + 4], "big") for i in range(4)]
   for i in range(32):
     x_vals.append(_f(x_vals[i], x_vals[i + 1], x_vals[i + 2], x_vals[i + 3], rk[i]))
   return b"".join(x_vals[35 - i].to_bytes(4, "big") for i in range(4))
@@ -342,7 +352,7 @@ def sm4_encrypt(block, key):
 
 def sm4_decrypt(block, key):
   rk = _key_expand(key)
-  x_vals = [int.from_bytes(block[i : i + 4], "big") for i in range(4)]
+  x_vals = [int.from_bytes(block[i * 4 : i * 4 + 4], "big") for i in range(4)]
   for i in range(32):
     x_vals.append(
       _f(x_vals[i], x_vals[i + 1], x_vals[i + 2], x_vals[i + 3], rk[31 - i])

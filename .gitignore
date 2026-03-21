@@ -87,3 +87,4 @@ dmypy.json
 cython_debug/
 .claude/
 docs
+.omc

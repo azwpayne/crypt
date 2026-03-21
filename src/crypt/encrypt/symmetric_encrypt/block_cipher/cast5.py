@@ -1977,7 +1977,7 @@ def key_schedule(key: bytes) -> tuple[list[int], list[list[int]]]:
 def _f_function(
   x: int,
   s_boxes: list[list[int]],
-  _round_key: int,
+  round_key: int,
   round_type: int,
 ) -> int:
   """
@@ -1992,6 +1992,9 @@ def _f_function(
   Returns:
       32-bit output
   """
+  # Mix in the round key
+  x = (x ^ round_key) & 0xFFFFFFFF
+
   # Split x into 4 bytes
   a = (x >> 24) & 0xFF
   b = (x >> 16) & 0xFF

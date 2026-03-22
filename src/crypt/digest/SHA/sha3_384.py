@@ -174,13 +174,6 @@ def _keccak_pad(message: bytes, rate_bits: int) -> bytes:
   Returns:
       Padded message bytes
   """
-  if isinstance(message, str):
-    message = message.encode("utf-8")
-  elif isinstance(message, bytes):
-    pass
-  else:
-    message = bytes(message)
-
   rate_bytes = rate_bits // 8
   msg_len = len(message)
 

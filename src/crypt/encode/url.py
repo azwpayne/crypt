@@ -43,13 +43,14 @@ def url_encode(data: bytes | str, safe: str = "") -> str:
       >>> url_encode(b"\x00\x01\x02")
       '%00%01%02'
   """
-  if isinstance(data, str):
-    byte_data = data.encode("utf-8")
-  elif isinstance(data, bytes):
-    byte_data = data
-  else:
-    msg = "data must be bytes or str"
-    raise TypeError(msg)
+  match data:
+    case str():
+      byte_data = data.encode("utf-8")
+    case bytes():
+      byte_data = data
+    case _:
+      msg = "data must be bytes or str"
+      raise TypeError(msg)
 
   # Build set of characters that don't need encoding
   safe_chars = UNRESERVED_CHARS | frozenset(safe)

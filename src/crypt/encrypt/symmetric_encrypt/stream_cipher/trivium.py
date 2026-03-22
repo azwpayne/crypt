@@ -28,7 +28,7 @@ class Trivium:
     for _ in range(4 * 288):
       self._clock(output=False)
 
-  def _clock(self, output: bool = True) -> int:
+  def _clock(self, *, output: bool = True) -> int:
     s = self._s
     t1 = s[65] ^ s[92]
     t2 = s[161] ^ s[176]
@@ -43,9 +43,7 @@ class Trivium:
 
   def keystream(self, length: int) -> bytes:
     """Generate *length* bytes of keystream."""
-    bits: list[int] = []
-    for _ in range(length * 8):
-      bits.append(self._clock())
+    bits = [self._clock() for _ in range(length * 8)]
     return _bits_to_bytes(bits)
 
   def encrypt(self, data: bytes) -> bytes:
@@ -58,11 +56,7 @@ class Trivium:
 
 
 def _bytes_to_bits(data: bytes) -> list[int]:
-  bits = []
-  for byte in data:
-    for i in range(8):
-      bits.append((byte >> i) & 1)
-  return bits
+  return [(byte >> i) & 1 for byte in data for i in range(8)]
 
 
 def _bits_to_bytes(bits: list[int]) -> bytes:

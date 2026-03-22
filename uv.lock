@@ -323,7 +323,6 @@ dependencies = [
     { name = "blake3" },
     { name = "cryptography" },
     { name = "pycryptodome" },
-    { name = "ruff" },
 ]
 
 [package.dev-dependencies]
@@ -350,7 +349,6 @@ requires-dist = [
     { name = "blake3", specifier = ">=1.0.8" },
     { name = "cryptography" },
     { name = "pycryptodome" },
-    { name = "ruff", specifier = ">=0.15.6" },
 ]
 
 [package.metadata.requires-dev]

@@ -12,10 +12,8 @@ MASK = 0xFFFFFFFF
 KEY_SIZE = 16
 
 
-def _mx(z: int, y: int, s: int, key: list, p: int, e: int) -> int:
-  return (
-    ((z >> 5 ^ y << 2) + (y >> 3 ^ z << 4)) ^ ((s ^ y) + (key[(p & 3) ^ e] ^ z))
-  ) & MASK
+def _mx(z: int, y: int, s: int, key_val: int) -> int:
+  return (((z >> 5 ^ y << 2) + (y >> 3 ^ z << 4)) ^ ((s ^ y) + (key_val ^ z))) & MASK
 
 
 def _parse_key(key: bytes) -> list:
@@ -55,10 +53,10 @@ def encrypt(data: bytes, key: bytes) -> bytes:
     e = (s >> 2) & 3
     for p in range(n - 1):
       y = v[p + 1]
-      v[p] = (v[p] + _mx(z, y, s, k, p, e)) & MASK
+      v[p] = (v[p] + _mx(z, y, s, k[(p & 3) ^ e])) & MASK
       z = v[p]
     y = v[0]
-    v[n - 1] = (v[n - 1] + _mx(z, y, s, k, n - 1, e)) & MASK
+    v[n - 1] = (v[n - 1] + _mx(z, y, s, k[(n - 1 & 3) ^ e])) & MASK
     z = v[n - 1]
 
   return struct.pack(f"<{n}I", *v)
@@ -80,10 +78,10 @@ def decrypt(data: bytes, key: bytes) -> bytes:
     e = (s >> 2) & 3
     for p in range(n - 1, 0, -1):
       z = v[p - 1]
-      v[p] = (v[p] - _mx(z, y, s, k, p, e)) & MASK
+      v[p] = (v[p] - _mx(z, y, s, k[(p & 3) ^ e])) & MASK
       y = v[p]
     z = v[n - 1]
-    v[0] = (v[0] - _mx(z, y, s, k, 0, e)) & MASK
+    v[0] = (v[0] - _mx(z, y, s, k[(0 & 3) ^ e])) & MASK
     y = v[0]
     s = (s - DELTA) & MASK
 

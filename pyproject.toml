@@ -8,7 +8,6 @@ dependencies = [
     "blake3>=1.0.8",
     "cryptography",
     "pycryptodome",
-    "ruff>=0.15.6",
 ]
 
 [dependency-groups]
@@ -62,6 +61,7 @@ tasks.clean = { shell = """
 pythonpath = ["src", "."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 timeout = 30
 addopts = """\
     -n=auto \

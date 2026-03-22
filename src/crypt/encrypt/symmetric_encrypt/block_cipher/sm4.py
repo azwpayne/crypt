@@ -320,11 +320,7 @@ def _l(b):
 
 def _l_prime(b):
   b &= 0xFFFFFFFF
-  return (
-    b
-    ^ ((b << 13) | (b >> 19))
-    ^ ((b << 23) | (b >> 9))
-  ) & 0xFFFFFFFF
+  return (b ^ ((b << 13) | (b >> 19)) ^ ((b << 23) | (b >> 9))) & 0xFFFFFFFF
 
 
 def _f(x0, x1, x2, x3, rk):

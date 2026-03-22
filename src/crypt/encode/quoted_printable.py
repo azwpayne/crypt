@@ -9,18 +9,39 @@ RFC 2045 §6.7 compliant:
 _SAFE = frozenset(range(33, 127)) - {ord("=")}
 
 
+def _encode_trailing_ws(line: list[str]) -> None:
+  """Encode trailing space/tab in *line* in-place."""
+  while line and line[-1] in (" ", "\t"):
+    popped = line.pop()
+    line.append(f"={ord(popped):02X}")
+
+
+def _decode_segment(content: str, result: bytearray) -> None:
+  """Decode one QP line segment into *result*."""
+  i = 0
+  while i < len(content):
+    if content[i] == "=" and i + 2 < len(content):
+      hex_str = content[i + 1 : i + 3]
+      try:
+        result.append(int(hex_str, 16))
+        i += 3
+      except ValueError:
+        result.append(ord("="))
+        i += 1
+    else:
+      result.append(ord(content[i]))
+      i += 1
+
+
 def encode_qp(data: bytes, line_length: int = 76) -> str:
   """Encode *data* to a Quoted-Printable string."""
   lines: list[str] = []
   line: list[str] = []
   col = 0
 
-  def _flush_line(soft: bool = True) -> None:
+  def _flush(*, soft: bool = True) -> None:
     nonlocal col
-    if soft:
-      lines.append("".join(line) + "=")
-    else:
-      lines.append("".join(line))
+    lines.append("".join(line) + ("=" if soft else ""))
     line.clear()
     col = 0
 
@@ -28,53 +49,23 @@ def encode_qp(data: bytes, line_length: int = 76) -> str:
   while i < len(data):
     byte = data[i]
 
-    # Newline: hard line break
-    if byte == ord("\n"):
-      # Strip trailing space/tab before newline
-      while line and line[-1] in (" ", "\t"):
-        enc = f"={line.pop():02X}" if line[-1:] == [" "] else f"={ord(line.pop()):02X}"
-        line.append(enc)
-      lines.append("".join(line))
-      line.clear()
-      col = 0
+    if byte in (ord("\n"), ord("\r")):
+      _encode_trailing_ws(line)
+      if byte == ord("\r") and i + 1 < len(data) and data[i + 1] == ord("\n"):
+        i += 1
+      _flush(soft=False)
       i += 1
       continue
 
-    if byte == ord("\r") and i + 1 < len(data) and data[i + 1] == ord("\n"):
-      while line and line[-1] in (" ", "\t"):
-        popped = line.pop()
-        line.append(f"={ord(popped):02X}")
-      lines.append("".join(line))
-      line.clear()
-      col = 0
-      i += 2
-      continue
-
-    # Encode token
-    if byte in _SAFE or byte in (0x09, 0x20):  # safe printable, tab, space
-      token = chr(byte)
-    else:
-      token = f"={byte:02X}"
-
-    token_len = len(token)
-    # Need room: token + possible soft-break "="
-    if col + token_len >= line_length:
-      _flush_line(soft=True)
-    line.append(token)
-    col += token_len
+    tok = chr(byte) if byte in _SAFE else f"={byte:02X}"
+    if col + len(tok) > line_length - 1:
+      _flush()
+    line.append(tok)
+    col += len(tok)
     i += 1
 
-  # Final line — strip trailing whitespace
-  while line and line[-1] in (" ", "\t"):
-    popped = line.pop()
-    enc = f"={ord(popped):02X}"
-    col += len(enc) - 1
-    if col > line_length:
-      _flush_line(soft=True)
-    line.append(enc)
-  if line:
-    lines.append("".join(line))
-
+  _encode_trailing_ws(line)
+  lines.append("".join(line))
   return "\n".join(lines)
 
 
@@ -83,43 +74,10 @@ def decode_qp(encoded: str) -> bytes:
   result = bytearray()
   lines = encoded.split("\n")
   for idx, line in enumerate(lines):
-    # Soft line break: line ends with '='
     if line.endswith("="):
-      line = line[:-1]  # strip soft break, no newline appended
+      _decode_segment(line[:-1], result)
     else:
-      # Hard newline (re-add), but not after last segment
-      add_nl = idx < len(lines) - 1
-
-      i = 0
-      while i < len(line):
-        if line[i] == "=" and i + 2 < len(line):
-          hex_str = line[i + 1 : i + 3]
-          try:
-            result.append(int(hex_str, 16))
-            i += 3
-          except ValueError:
-            result.append(ord("="))
-            i += 1
-        else:
-          result.append(ord(line[i]))
-          i += 1
-      if add_nl:
+      _decode_segment(line, result)
+      if idx < len(lines) - 1:
         result.append(ord("\n"))
-      continue
-
-    # Process soft-break line (no newline)
-    i = 0
-    while i < len(line):
-      if line[i] == "=" and i + 2 < len(line):
-        hex_str = line[i + 1 : i + 3]
-        try:
-          result.append(int(hex_str, 16))
-          i += 3
-        except ValueError:
-          result.append(ord("="))
-          i += 1
-      else:
-        result.append(ord(line[i]))
-        i += 1
-
   return bytes(result)

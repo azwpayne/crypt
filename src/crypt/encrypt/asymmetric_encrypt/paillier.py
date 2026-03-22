@@ -43,7 +43,7 @@ def _generate_prime(bits: int) -> int:
       return p
 
 
-def _L(u: int, n: int) -> int:
+def _paillier_l(u: int, n: int) -> int:
   """L(u) = (u - 1) / n."""
   return (u - 1) // n
 
@@ -67,7 +67,7 @@ def generate_keypair(bits: int = 512) -> tuple:
     lam = math.lcm(p - 1, q - 1)
     g = n + 1  # common simplification: g = n+1
     n2 = n * n
-    mu = pow(_L(pow(g, lam, n2), n), -1, n)
+    mu = pow(_paillier_l(pow(g, lam, n2), n), -1, n)
     return (n, g), (lam, mu)
 
 
@@ -90,7 +90,7 @@ def decrypt(public_key: tuple, private_key: tuple, ciphertext: int) -> int:
   n, _g = public_key
   lam, mu = private_key
   n2 = n * n
-  return (_L(pow(ciphertext, lam, n2), n) * mu) % n
+  return (_paillier_l(pow(ciphertext, lam, n2), n) * mu) % n
 
 
 def add_encrypted(public_key: tuple, c1: int, c2: int) -> int:

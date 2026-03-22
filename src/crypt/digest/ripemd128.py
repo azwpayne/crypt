@@ -296,21 +296,29 @@ def _rol32(x: int, n: int) -> int:
 
 
 def _compress(state: list, block: bytes) -> list:
-  X = list(struct.unpack("<16I", block))
+  words = list(struct.unpack("<16I", block))
   a1, b1, c1, d1 = state
   a2, b2, c2, d2 = state
 
   for j in range(64):
     round_idx = j // 16
-    T = _rol32((a1 + _f(j, b1, c1, d1) + X[_RL[j]] + _KL[round_idx]) & MASK, _SL[j]) & MASK
-    a1, b1, c1, d1 = d1, T, b1, c1
+    tmp = (
+      _rol32((a1 + _f(j, b1, c1, d1) + words[_RL[j]] + _KL[round_idx]) & MASK, _SL[j])
+      & MASK
+    )
+    a1, b1, c1, d1 = d1, tmp, b1, c1
 
-    T = _rol32((a2 + _f(63 - j, b2, c2, d2) + X[_RR[j]] + _KR[round_idx]) & MASK, _SR[j]) & MASK
-    a2, b2, c2, d2 = d2, T, b2, c2
+    tmp = (
+      _rol32(
+        (a2 + _f(63 - j, b2, c2, d2) + words[_RR[j]] + _KR[round_idx]) & MASK, _SR[j]
+      )
+      & MASK
+    )
+    a2, b2, c2, d2 = d2, tmp, b2, c2
 
-  T = (state[1] + c1 + d2) & MASK
+  tmp = (state[1] + c1 + d2) & MASK
   return [
-    T,
+    tmp,
     (state[2] + d1 + a2) & MASK,
     (state[3] + a1 + b2) & MASK,
     (state[0] + b1 + c2) & MASK,

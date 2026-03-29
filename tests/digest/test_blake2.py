@@ -54,15 +54,11 @@ class TestBlake2b:
 
   def test_blake2b_empty(self):
     """Test BLAKE2b with empty input."""
-    result = blake2b(b"")
-    expected = hashlib.blake2b(b"").hexdigest()
-    assert result == expected
+    self._extracted_from_test_blake2b_binary_data_3(b"")
 
   def test_blake2b_hello(self):
     """Test BLAKE2b with 'hello'."""
-    result = blake2b(b"hello")
-    expected = hashlib.blake2b(b"hello").hexdigest()
-    assert result == expected
+    self._extracted_from_test_blake2b_binary_data_3(b"hello")
 
   @pytest.mark.parametrize("msg", BYTE_TEST_CASES)
   def test_blake2b_vs_hashlib(self, msg):
@@ -74,16 +70,18 @@ class TestBlake2b:
   def test_blake2b_large_input(self):
     """Test BLAKE2b with large input."""
     data = b"a" * 10000
-    custom_result = blake2b(data)
-    hashlib_result = hashlib.blake2b(data).hexdigest()
-    assert custom_result == hashlib_result
+    self._extracted_from_test_blake2b_binary_data_3(data)
 
   def test_blake2b_binary_data(self):
     """Test BLAKE2b with binary data."""
     data = bytes(range(256))
-    custom_result = blake2b(data)
-    hashlib_result = hashlib.blake2b(data).hexdigest()
-    assert custom_result == hashlib_result
+    self._extracted_from_test_blake2b_binary_data_3(data)
+
+  @staticmethod
+  def _extracted_from_test_blake2b_binary_data_3(arg0):
+    result = blake2b(arg0)
+    expected = hashlib.blake2b(arg0).hexdigest()
+    assert result == expected
 
   def test_blake2b_different_digest_sizes(self):
     """Test BLAKE2b with different digest sizes."""

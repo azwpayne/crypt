@@ -43,6 +43,7 @@ class TestElGamal:
     assert decrypt_bytes(self.pub, self.priv, ct) == data
 
   def test_invalid_plaintext_raises(self):
+    # p, g, h = self.pub
     p, g, h = self.pub
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=".*"):
       encrypt(self.pub, 0)

@@ -15,18 +15,17 @@ class TestSimon:
   """Tests for SIMON lightweight block cipher."""
 
   def test_simon64_encrypt_decrypt_roundtrip(self):
-    block = bytes(range(8))
-    key = bytes(range(16))
-    ct = simon_encrypt(block, key, block_size=64)
-    pt = simon_decrypt(ct, key, block_size=64)
-    assert pt == block
+    self._extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(8, 16, 64)
 
   def test_simon128_encrypt_decrypt_roundtrip(self):
-    block = bytes(range(16))
-    key = bytes(range(32))
-    ct = simon_encrypt(block, key, block_size=128)
-    pt = simon_decrypt(ct, key, block_size=128)
-    assert pt == block
+    self._extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(16, 32, 128)
+
+  def _extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(
+    self, arg0, arg1, block_size
+  ):
+    block = bytes(range(arg0))
+    key = bytes(range(arg1))
+    self._extracted_from_test_simon_zero_key_zero_block_4(block, key, block_size)
 
   def test_simon64_output_length(self):
     block = b"\x00" * 8
@@ -46,22 +45,26 @@ class TestSimon:
     assert ct != block
 
   def test_simon64_invalid_block_size_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       simon_encrypt(b"\x00" * 7, b"\x00" * 16, block_size=64)
 
   def test_simon64_invalid_key_size_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       simon_encrypt(b"\x00" * 8, b"\x00" * 8, block_size=64)
 
   def test_simon_invalid_block_size_param_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       simon_encrypt(b"\x00" * 16, b"\x00" * 16, block_size=32)
 
   def test_simon_zero_key_zero_block(self):
     block = b"\x00" * 8
     key = b"\x00" * 16
-    ct = simon_encrypt(block, key, block_size=64)
-    pt = simon_decrypt(ct, key, block_size=64)
+    self._extracted_from_test_simon_zero_key_zero_block_4(block, key, 64)
+
+  @staticmethod
+  def _extracted_from_test_simon_zero_key_zero_block_4(block, key, block_size):
+    ct = simon_encrypt(block, key, block_size=block_size)
+    pt = simon_decrypt(ct, key, block_size=block_size)
     assert pt == block
 
 
@@ -88,19 +91,19 @@ class TestBelt:
     assert belt_decrypt(ct, key) == block
 
   def test_invalid_block_size_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       belt_encrypt(b"\x00" * 8, b"\x00" * 32)
 
   def test_invalid_key_size_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       belt_encrypt(b"\x00" * 16, b"\x00" * 16)
 
   def test_decrypt_invalid_block_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       belt_decrypt(b"\x00" * 8, b"\x00" * 32)
 
   def test_decrypt_invalid_key_raises(self):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r".*"):
       belt_decrypt(b"\x00" * 16, b"\x00" * 8)
 
   def test_different_plaintexts_give_different_ciphertexts(self):

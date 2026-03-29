@@ -9,7 +9,7 @@ Reference: RFC 7693
 from __future__ import annotations
 
 import struct
-from typing import Final, cast
+from typing import Final
 
 # BLAKE2b constants (64-bit words)
 # IV is the first 64 bits of the fractional parts of the square roots of the first 8 primes
@@ -222,7 +222,7 @@ def blake2b(
 
   Example:
       >>> blake2b(b"hello")
-      '324dcf027dd4a30a932c441f365a25e86b173defa4b8e58948253471b81b72cf...'
+      'e4cfa39a3d37be31c59609e807970799caa68a19bfaa15135f165085e01d41a65ba1e1b146aeb6bd0092b49eac214c103ccfa3a365954bbbe52f74a2b3620c94'
   """
   if not 1 <= digest_size <= 64:
     msg = "digest_size must be between 1 and 64"
@@ -238,24 +238,13 @@ def blake2b(
     raise ValueError(msg)
 
   # Initialize state with IV
-  h = cast("list[int]", list(BLAKE2B_IV))
-
-  # XOR parameter block into first 4 state words
-  # P[0] = digest_size | key_len << 8 | fanout << 16 | depth << 24
-  # P[1] = leaf_length (for BLAKE2b, this is leaf_length)
-  # P[2] = node_offset (lower 32 bits)
-  # P[3] = node_offset (upper 32 bits) | node_depth << 16 | inner_length << 24
-  # P[4..5] = reserved
-  # P[6..7] = salt (16 bytes)
-  # P[8..9] = personal (16 bytes)
+  h: list[int] = list(BLAKE2B_IV)
 
   key_len = len(key)
   h[0] ^= digest_size | (key_len << 8) | (1 << 16) | (1 << 24)
 
-  _extracted_from_blake2b_53(salt, h, 4, 5)
-  _extracted_from_blake2b_53(person, h, 6, 7)
-  # Prepend key if present (key is padded to one full block)
-  key_len = len(key)
+  _xor_param_into_state(salt, h, 4, 5)
+  _xor_param_into_state(person, h, 6, 7)
   if key:
     data = key.ljust(128, b"\x00") + data
 
@@ -283,12 +272,14 @@ def blake2b(
   return result[:digest_size].hex()
 
 
-# TODO: Rename this here and in `blake2b`
-def _extracted_from_blake2b_53(arg0, h, arg2, arg3):
-  # XOR salt into h[4..5]
-  salt_padded = arg0.ljust(16, b"\x00")
-  h[arg2] ^= struct.unpack("<Q", salt_padded[:8])[0]
-  h[arg3] ^= struct.unpack("<Q", salt_padded[8:])[0]
+def _xor_param_into_state(param: bytes, h: list[int], idx_lo: int, idx_hi: int) -> None:
+  """XOR a parameter (salt or personalization) into the BLAKE2b state vector.
+
+  Pads the parameter to 16 bytes and XORs as two little-endian 64-bit words.
+  """
+  padded = param.ljust(16, b"\x00")
+  h[idx_lo] ^= struct.unpack("<Q", padded[:8])[0]
+  h[idx_hi] ^= struct.unpack("<Q", padded[8:])[0]
 
 
 def blake2s(
@@ -312,7 +303,7 @@ def blake2s(
 
   Example:
       >>> blake2s(b"hello")
-      '19213bacc58dee6dbde3ceb9a47cbb330b3d86f6cca899647eb9f725cf73...'
+      '19213bacc58dee6dbde3ceb9a47cbb330b3d86f8cca8997eb00be456f140ca25'
   """
   if not 1 <= digest_size <= 32:
     msg = "digest_size must be between 1 and 32"
@@ -328,24 +319,13 @@ def blake2s(
     raise ValueError(msg)
 
   # Initialize state with IV
-  h = cast("list[int]", list(BLAKE2S_IV))
+  h: list[int] = list(BLAKE2S_IV)
 
-  # XOR parameter block into first 4 state words
   key_len = len(key)
   h[0] ^= digest_size | (key_len << 8) | (1 << 16) | (1 << 24)
 
-  # XOR salt into h[4..5] (as two 32-bit words)
-  salt_padded = salt.ljust(8, b"\x00")
-  h[4] ^= struct.unpack("<I", salt_padded[:4])[0]
-  h[5] ^= struct.unpack("<I", salt_padded[4:])[0]
-
-  # XOR personalization into h[6..7]
-  person_padded = person.ljust(8, b"\x00")
-  h[6] ^= struct.unpack("<I", person_padded[:4])[0]
-  h[7] ^= struct.unpack("<I", person_padded[4:])[0]
-
-  # Prepend key if present (key is padded to one full block)
-  key_len = len(key)
+  _xor_param_into_state_32(salt, h, 4, 5)
+  _xor_param_into_state_32(person, h, 6, 7)
   if key:
     data = key.ljust(64, b"\x00") + data
 
@@ -355,8 +335,7 @@ def blake2s(
   if msg_len == 0:
     data = b"\x00" * 64
   elif msg_len % 64 != 0:
-    pad_len = 64 - (msg_len % 64)
-    data = data + b"\x00" * pad_len
+    data += b"\x00" * (64 - (msg_len % 64))
 
   # Process blocks
   # t is the cumulative number of actual bytes processed (before padding)
@@ -372,3 +351,15 @@ def blake2s(
   # Output digest
   result = b"".join(struct.pack("<I", x) for x in h)
   return result[:digest_size].hex()
+
+
+def _xor_param_into_state_32(
+  param: bytes, h: list[int], idx_lo: int, idx_hi: int
+) -> None:
+  """XOR a parameter (salt or personalization) into the BLAKE2s state vector.
+
+  Pads the parameter to 8 bytes and XORs as two little-endian 32-bit words.
+  """
+  padded = param.ljust(8, b"\x00")
+  h[idx_lo] ^= struct.unpack("<I", padded[:4])[0]
+  h[idx_hi] ^= struct.unpack("<I", padded[4:])[0]

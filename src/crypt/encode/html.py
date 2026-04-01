@@ -180,12 +180,12 @@ def decode_numeric_entities(encoded: str) -> str:
     raise TypeError(msg)
 
   def replace_entity(match: re.Match) -> str:
-    entity = match.group(0)
+    entity = match[0]
 
     # Hexadecimal entity
     if entity.startswith(("&#x", "&#X")):
       try:
-        code_point = int(entity[3:-1], 16)
+        code_point = int(str(entity[3:-1]), 16)
         return chr(code_point)
       except (ValueError, OverflowError):
         return entity

@@ -122,21 +122,21 @@ class TestHtmlRoundtrip:
 
   def test_basic_roundtrip(self):
     """Test basic encode/decode roundtrip."""
-    original = "<script>alert('xss')</script>"
-    encoded = html_encode(original)
-    decoded = html_decode(encoded)
-    assert decoded == original
+    self._extracted_from_test_complex_html_roundtrip_3("<script>alert('xss')</script>")
 
   def test_quote_roundtrip(self):
     """Test quote encoding roundtrip."""
-    original = "\"Hello\" & 'World'"
-    encoded = html_encode(original)
-    decoded = html_decode(encoded)
-    assert decoded == original
+    self._extracted_from_test_complex_html_roundtrip_3("\"Hello\" & 'World'")
 
   def test_complex_html_roundtrip(self):
     """Test complex HTML roundtrip."""
-    original = '<div class="test">Hello & <b>World</b></div>'
+    self._extracted_from_test_complex_html_roundtrip_3(
+      '<div class="test">Hello & <b>World</b></div>'
+    )
+
+  @staticmethod
+  def _extracted_from_test_complex_html_roundtrip_3(arg0):
+    original = arg0
     encoded = html_encode(original)
     decoded = html_decode(encoded)
     assert decoded == original

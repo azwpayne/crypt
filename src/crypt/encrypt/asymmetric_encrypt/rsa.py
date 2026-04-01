@@ -7,7 +7,6 @@ This module provides basic RSA functionality for educational purposes:
 - Signing/verification
 """
 
-import random
 import secrets
 
 
@@ -44,9 +43,8 @@ def is_prime(n: int, k: int = 10) -> bool:
 def generate_prime(bits: int) -> int:
   """Generate a random prime number with the specified number of bits."""
   while True:
-    # Generate random odd number with exact bit length
-    n = random.getrandbits(bits)
-    n |= (1 << (bits - 1)) | 1  # Set MSB and LSB
+    n = secrets.randbits(bits)
+    n |= (1 << (bits - 1)) | 1
     if is_prime(n):
       return n
 
@@ -189,7 +187,7 @@ def sign(message: bytes, private_key: tuple) -> bytes:
 
   # Convert message to integer
   m = bytes_to_int(message)
-
+  # m = bytes_to_int(sha256(message))
   if m >= n:
     msg = "Message is too long for the key size"
     raise ValueError(msg)

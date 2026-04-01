@@ -37,8 +37,7 @@ def base32_encode(data: bytes) -> str:
   ]
   # 添加填充字符
   padding = (8 - len(encoded) % 8) % 8
-  encoded.extend([PADDING_CHAR] * padding)
-
+  encoded.extend(PADDING_CHAR for _ in range(padding))
   return "".join(encoded)
 
 

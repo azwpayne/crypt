@@ -45,5 +45,5 @@ class TestElGamal:
   def test_invalid_plaintext_raises(self):
     # p, g, h = self.pub
     p, g, h = self.pub
-    with pytest.raises(ValueError, match=".*"):
+    with pytest.raises(ValueError, match=r".*"):
       encrypt(self.pub, 0)

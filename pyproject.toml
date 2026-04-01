@@ -8,6 +8,7 @@ dependencies = [
     "blake3",
     "cryptography",
     "pycryptodome",
+    "pytest>=9.0.2",
 ]
 
 [dependency-groups]
@@ -18,7 +19,6 @@ dev = [
     "ty",
 ]
 test = [
-    # 核心引擎
     "pytest",
     "pytest-xdist[psutil]",
     "pytest-parallel",
@@ -113,16 +113,6 @@ testpaths = ["tests", "src"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 timeout = 30
-#addopts = """\
-#    -n=auto \
-#    --strict-markers \
-#    --tb=short \
-#    --cov=src/crypt \
-#    --cov-report=term-missing \
-#    --cov-report=html \
-#    --cov-report=xml \
-#    --cov-branch \
-#    """
 addopts = [
     # 并行与随机
     "-n=8",
@@ -135,7 +125,7 @@ addopts = [
     "--cov-report=html:reports/coverage",
     "--cov-report=xml:reports/coverage.xml",
     "--cov-report=json:reports/coverage.json",
-    "--cov-fail-under=95",
+    "--cov-fail-under=100",
     "--no-cov-on-fail",
     # 性能与超时
     "--timeout=30",
@@ -173,6 +163,14 @@ markers = [
     "snapshot: 快照测试",
     "property: Hypothesis属性测试",
 ]
+[tool.pyrefly]
+strict = true
+
+# 针对测试目录的特殊配置
+[[tool.pyrefly.overrides]]
+pattern = "tests/**/*.py"
+strict = false
+ignore_errors = ["bad-argument-type"]
 
 [tool.coverage.run]
 source = ["src"]

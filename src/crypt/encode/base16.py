@@ -17,7 +17,6 @@ def base16_encode(data: bytes, *, uppercase: bool = True) -> str:
   """
   # 十六进制字符表
   hex_chars = "0123456789ABCDEF" if uppercase else "0123456789abcdef"
-
   # result = []
   # for byte in data:
   #     # 取出高 4 位和低 4 位

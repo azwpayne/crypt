@@ -67,3 +67,31 @@ class TestBase32EdgeCases:
       encoded = base32.base32_encode(data)
       decoded = base32.base32_decode(encoded)
       assert decoded == data, f"Padding failed for length {length}"
+
+  def test_decode_strips_whitespace(self):
+    """Test decoding strips leading/trailing whitespace."""
+    result = base32.base32_decode("  JBSWY3DP  ")
+    assert result == b"Hello"
+
+  def test_decode_only_padding_returns_empty(self):
+    """Test decoding only padding characters returns empty bytes."""
+    result = base32.base32_decode("========")
+    assert result == b""
+
+  def test_decode_without_padding(self):
+    """Test decoding without padding characters works correctly."""
+    result = base32.base32_decode("JBSWY3DP")
+    assert result == b"Hello"
+
+  def test_decode_multiple_invalid_chars(self):
+    """Test decoding with multiple invalid characters raises ValueError."""
+    with pytest.raises(ValueError, match="Invalid Base32 character"):
+      base32.base32_decode("A!@#BC")
+
+
+class TestBase32Standalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_base32 function to cover it."""
+    from crypt.encode.base32 import test_base32
+
+    test_base32()

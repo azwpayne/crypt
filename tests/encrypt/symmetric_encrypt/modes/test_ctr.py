@@ -125,3 +125,78 @@ class TestCTR:
     assert ciphertext == b""
     decrypted = ctr.decrypt(ciphertext)
     assert decrypted == plaintext
+
+  def test_init_with_expanded_key_and_nr(self):
+    """Test CTR initializes with expanded_key and nr instead of raw key."""
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+
+    ctr = CTRMode(expanded_key=[0] * 44, nr=10, nonce=nonce)
+
+    assert ctr.key is None
+    assert ctr.nr == 10
+    assert len(ctr.expanded_key) == 44
+
+  def test_init_missing_key_and_func_raises(self):
+    """Test CTR raises ValueError when no key or encrypt_func provided."""
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+
+    with pytest.raises(ValueError, match="Either key or encrypt_func must be provided"):
+      CTRMode(nonce=nonce)
+
+  def test_init_with_external_encrypt_func(self):
+    """Test CTR initializes with external encrypt_func and key is None."""
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+
+    ctr = CTRMode(encrypt_func=lambda b: b, nonce=nonce)
+
+    assert ctr.key is None
+
+  def test_ctr_crypt_equality(self):
+    """Test that encrypt and decrypt are the same _CTRCrypt object."""
+    key = b"0123456789abcdef"
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+    ctr = CTRMode(key=key, nonce=nonce)
+
+    assert ctr.encrypt == ctr.decrypt
+    assert ctr.encrypt == ctr.crypt
+
+  def test_ctr_crypt_hash(self):
+    """Test that encrypt and decrypt have the same hash."""
+    key = b"0123456789abcdef"
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+    ctr = CTRMode(key=key, nonce=nonce)
+
+    assert hash(ctr.encrypt) == hash(ctr.decrypt)
+
+  def test_multiple_encrypt_calls_counter_persists(self):
+    """Test that counter persists across multiple encrypt calls."""
+    key = b"0123456789abcdef"
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+    ctr = CTRMode(key=key, nonce=nonce)
+
+    plaintext = b"Hello, World!"
+    ciphertext1 = ctr.encrypt(plaintext)
+    ciphertext2 = ctr.encrypt(plaintext)
+
+    assert ciphertext1 != ciphertext2
+
+  def test_decrypt_resets_counter(self):
+    """Test that decrypt resets the counter for subsequent encrypt calls."""
+    key = b"0123456789abcdef"
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+    ctr = CTRMode(key=key, nonce=nonce)
+
+    plaintext = b"Hello, World!"
+    ciphertext1 = ctr.encrypt(plaintext)
+    ctr.decrypt(ciphertext1)
+    ciphertext2 = ctr.encrypt(plaintext)
+
+    assert ciphertext1 == ciphertext2
+
+
+class TestCTRModeStandalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_ctr_mode function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.modes.ctr import test_ctr_mode
+
+    test_ctr_mode()

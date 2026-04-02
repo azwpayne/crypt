@@ -104,3 +104,29 @@ class TestBase85Ascii85:
     with_whitespace = "  " + encoded + "  "
     decoded = base85.b85decode_ascii85(with_whitespace)
     assert decoded == data
+
+
+class TestBase85EdgeCases:
+  def test_base85_encode_decode_roundtrip(self):
+    """Test base85 encode/decode roundtrip."""
+    data = b"Hello, World!"
+    encoded = base85.b85encode(data)
+    decoded = base85.b85decode(encoded)
+    assert decoded == data
+
+  def test_base85_empty_data(self):
+    """Test base85 with empty data."""
+    assert base85.b85encode(b"") == ""
+
+  def test_base85_binary_data(self):
+    """Test base85 with binary data."""
+    data = bytes(range(256))
+    encoded = base85.b85encode(data)
+    decoded = base85.b85decode(encoded)
+    assert decoded == data
+
+  def test_base85_single_byte(self):
+    """Test base85 with single byte."""
+    encoded = base85.b85encode(b"A")
+    decoded = base85.b85decode(encoded)
+    assert decoded == b"A"

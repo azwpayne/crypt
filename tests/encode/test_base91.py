@@ -78,3 +78,29 @@ class TestBase91String:
     # Test that valid encoded string decodes correctly
     decoded = base91.base91_decode(encoded)
     assert decoded == data
+
+
+class TestBase91EdgeCases:
+  def test_base91_encode_decode_roundtrip(self):
+    """Test base91 encode/decode roundtrip."""
+    data = b"Hello, World!"
+    encoded = base91.base91_encode(data)
+    decoded = base91.base91_decode(encoded)
+    assert decoded == data
+
+  def test_base91_empty_data(self):
+    """Test base91 with empty data."""
+    assert base91.base91_encode(b"") == ""
+
+  def test_base91_binary_data(self):
+    """Test base91 with binary data."""
+    data = bytes(range(256))
+    encoded = base91.base91_encode(data)
+    decoded = base91.base91_decode(encoded)
+    assert decoded == data
+
+  def test_base91_single_byte(self):
+    """Test base91 with single byte."""
+    encoded = base91.base91_encode(b"A")
+    decoded = base91.base91_decode(encoded)
+    assert decoded == b"A"

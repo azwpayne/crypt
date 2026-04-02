@@ -5,8 +5,7 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    :
 import math
-
-from utils import generate_n_sieve
+from crypt.digest.SHA.utils import generate_n_sieve
 
 # SHA 算法初始哈希值生成的素数常量
 # _SHA_INITIAL_HASH_PRIMES = generate_n_sieve(8)

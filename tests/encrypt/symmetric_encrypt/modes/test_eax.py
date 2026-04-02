@@ -414,11 +414,57 @@ class TestEAXDifferentKeys:
       eax2.decrypt(ciphertext, nonce, tag)
 
 
-class TestEAXEdgeCases:
-  """Edge case tests for EAX mode."""
+class TestEAXStandalone:
+  def test_standalone_test_function(self):
+    from crypt.encrypt.symmetric_encrypt.modes.eax import test_eax_mode
 
+    test_eax_mode()
+
+
+class TestEAXInternalBranches:
+  def test_init_with_expanded_key_and_nr(self):
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import key_expansion
+
+    key = b"0123456789abcdef"
+    expanded = key_expansion(key)
+    eax = EAXMode(expanded_key=expanded, nr=10)
+    nonce = b"unique_nonce_16b"
+    plaintext = b"Test expanded key"
+    ciphertext, tag = eax.encrypt(plaintext, nonce)
+    decrypted = eax.decrypt(ciphertext, nonce, tag)
+    assert decrypted == plaintext
+
+  def test_cmac_empty_message(self):
+    key = b"0123456789abcdef"
+    eax = EAXMode(key=key)
+    mac = eax._cmac(b"")
+    assert len(mac) == 16
+
+  def test_encrypt_with_aad_keyword(self):
+    key = b"0123456789abcdef"
+    nonce = b"unique_nonce_16b"
+    eax = EAXMode(key=key)
+    ciphertext, tag = eax.encrypt(b"secret", nonce, aad=b"header")
+    decrypted = eax.decrypt(ciphertext, nonce, tag, aad=b"header")
+    assert decrypted == b"secret"
+
+  def test_decrypt_wrong_nonce_length(self):
+    key = b"0123456789abcdef"
+    eax = EAXMode(key=key)
+    with pytest.raises(ValueError, match="Nonce must be"):
+      eax.decrypt(b"data", b"short", b"tag" * 6)
+
+  def test_constant_time_compare_different_lengths(self):
+    key = b"0123456789abcdef"
+    eax = EAXMode(key=key)
+    assert eax._constant_time_compare(b"abc", b"abcd") is False
+    assert eax._constant_time_compare(b"", b"") is True
+    assert eax._constant_time_compare(b"same", b"same") is True
+    assert eax._constant_time_compare(b"same", b"dame") is False
+
+
+class TestEAXEdgeCases:
   def test_large_data(self):
-    """Test EAX with large data."""
     key = b"0123456789abcdef"
     nonce = b"unique_nonce_16b"
     plaintext = b"X" * 10000

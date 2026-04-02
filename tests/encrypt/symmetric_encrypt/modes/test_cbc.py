@@ -161,3 +161,84 @@ class TestCBC:
     ciphertext2 = cbc2.encrypt(plaintext)
 
     assert ciphertext1 != ciphertext2
+
+  def test_init_with_expanded_key_and_nr(self):
+    """Test initialization with pre-expanded key and round count."""
+    cbc = CBCMode(expanded_key=[0] * 44, nr=10, iv=b"1234567890123456")
+    assert cbc.key is None
+    assert cbc.expanded_key == [0] * 44
+    assert cbc.nr == 10
+
+  def test_init_missing_key_and_funcs_raises(self):
+    """Test that missing key and no external functions raises ValueError."""
+    with pytest.raises(ValueError, match="Either key or both"):
+      CBCMode(iv=b"1234567890123456")
+
+  def test_init_with_external_functions(self):
+    """Test initialization with external encrypt and decrypt functions."""
+    cbc = CBCMode(
+      encrypt_func=lambda b: b,
+      decrypt_func=lambda b: b,
+      iv=b"1234567890123456",
+    )
+    assert cbc.key is None
+    assert cbc.expanded_key == []
+    assert cbc.nr == 0
+
+  def test_encrypt_with_external_function(self):
+    """Test that external encrypt/decrypt functions work for roundtrip."""
+
+    def fake_encrypt(block):
+      return bytes(b ^ 0xFF for b in block)
+
+    def fake_decrypt(block):
+      return bytes(b ^ 0xFF for b in block)
+
+    cbc = CBCMode(
+      encrypt_func=fake_encrypt,
+      decrypt_func=fake_decrypt,
+      iv=b"1234567890123456",
+    )
+    plaintext = b"Hello, World!"
+    ciphertext = cbc.encrypt(plaintext)
+    cbc2 = CBCMode(
+      encrypt_func=fake_encrypt,
+      decrypt_func=fake_decrypt,
+      iv=b"1234567890123456",
+    )
+    decrypted = cbc2.decrypt(ciphertext)
+    assert decrypted == plaintext
+
+  def test_decrypt_with_external_function(self):
+    """Test that external decrypt function is called during decryption."""
+    call_count = [0]
+
+    def fake_encrypt(block):
+      return block
+
+    def fake_decrypt(block):
+      call_count[0] += 1
+      return block
+
+    cbc = CBCMode(
+      encrypt_func=fake_encrypt,
+      decrypt_func=fake_decrypt,
+      iv=b"1234567890123456",
+    )
+    plaintext = b"Test"
+    ciphertext = cbc.encrypt(plaintext)
+    cbc2 = CBCMode(
+      encrypt_func=fake_encrypt,
+      decrypt_func=fake_decrypt,
+      iv=b"1234567890123456",
+    )
+    cbc2.decrypt(ciphertext)
+    assert call_count[0] == 1
+
+
+class TestCBCModeStandalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_cbc_mode function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.modes.cbc import test_cbc_mode
+
+    test_cbc_mode()

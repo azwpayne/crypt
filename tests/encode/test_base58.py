@@ -103,4 +103,27 @@ class TestBase58Check:
   def test_base58check_too_short(self):
     """Test that too short input raises error."""
     with pytest.raises(ValueError, match="Base58Check数据太短"):
-      base58.decode_base58_check("1")  # Too short to contain checksum
+      base58.decode_base58_check("1")
+
+
+class TestBase58EncodeDecode:
+  def test_base58_encode_decode_roundtrip(self):
+    """Test base58 encode/decode roundtrip."""
+    data = b"Hello, World!"
+    encoded = base58.encode_base58(data)
+    decoded = base58.decode_base58(encoded)
+    assert decoded == data
+
+  def test_base58_encode_empty(self):
+    """Test base58 encode with empty data."""
+    assert base58.encode_base58(b"") == ""
+
+  def test_base58_decode_invalid_char(self):
+    """Test base58 decode with invalid character raises ValueError."""
+    with pytest.raises(ValueError, match="无效"):
+      base58.decode_base58("OIl0!")
+
+  def test_base58_known_values(self):
+    """Test base58 with known values."""
+    assert base58.encode_base58(b"\x00") == "1"
+    assert base58.encode_base58(b"\x00\x00") == "11"

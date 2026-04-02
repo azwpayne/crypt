@@ -153,6 +153,44 @@ class TestXTSMode:
     assert decrypted == plaintext
 
 
+class TestXTSStandalone:
+  def test_standalone_test_function(self):
+    from crypt.encrypt.symmetric_encrypt.modes.xts import test_xts_mode
+
+    test_xts_mode()
+
+
+class TestXTSInternalBranches:
+  def test_init_with_expanded_key_and_nr(self):
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import key_expansion
+
+    key = b"0123456789abcdef0123456789abcdef"
+    half = len(key) // 2
+    expanded = key_expansion(key[:half])
+    tweak = b"\x00" * 16
+    xts = XTSMode(expanded_key=expanded, nr=10)
+    plaintext = b"Test expanded key!"
+    ciphertext = xts.encrypt(plaintext, tweak)
+    decrypted = xts.decrypt(ciphertext, tweak)
+    assert decrypted == plaintext
+
+  def test_odd_key_length_raises(self):
+    with pytest.raises(ValueError, match="Key length must be even"):
+      XTSMode(key=b"0123456789abcde")
+
+  def test_missing_key_and_funcs_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode()
+
+  def test_encrypt_func_only_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode(encrypt_func=lambda b: b)
+
+  def test_decrypt_func_only_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode(decrypt_func=lambda b: b)
+
+
 class TestXTSModeAgainstPyCryptodome:
   """Test XTS mode against pycryptodome reference implementation."""
 

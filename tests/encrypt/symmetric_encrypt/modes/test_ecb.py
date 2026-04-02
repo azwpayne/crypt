@@ -65,3 +65,70 @@ class TestECB:
     ciphertext = ecb_mode.encrypt(plaintext)
     decrypted = ecb_mode.decrypt(ciphertext)
     assert decrypted == plaintext
+
+  def test_init_with_expanded_key_and_nr(self):
+    """Test initialization with pre-expanded key and round count."""
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore", UserWarning)
+      mode = ECBMode(expanded_key=[0] * 44, nr=10, block_size=16)
+    assert mode.key is None
+    assert mode.expanded_key == [0] * 44
+    assert mode.nr == 10
+
+  def test_init_missing_key_and_funcs_raises(self):
+    """Test that missing key and no external functions raises ValueError."""
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore", UserWarning)
+      with pytest.raises(ValueError, match="Either key or both"):
+        ECBMode()
+
+  def test_init_with_external_functions(self):
+    """Test initialization with external encrypt and decrypt functions."""
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore", UserWarning)
+      mode = ECBMode(
+        encrypt_func=lambda b: b,
+        decrypt_func=lambda b: b,
+        block_size=4,
+      )
+    assert mode.key is None
+    assert mode.expanded_key == []
+    assert mode.nr == 0
+
+  def test_encrypt_with_external_function(self):
+    """Test that external encrypt function is called during encryption."""
+    call_count = [0]
+
+    def fake_encrypt(block):
+      call_count[0] += 1
+      return block
+
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore", UserWarning)
+      mode = ECBMode(encrypt_func=fake_encrypt, decrypt_func=lambda b: b, block_size=16)
+    plaintext = b"Hello, World!"
+    mode.encrypt(plaintext)
+    assert call_count[0] == 1
+
+  def test_decrypt_with_external_function(self):
+    """Test that external decrypt function is called during decryption."""
+    call_count = [0]
+
+    def fake_decrypt(block):
+      call_count[0] += 1
+      return block + bytes([16] * 16)
+
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore", UserWarning)
+      mode = ECBMode(encrypt_func=lambda b: b, decrypt_func=fake_decrypt, block_size=16)
+    ciphertext = b"\x00" * 16
+    mode.decrypt(ciphertext)
+    assert call_count[0] == 1
+
+
+class TestECBModeStandalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_ecb_mode function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.modes.ecb import test_ecb_mode
+
+    test_ecb_mode()

@@ -97,8 +97,7 @@ print(decoded)  # b"Hello, World!"
 
 ```python
 from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt,
-
-rsa_decrypt
+    rsa_decrypt
 
 # Generate RSA key pair
 public_key, private_key = generate_keypair(key_size = 2048)

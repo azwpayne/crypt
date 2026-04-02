@@ -176,3 +176,34 @@ class TestSHAKE256NISTVectors:
     result2 = shake2.read(16)
 
     assert result == result2
+
+
+class TestSHAKE256EdgeCases:
+  def test_shake256_different_output_lengths(self):
+    """Test SHAKE256 with different output lengths."""
+    data = b"test"
+    h1 = shake256(data, 16)
+    h2 = shake256(data, 64)
+    assert len(h1) == 16
+    assert len(h2) == 64
+    assert h2.startswith(h1)
+
+  def test_shake256_empty_input(self):
+    """Test SHAKE256 with empty input."""
+    result = shake256(b"", 64)
+    assert len(result) == 64
+
+  def test_shake256_class_interface(self):
+    """Test SHAKE256 class-based interface."""
+    hasher = SHAKE256()
+    hasher.update(b"Hello")
+    hasher.update(b", World!")
+    result = hasher.read(64)
+    assert len(result) == 64
+
+  def test_shake256_hexdigest(self):
+    """Test SHAKE256 hexdigest."""
+    hasher = SHAKE256()
+    hasher.update(b"test")
+    hex_result = hasher.hexdigest(32)
+    assert len(hex_result) == 64

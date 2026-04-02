@@ -1,6 +1,10 @@
 """Tests for PKCS#7 padding implementation."""
 
-from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import pad, unpad
+from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import (
+  _constant_time_compare,
+  pad,
+  unpad,
+)
 
 import pytest
 
@@ -96,3 +100,31 @@ class TestPKCS7RoundTrip:
     padded = pad(data, block_size)
     unpadded = unpad(padded, block_size)
     assert unpadded == data
+
+
+class TestPKCS7ConstantTimeCompare:
+  def test_constant_time_compare_equal(self):
+    assert _constant_time_compare(b"abc", b"abc")
+
+  def test_constant_time_compare_different(self):
+    assert not _constant_time_compare(b"abc", b"abd")
+
+  def test_constant_time_compare_different_lengths(self):
+    assert not _constant_time_compare(b"ab", b"abc")
+
+  def test_constant_time_compare_empty(self):
+    assert _constant_time_compare(b"", b"")
+
+
+class TestPKCS7UnpadEdgeCases:
+  def test_unpad_invalid_block_size(self):
+    with pytest.raises(ValueError, match="block_size"):
+      unpad(b"hello\x03\x03\x03", 0)
+
+
+class TestPKCS7Standalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_pkcs7 function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import test_pkcs7
+
+    test_pkcs7()

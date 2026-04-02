@@ -118,6 +118,38 @@ class TestOFBMode:
 
     assert ciphertext1 != ciphertext2
 
+  def test_init_with_expanded_key_and_nr(self):
+    """Test initialization with pre-expanded key and round count."""
+    ofb = OFBMode(expanded_key=[0] * 44, nr=10, iv=b"1234567890123456")
+    assert ofb.key is None
+    assert ofb.expanded_key == [0] * 44
+    assert ofb.nr == 10
+
+  def test_init_missing_key_and_func_raises(self):
+    """Test that missing key and no external function raises ValueError."""
+    with pytest.raises(ValueError, match="Either key or encrypt_func"):
+      OFBMode(iv=b"1234567890123456")
+
+  def test_init_with_external_encrypt_func(self):
+    """Test initialization with external encrypt function."""
+    ofb = OFBMode(encrypt_func=lambda b: b, iv=b"1234567890123456")
+    assert ofb.key is None
+    assert ofb.expanded_key == []
+    assert ofb.nr == 0
+
+  def test_encrypt_with_external_function(self):
+    """Test that external encrypt function is called during keystream generation."""
+    call_count = [0]
+
+    def fake_encrypt(block):
+      call_count[0] += 1
+      return block
+
+    ofb = OFBMode(encrypt_func=fake_encrypt, iv=b"1234567890123456")
+    plaintext = b"Hello"
+    ofb.encrypt(plaintext)
+    assert call_count[0] == 1
+
 
 class TestOFBModeAgainstPyCryptodome:
   """Test OFB mode against pycryptodome reference implementation."""
@@ -159,3 +191,11 @@ class TestOFBModeAgainstPyCryptodome:
     decrypted = ofb.decrypt(ciphertext)
 
     assert decrypted == plaintext
+
+
+class TestOFBModeStandalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_ofb_mode function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.modes.ofb import test_ofb_mode
+
+    test_ofb_mode()

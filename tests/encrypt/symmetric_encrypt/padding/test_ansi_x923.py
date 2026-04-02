@@ -1,6 +1,10 @@
 """Tests for ANSI X.923 padding implementation."""
 
-from crypt.encrypt.symmetric_encrypt.padding.ansi_x923 import pad, unpad
+from crypt.encrypt.symmetric_encrypt.padding.ansi_x923 import (
+  _constant_time_compare,
+  pad,
+  unpad,
+)
 
 import pytest
 
@@ -92,3 +96,31 @@ class TestANSIX923RoundTrip:
     padded = pad(data, block_size)
     unpadded = unpad(padded, block_size)
     assert unpadded == data
+
+
+class TestANSIX923ConstantTimeCompare:
+  def test_constant_time_compare_equal(self):
+    assert _constant_time_compare(b"abc", b"abc")
+
+  def test_constant_time_compare_different(self):
+    assert not _constant_time_compare(b"abc", b"abd")
+
+  def test_constant_time_compare_different_lengths(self):
+    assert not _constant_time_compare(b"ab", b"abc")
+
+  def test_constant_time_compare_empty(self):
+    assert _constant_time_compare(b"", b"")
+
+
+class TestANSIX923UnpadEdgeCases:
+  def test_unpad_invalid_block_size(self):
+    with pytest.raises(ValueError, match="block_size"):
+      unpad(b"hello\x00\x00\x03", 0)
+
+
+class TestANSIX923Standalone:
+  def test_standalone_test_function(self):
+    """Call the standalone test_ansi_x923 function to cover it."""
+    from crypt.encrypt.symmetric_encrypt.padding.ansi_x923 import test_ansi_x923
+
+    test_ansi_x923()

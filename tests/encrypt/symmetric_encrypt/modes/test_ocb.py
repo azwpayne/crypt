@@ -96,3 +96,32 @@ class TestOCB3AES128:
     """Test that nonces longer than 15 bytes are rejected."""
     with pytest.raises((ValueError, OverflowError)):
       ocb_encrypt(AES128_KEY, b"\x00" * 16, b"data", b"")
+
+
+class TestOCBEdgeCases:
+  def test_ntz_zero(self):
+    from crypt.encrypt.symmetric_encrypt.modes.ocb import _ntz
+
+    assert _ntz(0) == 128
+    assert _ntz(1) == 0
+    assert _ntz(2) == 1
+    assert _ntz(4) == 2
+    assert _ntz(8) == 3
+
+  def test_constant_time_compare(self):
+    from crypt.encrypt.symmetric_encrypt.modes.ocb import _constant_time_compare
+
+    assert _constant_time_compare(b"abc", b"abcd") is False
+    assert _constant_time_compare(b"", b"") is True
+    assert _constant_time_compare(b"same", b"same") is True
+    assert _constant_time_compare(b"same", b"dame") is False
+
+  def test_invalid_tag_len(self):
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_encrypt(AES128_KEY, b"\x00" * 12, b"data", b"", tag_len=0)
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_encrypt(AES128_KEY, b"\x00" * 12, b"data", b"", tag_len=17)
+
+  def test_ciphertext_too_short(self):
+    with pytest.raises(ValueError, match="Ciphertext too short"):
+      ocb_decrypt(AES128_KEY, b"\x00" * 12, b"\x00" * 5, b"")

@@ -18,6 +18,8 @@ from crypt.digest.CRC.crc8 import (
   reverse_bits,
 )
 from crypt.digest.CRC.crc12 import (
+  _reflect8,
+  _reflect12,
   crc12,
   crc12_cdma2000,
   crc12_dect,
@@ -182,6 +184,50 @@ class TestCRC12AllVariants:
     data = b"test"
     results = [crc12(data) for _ in range(10)]
     assert all(r == results[0] for r in results)
+
+  def test_crc12_with_ref_in(self):
+    """Test CRC-12 with ref_in=True differs from default."""
+    default = crc12(STANDARD_TEST)
+    with_ref_in = crc12(STANDARD_TEST, ref_in=True)
+    assert with_ref_in != default
+    assert 0 <= with_ref_in <= 0xFFF
+
+  def test_crc12_with_ref_out(self):
+    """Test CRC-12 with ref_out=True differs from default."""
+    default = crc12(STANDARD_TEST)
+    with_ref_out = crc12(STANDARD_TEST, ref_out=True)
+    assert with_ref_out != default
+    assert 0 <= with_ref_out <= 0xFFF
+
+  def test_crc12_with_both_reflections(self):
+    """Test CRC-12 with both ref_in and ref_out returns valid 12-bit result."""
+    result = crc12(STANDARD_TEST, ref_in=True, ref_out=True)
+    assert 0 <= result <= 0xFFF
+
+  def test_crc12_with_xor_out(self):
+    """Test CRC-12 with xor_out differs from default."""
+    default = crc12(STANDARD_TEST)
+    with_xor = crc12(STANDARD_TEST, xor_out=0xFFF)
+    assert with_xor != default
+    assert 0 <= with_xor <= 0xFFF
+
+  def test_crc12_with_all_params(self):
+    """Test CRC-12 with all parameters returns valid result."""
+    result = crc12(
+      b"test", poly=0xF13, init=0xFFF, ref_in=True, ref_out=True, xor_out=0xFFF
+    )
+    assert 0 <= result <= 0xFFF
+
+  def test_reflect8_known_values(self):
+    """Test _reflect8 with known values."""
+    assert _reflect8(0x00) == 0x00
+    assert _reflect8(0xFF) == 0xFF
+    assert _reflect8(0x01) == 0x80
+
+  def test_reflect12_known_values(self):
+    """Test _reflect12 with known values."""
+    assert _reflect12(0x000) == 0x000
+    assert _reflect12(0xFFF) == 0xFFF
 
 
 class TestCRC16AllVariants:
@@ -469,13 +515,13 @@ class TestCRCEdgeCases:
     """Test CRCs with special byte patterns."""
     patterns = [
       b"\x00",
-      b"\xFF",
-      b"\x00\xFF",
-      b"\xFF\x00",
-      b"\x55\xAA",
-      b"\xAA\x55",
-      b"\xDE\xAD\xBE\xEF",
-      b"\xCA\xFE\xBA\xBE",
+      b"\xff",
+      b"\x00\xff",
+      b"\xff\x00",
+      b"\x55\xaa",
+      b"\xaa\x55",
+      b"\xde\xad\xbe\xef",
+      b"\xca\xfe\xba\xbe",
     ]
     for pattern in patterns:
       assert isinstance(crc8_smbus(pattern), int)

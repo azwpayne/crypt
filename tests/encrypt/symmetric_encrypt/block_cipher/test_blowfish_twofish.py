@@ -419,3 +419,101 @@ class TestCrossModeConsistency:
     # But both should decrypt correctly
     assert tf_decrypt_ecb(key, ecb_ct) == plaintext
     assert tf_decrypt_cbc(key, iv, cbc_ct) == plaintext
+
+
+class TestTwofishErrorHandling:
+  def test_twofish_decrypt_ecb_invalid_ciphertext_length(self):
+    with pytest.raises(ValueError, match="multiple of 16"):
+      tf_decrypt_ecb(b"0123456789abcdef", b"short")
+
+  def test_twofish_encrypt_cbc_invalid_iv(self):
+    with pytest.raises(ValueError, match="IV must be 16 bytes"):
+      tf_encrypt_cbc(b"0123456789abcdef", b"short", b"data")
+
+  def test_twofish_decrypt_cbc_invalid_ciphertext_length(self):
+    with pytest.raises(ValueError, match="multiple of 16"):
+      tf_decrypt_cbc(b"0123456789abcdef", b"1234567890123456", b"short")
+
+  def test_twofish_decrypt_cbc_invalid_iv(self):
+    with pytest.raises(ValueError, match="IV must be 16 bytes"):
+      tf_decrypt_cbc(b"0123456789abcdef", b"short", b"1234567890123456")
+
+
+class TestTwofishKeyLengths:
+  def test_twofish_192_bit_key_cbc_roundtrip(self):
+    key = b"0123456789abcdefghijklmn"
+    iv = b"1234567890123456"
+    plaintext = b"Test 192-bit key"
+    ciphertext = tf_encrypt_cbc(key, iv, plaintext)
+    assert tf_decrypt_cbc(key, iv, ciphertext) == plaintext
+
+  def test_twofish_256_bit_key_cbc_roundtrip(self):
+    key = b"0123456789abcdefghijklmnopqrstuv"
+    iv = b"1234567890123456"
+    plaintext = b"Test 256-bit key"
+    ciphertext = tf_encrypt_cbc(key, iv, plaintext)
+    assert tf_decrypt_cbc(key, iv, ciphertext) == plaintext
+
+
+class TestTwofishPaddingEdgeCases:
+  def test_twofish_empty_plaintext_cbc(self):
+    key = b"0123456789abcdef"
+    iv = b"1234567890123456"
+    ciphertext = tf_encrypt_cbc(key, iv, b"")
+    assert len(ciphertext) == 16
+    assert tf_decrypt_cbc(key, iv, ciphertext) == b""
+
+  def test_twofish_known_test_vector(self):
+    key = bytes(16)
+    plaintext = bytes(16)
+    ciphertext = tf_encrypt_ecb(key, plaintext)
+    assert len(ciphertext) == 16
+    assert tf_decrypt_ecb(key, ciphertext) == plaintext
+
+
+class TestBlowfishErrorHandling:
+  def test_blowfish_decrypt_ecb_invalid_ciphertext(self):
+    with pytest.raises(ValueError, match="multiple of 8"):
+      bf_decrypt_ecb(b"0123456789abcdef", b"short")
+
+  def test_blowfish_encrypt_cbc_invalid_iv(self):
+    with pytest.raises(ValueError, match="IV must be 8 bytes"):
+      bf_encrypt_cbc(b"0123456789abcdef", b"short", b"data")
+
+  def test_blowfish_decrypt_cbc_invalid_ciphertext(self):
+    with pytest.raises(ValueError, match="multiple of 8"):
+      bf_decrypt_cbc(b"0123456789abcdef", b"12345678", b"short")
+
+  def test_blowfish_decrypt_cbc_invalid_iv(self):
+    with pytest.raises(ValueError, match="IV must be 8 bytes"):
+      bf_decrypt_cbc(b"0123456789abcdef", b"short", b"12345678")
+
+
+class TestBlowfishPaddingEdgeCases:
+  def test_blowfish_ecb_exact_block_padding(self):
+    key = b"0123456789abcdef"
+    plaintext = b"exactly8"
+    ciphertext = bf_encrypt_ecb(key, plaintext)
+    assert len(ciphertext) == 16
+    assert bf_decrypt_ecb(key, ciphertext) == plaintext
+
+  def test_blowfish_cbc_empty_plaintext(self):
+    key = b"0123456789abcdef"
+    iv = b"12345678"
+    ciphertext = bf_encrypt_cbc(key, iv, b"")
+    assert len(ciphertext) == 8
+    assert bf_decrypt_cbc(key, iv, ciphertext) == b""
+
+
+class TestBlowfishStandalone:
+  def test_standalone_test_function(self):
+    from crypt.encrypt.symmetric_encrypt.block_cipher.blowfish import test_blowfish
+
+    test_blowfish()
+
+
+class TestTwofishStandalone:
+  def test_standalone_test_function(self):
+    from crypt.encrypt.symmetric_encrypt.block_cipher.twofish import test_twofish
+
+    test_twofish()

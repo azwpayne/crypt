@@ -179,3 +179,34 @@ class TestSHAKE128NISTVectors:
     result2 = shake2.read(16)
 
     assert result == result2
+
+
+class TestSHAKE128EdgeCases:
+  def test_shake128_different_output_lengths(self):
+    """Test SHAKE128 with different output lengths."""
+    data = b"test"
+    h1 = shake128(data, 16)
+    h2 = shake128(data, 32)
+    assert len(h1) == 16
+    assert len(h2) == 32
+    assert h2.startswith(h1)
+
+  def test_shake128_empty_input(self):
+    """Test SHAKE128 with empty input."""
+    result = shake128(b"", 32)
+    assert len(result) == 32
+
+  def test_shake128_class_interface(self):
+    """Test SHAKE128 class-based interface."""
+    hasher = SHAKE128()
+    hasher.update(b"Hello")
+    hasher.update(b", World!")
+    result = hasher.read(32)
+    assert len(result) == 32
+
+  def test_shake128_hexdigest(self):
+    """Test SHAKE128 hexdigest."""
+    hasher = SHAKE128()
+    hasher.update(b"test")
+    hex_result = hasher.hexdigest(16)
+    assert len(hex_result) == 32

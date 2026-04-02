@@ -5,7 +5,7 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    :
 
-from utils import generate_n_sieve
+from crypt.digest.SHA.utils import generate_n_sieve
 
 
 def generate_sha2_k_table():

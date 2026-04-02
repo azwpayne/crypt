@@ -61,6 +61,11 @@ def decrypt(text: str) -> str:
   return encrypt(text)  # 阿塔巴什是自逆的
 
 
+# Aliases for comprehensive test compatibility
+atbash_encrypt = encrypt
+atbash_decrypt = decrypt
+
+
 def encrypt_hebrew(text: str) -> str:
   """
   使用希伯来字母表的阿塔巴什密码

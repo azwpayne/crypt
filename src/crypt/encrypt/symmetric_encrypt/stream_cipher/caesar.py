@@ -44,6 +44,11 @@ def decrypt(text: str, shift: int) -> str:
   return encrypt(text, -shift)
 
 
+# Aliases for comprehensive test compatibility
+caesar_encrypt = encrypt
+caesar_decrypt = decrypt
+
+
 def encrypt_with_custom_alphabet(
   text: str, shift: int, alphabet: str = ascii_lowercase
 ) -> str:

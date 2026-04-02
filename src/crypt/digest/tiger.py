@@ -845,7 +845,7 @@ def _round(a: int, b: int, c: int, x: int, mult: int) -> tuple[int, int, int]:
       Updated (a, b, c) state
   """
   # Ensure x is 64-bit
-  x = x & 0xFFFFFFFFFFFFFFFF
+  x &= 0xFFFFFFFFFFFFFFFF
   c ^= x
   # Extract bytes from c for S-box lookups
   c0 = c & 0xFF
@@ -879,10 +879,8 @@ def _key_schedule(words: tuple[int, ...]) -> tuple[int, ...]:
       24 scheduled words
   """
   x = [w & 0xFFFFFFFFFFFFFFFF for w in words]
-  schedule = []
-
   # Pass 1: use x as-is
-  schedule.extend(x)
+  schedule = list(x)
 
   # Generate x for pass 2: x[i] = (x[i-8] - x[i-1]) * mult
   mult = 7
@@ -961,11 +959,11 @@ def _pad_message_tiger(message: bytes) -> bytes:
   original_length_bits = len(message) * 8
 
   # Append 0x01 byte
-  message = message + b"\x01"
+  message += b"\x01"
 
   # Pad with zeros until length ≡ 56 (mod 64)
   padding_len = (56 - len(message)) % 64
-  message = message + b"\x00" * padding_len
+  message += b"\x00" * padding_len
 
   # Append original length as 64-bit little-endian
   return message + struct.pack("<Q", original_length_bits)
@@ -985,11 +983,11 @@ def _pad_message_tiger2(message: bytes) -> bytes:
   original_length_bits = len(message) * 8
 
   # Append 0x80 byte (like MD5)
-  message = message + b"\x80"
+  message += b"\x80"
 
   # Pad with zeros until length ≡ 56 (mod 64)
   padding_len = (56 - len(message)) % 64
-  message = message + b"\x00" * padding_len
+  message += b"\x00" * padding_len
 
   # Append original length as 64-bit little-endian
   return message + struct.pack("<Q", original_length_bits)

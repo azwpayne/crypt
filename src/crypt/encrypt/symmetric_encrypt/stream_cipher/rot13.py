@@ -57,6 +57,10 @@ def decrypt(text: str) -> str:
   return encrypt(text)  # ROT13是自逆的
 
 
+# Alias for comprehensive test compatibility
+rot13 = encrypt
+
+
 if __name__ == "__main__":
   # 测试ROT13
   test_texts = [

@@ -119,19 +119,16 @@ class TestTigerPadding:
   def test_tiger_pad_message_empty(self):
     """Test Tiger padding of empty message."""
     result = tiger.pad_message_tiger(b"")
-    # Should add 0x01 + padding to 56 mod 64, then 8 bytes length
-    assert len(result) == 64
-    assert result[0] == 0x01
-    # Length in bits (0) as 8-byte little-endian at end
-    assert result[-8:] == b"\x00\x00\x00\x00\x00\x00\x00\x00"
+    self._extracted_from_test_tiger2_pad_message_empty_5(result, 0x01)
 
   def test_tiger2_pad_message_empty(self):
     """Test Tiger2 padding of empty message."""
     result = tiger.pad_message_tiger2(b"")
-    # Should add 0x80 + padding to 56 mod 64, then 8 bytes length
+    self._extracted_from_test_tiger2_pad_message_empty_5(result, 0x80)
+
+  def _extracted_from_test_tiger2_pad_message_empty_5(self, result, arg1):
     assert len(result) == 64
-    assert result[0] == 0x80
-    # Length in bits (0) as 8-byte little-endian at end
+    assert result[0] == arg1
     assert result[-8:] == b"\x00\x00\x00\x00\x00\x00\x00\x00"
 
   def test_tiger_pad_message_short(self):

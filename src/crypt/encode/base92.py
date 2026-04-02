@@ -6,7 +6,7 @@
 """Base92 encoding/decoding implementation.
 
 Base92 uses a 92-character alphabet (printable ASCII excluding space, double quote,
-and backtick). The tilde (~) is used as a special denotation for empty string.
+and backtick).
 
 Reference: https://base92.sourceforge.net/
 """
@@ -26,7 +26,7 @@ def base92_encode(input_data: bytes) -> str:
       Base92 encoded string
   """
   if not input_data:
-    return "~"
+    return ""
 
   b = 0
   n = 0
@@ -63,7 +63,7 @@ def base92_decode(encoded_str: str) -> bytes:
   Returns:
       Decoded bytes
   """
-  if encoded_str == "~":
+  if not encoded_str:
     return b""
 
   v = -1

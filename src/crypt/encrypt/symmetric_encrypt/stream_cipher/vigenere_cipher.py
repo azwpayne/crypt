@@ -289,3 +289,8 @@ if __name__ == "__main__":
   long_text = "HELLOHELLOHELLO"
   kasiski = kasiski_examination(encrypt(long_text, "SECRET"))
   print(f"卡西斯基检测结果: {kasiski}")
+
+
+# Aliases for comprehensive test compatibility
+vigenere_encrypt = encrypt
+vigenere_decrypt = decrypt

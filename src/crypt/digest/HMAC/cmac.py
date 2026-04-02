@@ -133,37 +133,73 @@ def cmac(key: bytes, message: bytes) -> bytes:
   return mac
 
 
+def cmac_aes128(key: bytes, message: bytes) -> bytes:
+  """Compute AES-128-CMAC of a message.
+
+  Convenience function for AES-128 CMAC.
+
+  Args:
+      key: 16-byte AES-128 key.
+      message: Message to authenticate.
+
+  Returns:
+      16-byte CMAC tag.
+
+  Raises:
+      ValueError: If key length is not 16 bytes.
+  """
+  if len(key) != 16:
+    msg = "AES-128 requires a 16-byte key"
+    raise ValueError(msg)
+  return cmac(key, message)
+
+
+def cmac_aes256(key: bytes, message: bytes) -> bytes:
+  """Compute AES-256-CMAC of a message.
+
+  Convenience function for AES-256 CMAC.
+
+  Args:
+      key: 32-byte AES-256 key.
+      message: Message to authenticate.
+
+  Returns:
+      16-byte CMAC tag.
+
+  Raises:
+      ValueError: If key length is not 32 bytes.
+  """
+  if len(key) != 32:
+    msg = "AES-256 requires a 32-byte key"
+    raise ValueError(msg)
+  return cmac(key, message)
+
+
+def _constant_time_compare(a: bytes, b: bytes) -> bool:
+  """Constant-time comparison of two byte strings to prevent timing attacks."""
+  if len(a) != len(b):
+    return False
+
+  result = 0
+  for x, y in zip(a, b, strict=False):
+    result |= x ^ y
+
+  return result == 0
+
+
 def cmac_verify(key: bytes, message: bytes, tag: bytes) -> bool:
-  """Verify an AES-CMAC tag in constant time.
+  """Verify a CMAC tag per RFC 4493.
 
   Args:
       key: AES key (16, 24, or 32 bytes).
-      message: Message to verify.
-      tag: Expected 16-byte CMAC tag.
+      message: Message to authenticate.
+      tag: CMAC tag to verify.
 
   Returns:
       True if the tag is valid, False otherwise.
   """
-  expected = cmac(key, message)
-  return _constant_time_compare(expected, tag)
-
-
-def _constant_time_compare(a: bytes, b: bytes) -> bool:
-  """Compare two byte strings in constant time.
-
-  Prevents timing side-channel attacks by always comparing all bytes
-  regardless of where a mismatch occurs.
-
-  Args:
-      a: First byte string.
-      b: Second byte string.
-
-  Returns:
-      True if equal, False otherwise.
-  """
-  if len(a) != len(b):
+  if len(tag) != _BLOCK_SIZE:
     return False
-  result = 0
-  for x, y in zip(a, b, strict=False):
-    result |= x ^ y
-  return result == 0
+
+  expected_tag = cmac(key, message)
+  return _constant_time_compare(expected_tag, tag)

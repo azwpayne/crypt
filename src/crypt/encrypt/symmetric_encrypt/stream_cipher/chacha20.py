@@ -71,6 +71,17 @@ def _extracted_from_chacha20_block_19(working_state):
 
 
 def chacha20_encrypt(key, nonce, counter, plaintext):
+  """Encrypt plaintext using ChaCha20.
+
+  Args:
+    key: 32-byte key
+    nonce: 12-byte nonce
+    counter: Initial counter value (usually 0)
+    plaintext: Data to encrypt
+
+  Returns:
+    Ciphertext bytes
+  """
   ciphertext = bytearray()
   # 每个块 64 字节，若明文长度不足 64 字节，则只使用部分 keystream
   block_count = (len(plaintext) + 63) // 64
@@ -81,6 +92,23 @@ def chacha20_encrypt(key, nonce, counter, plaintext):
     for j in range(len(block)):
       ciphertext.append(block[j] ^ keystream[j])
   return bytes(ciphertext)
+
+
+def chacha20_decrypt(key, nonce, counter, ciphertext):
+  """Decrypt ciphertext using ChaCha20.
+
+  ChaCha20 is a stream cipher - encryption and decryption are the same operation.
+
+  Args:
+    key: 32-byte key
+    nonce: 12-byte nonce
+    counter: Initial counter value (usually 0)
+    ciphertext: Data to decrypt
+
+  Returns:
+    Plaintext bytes
+  """
+  return chacha20_encrypt(key, nonce, counter, ciphertext)
 
 
 # 示例：加密和解密测试

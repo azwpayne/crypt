@@ -29,8 +29,8 @@ class TestMD2:
     """Test MD2 with 'hello'."""
     result = md2(b"hello")
     # MD2 implementation uses S-box from RFC 1319
-    # Note: The S-box in RFC 1319 has duplicate entries
-    assert result == "5a22618266094ee165bba40afee6517c"
+    # Verified against pycryptodome: MD2("hello") = a9046c73e00331af68917d3804f70655
+    assert result == "a9046c73e00331af68917d3804f70655"
 
   def test_md2_string_input(self):
     """Test MD2 accepts string input."""

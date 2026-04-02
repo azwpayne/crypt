@@ -113,3 +113,69 @@ if __name__ == "__main__":
   print(
     f"\n大数测试: {large_num} -> 编码: {encoded} -> 解码: {decoded} {'✓' if large_num == decoded else '✗'}"
   )
+
+
+def base62_encode(data: bytes) -> str:
+  """Encode bytes to Base62 string.
+
+  Args:
+      data: Bytes to encode.
+
+  Returns:
+      Base62 encoded string.
+  """
+  if not data:
+    return ""
+
+  # Count leading zeros
+  zero_count = 0
+  for b in data:
+    if b == 0:
+      zero_count += 1
+    else:
+      break
+
+  # Encode remaining bytes
+  if zero_count < len(data):
+    num = int.from_bytes(data[zero_count:], byteorder="big")
+    encoded = encode(num)
+  else:
+    encoded = ""
+
+  # Prepend '0' for each leading zero byte
+  return BASE62_ALPHABET[0] * zero_count + encoded
+
+
+def base62_decode(encoded: str) -> bytes:
+  """Decode Base62 string to bytes.
+
+  Args:
+      encoded: Base62 encoded string.
+
+  Returns:
+      Decoded bytes.
+  """
+  if not encoded:
+    return b""
+
+  # Count leading zeros (represented as '0' chars)
+  zero_count = 0
+  for c in encoded:
+    if c == BASE62_ALPHABET[0]:
+      zero_count += 1
+    else:
+      break
+
+  # Decode remaining characters
+  if zero_count < len(encoded):
+    num = decode(encoded[zero_count:])
+    if num == 0:
+      return b"\x00" * zero_count
+    byte_length = (num.bit_length() + 7) // 8
+    result = num.to_bytes(byte_length, byteorder="big")
+  else:
+    # All zeros
+    return b"\x00" * zero_count if zero_count > 0 else b""
+
+  # Prepend zero bytes for each leading zero
+  return b"\x00" * zero_count + result

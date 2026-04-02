@@ -164,9 +164,9 @@ def crc16_ansi(data: bytes) -> int:
 def crc16_dnp(data: bytes) -> int:
   """CRC-16/DNP (Distributed Network Protocol).
 
-  poly=0x3D65 init=0x0000 refin=false refout=false xorout=0xFFFF
+  poly=0x3D65 init=0x0000 refin=true refout=false xorout=0xFFFF
   Used in SCADA systems.
 
   Test vector: crc16_dnp(b"123456789") == 0xEA82
   """
-  return crc16(data, 0x3D65, 0x0000, ref_in=False, ref_out=False, xor_out=0xFFFF)
+  return crc16(data, 0x3D65, 0x0000, ref_in=True, ref_out=False, xor_out=0xFFFF)

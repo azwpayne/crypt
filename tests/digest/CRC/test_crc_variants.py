@@ -97,7 +97,7 @@ class TestCRC16:
     """Test CRC-16/DNP with standard test vector."""
     result = crc16_dnp(TEST_DATA)
     # CRC-16/DNP: poly=0x3D65 init=0x0000 refin=false refout=false xorout=0xFFFF
-    assert result == 0xC2B7  # Verified correct implementation
+    assert result == 0xEA82  # Standard test vector value
 
   def test_crc16_empty(self):
     """Test CRC-16 with empty data."""

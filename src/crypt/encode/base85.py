@@ -181,3 +181,8 @@ if __name__ == "__main__":
   encoded_binary = b85encode(binary_data[:20])
   print("Example 3 - Binary data (first 20 bytes):")
   print(f"  Encoded: {encoded_binary}")
+
+
+# Aliases for consistency with other encoding modules
+base85_encode = b85encode
+base85_decode = b85decode

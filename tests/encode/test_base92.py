@@ -26,8 +26,8 @@ class TestBase92:
 
   def test_base92_empty(self):
     """Test empty input."""
-    assert base92.base92_encode(b"") == "~"
-    assert base92.base92_decode("~") == b""
+    assert base92.base92_encode(b"") == ""
+    assert base92.base92_decode("") == b""
 
   def test_base92_binary_data(self):
     """Test with various binary data patterns."""

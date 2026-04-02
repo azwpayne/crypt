@@ -67,6 +67,17 @@ def salsa20_block(k, c, n):
 
 
 def salsa20_encrypt(k, n, c, p):
+  """Encrypt plaintext using Salsa20.
+
+  Args:
+    k: 32-byte key
+    n: 8-byte nonce
+    c: Counter value
+    p: Plaintext to encrypt
+
+  Returns:
+    Ciphertext bytes
+  """
   ciphertext = bytearray()
   block_count = (len(p) + 63) // 64
   for i in range(block_count):
@@ -75,6 +86,23 @@ def salsa20_encrypt(k, n, c, p):
     for j in range(len(block)):
       ciphertext.append(block[j] ^ keystream[j])
   return bytes(ciphertext)
+
+
+def salsa20_decrypt(k, n, c, ciph):
+  """Decrypt ciphertext using Salsa20.
+
+  Salsa20 is a stream cipher - encryption and decryption are the same operation.
+
+  Args:
+    k: 32-byte key
+    n: 8-byte nonce
+    c: Counter value
+    ciph: Ciphertext to decrypt
+
+  Returns:
+    Plaintext bytes
+  """
+  return salsa20_encrypt(k, n, c, ciph)
 
 
 if __name__ == "__main__":

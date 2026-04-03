@@ -95,7 +95,7 @@ print(decoded)  # b"Hello, World!"
 
 ### Asymmetric Encryption
 
-```python
+```python3
 from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt,
     rsa_decrypt
 
@@ -346,7 +346,7 @@ uv run poe full
 
 ### Project Structure
 
-```
+```text
 src/crypt/
 ├── digest/        # Hash algorithms and message authentication
 │   ├── CRC/       # CRC8, CRC12, CRC16, CRC32, CRC32C, CRC64

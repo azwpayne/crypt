@@ -1,5 +1,7 @@
 # Crypt
 
+[![CI](https://github.com/azwpayne/crypt/actions/workflows)](https://github.com/azwpayne/crypt/actions/workflows/ci.yml)
+
 A pure Python implementation of common cryptographic algorithms for educational
 purposes.
 
@@ -95,9 +97,8 @@ print(decoded)  # b"Hello, World!"
 
 ### Asymmetric Encryption
 
-```python3
-from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt,
-    rsa_decrypt
+```python
+# from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
 
 # Generate RSA key pair
 public_key, private_key = generate_keypair(key_size = 2048)
@@ -115,44 +116,44 @@ print(decrypted.decode())  # Hello, RSA!
 
 ### Hash Functions
 
-| Algorithm           | Description                      | Status      |
-|---------------------|----------------------------------|-------------|
-| **MD Family**       |                                  |             |
-| MD2                 | 128-bit hash (legacy)            | Implemented |
-| MD4                 | 128-bit hash (legacy)            | Implemented |
-| MD5                 | 128-bit hash (broken, legacy)    | Implemented |
-| MD6                 | Variable-length hash             | Implemented |
-| **SHA Family**      |                                  |             |
-| SHA-0               | 160-bit hash (broken)            | Implemented |
-| SHA-1               | 160-bit hash (deprecated)        | Implemented |
-| SHA-224             | 224-bit hash                     | Implemented |
-| SHA-256             | 256-bit hash                     | Implemented |
-| SHA-384             | 384-bit hash                     | Implemented |
-| SHA-512             | 512-bit hash                     | Implemented |
-| SHA-512/224         | 224-bit truncated SHA-512        | Implemented |
-| SHA-512/256         | 256-bit truncated SHA-512        | Implemented |
-| SHA3-224            | Keccak-based 224-bit             | Implemented |
-| SHA3-256            | Keccak-based 256-bit             | Implemented |
-| SHA3-384            | Keccak-based 384-bit             | Implemented |
-| SHA3-512            | Keccak-based 512-bit             | Implemented |
-| SHAKE128            | Extendable-output function (XOF) | Implemented |
-| SHAKE256            | Extendable-output function (XOF) | Implemented |
-| **Other Hashes**    |                                  |             |
-| BLAKE2b / BLAKE2s   | Fast cryptographic hash          | Implemented |
-| BLAKE3              | Modern fast hash                 | Implemented |
-| CRC8 / CRC12        | Cyclic redundancy checks (8/12)  | Implemented |
-| CRC16 / CRC16-CCITT | Cyclic redundancy checks (16)    | Implemented |
-| CRC32 / CRC32C      | Cyclic redundancy checks (32)    | Implemented |
-| CRC64               | Cyclic redundancy check (64)     | Implemented |
-| Adler32             | Checksum algorithm               | Implemented |
-| FNV                 | Non-cryptographic hash           | Implemented |
-| Tiger               | 192-bit hash                     | Implemented |
-| RIPEMD-128          | 128-bit hash                     | Implemented |
-| RIPEMD-160          | 160-bit hash                     | Implemented |
-| Whirlpool           | 512-bit hash                     | Implemented |
-| SM3                 | Chinese national standard hash   | Implemented |
-| bcrypt              | Password hashing                 | Implemented |
-| Poly1305            | Message authentication code      | Implemented |
+| Algorithm           | Description                      | Security Status   |
+|---------------------|----------------------------------|-------------------|
+| **MD Family**       |                                  |                   |
+| MD2                 | 128-bit hash                     | Broken, legacy    |
+| MD4                 | 128-bit hash                     | Broken, legacy    |
+| MD5                 | 128-bit hash                     | Broken, legacy    |
+| MD6                 | Variable-length hash             | Experimental      |
+| **SHA Family**      |                                  |                   |
+| SHA-0               | 160-bit hash                     | Broken            |
+| SHA-1               | 160-bit hash                     | Deprecated        |
+| SHA-224             | 224-bit hash                     | Secure            |
+| SHA-256             | 256-bit hash                     | Secure            |
+| SHA-384             | 384-bit hash                     | Secure            |
+| SHA-512             | 512-bit hash                     | Secure            |
+| SHA-512/224         | 224-bit truncated SHA-512        | Secure            |
+| SHA-512/256         | 256-bit truncated SHA-512        | Secure            |
+| SHA3-224            | Keccak-based 224-bit             | Secure            |
+| SHA3-256            | Keccak-based 256-bit             | Secure            |
+| SHA3-384            | Keccak-based 384-bit             | Secure            |
+| SHA3-512            | Keccak-based 512-bit             | Secure            |
+| SHAKE128            | Extendable-output function (XOF) | Secure            |
+| SHAKE256            | Extendable-output function (XOF) | Secure            |
+| **Other Hashes**    |                                  |                   |
+| BLAKE2b / BLAKE2s   | Fast cryptographic hash          | Secure            |
+| BLAKE3              | Modern fast hash                 | Secure            |
+| CRC8 / CRC12        | Cyclic redundancy checks         | Non-cryptographic |
+| CRC16 / CRC16-CCITT | Cyclic redundancy checks         | Non-cryptographic |
+| CRC32 / CRC32C      | Cyclic redundancy checks         | Non-cryptographic |
+| CRC64               | Cyclic redundancy check          | Non-cryptographic |
+| Adler32             | Checksum algorithm               | Non-cryptographic |
+| FNV                 | Non-cryptographic hash           | Non-cryptographic |
+| Tiger               | 192-bit hash                     | Legacy            |
+| RIPEMD-128          | 128-bit hash                     | Legacy            |
+| RIPEMD-160          | 160-bit hash                     | Legacy            |
+| Whirlpool           | 512-bit hash                     | Legacy            |
+| SM3                 | Chinese national standard hash   | Secure            |
+| bcrypt              | Password hashing                 | Secure            |
+| Poly1305            | Message authentication code      | Secure            |
 
 ### HMAC (Hash-based Message Authentication)
 
@@ -179,62 +180,62 @@ print(decrypted.decode())  # Hello, RSA!
 
 #### Block Ciphers
 
-| Algorithm         | Block Size | Key Sizes       | Description                           |
-|-------------------|------------|-----------------|---------------------------------------|
-| AES               | 128-bit    | 128/192/256-bit | Advanced Encryption Standard          |
-| DES               | 64-bit     | 56-bit          | Data Encryption Standard (legacy)     |
-| 3DES (Triple DES) | 64-bit     | 112/168-bit     | Triple DES (legacy)                   |
-| Blowfish          | 64-bit     | 32-448-bit      | Fast block cipher                     |
-| Twofish           | 128-bit    | 128/192/256-bit | AES finalist                          |
-| Camellia          | 128-bit    | 128/192/256-bit | Japanese standard                     |
-| CAST5 (CAST-128)  | 64-bit     | 40-128-bit      | Legacy cipher                         |
-| CAST6 (CAST-256)  | 128-bit    | 128/192/256-bit | AES candidate                         |
-| RC5               | 64-bit     | Variable        | Variable rounds                       |
-| RC6               | 128-bit    | 128/192/256-bit | AES finalist                          |
-| TEA               | 64-bit     | 128-bit         | Tiny Encryption Algorithm             |
-| XTEA              | 64-bit     | 128-bit         | Extended TEA                          |
-| XXTEA             | 64-bit     | 128-bit         | Corrected Block TEA                   |
-| SM4               | 128-bit    | 128-bit         | Chinese national standard             |
-| PRESENT           | 64-bit     | 80/128-bit      | Lightweight cipher                    |
-| BELT              | 128-bit    | 256-bit         | Belarusian standard                   |
-| Simon             | Various    | Various         | NSA lightweight cipher                |
-| Playfair          | Digraph    | Keyword-based   | Classical digraph substitution cipher |
-| Rail Fence        | Transpose  | Integer key     | Classical transposition cipher        |
+| Algorithm         | Block Size | Key Sizes       | Security Status     |
+|-------------------|------------|-----------------|---------------------|
+| AES               | 128-bit    | 128/192/256-bit | Secure              |
+| DES               | 64-bit     | 56-bit          | Broken, legacy      |
+| 3DES (Triple DES) | 64-bit     | 112/168-bit     | Deprecated          |
+| Blowfish          | 64-bit     | 32-448-bit      | Legacy              |
+| Twofish           | 128-bit    | 128/192/256-bit | Secure              |
+| Camellia          | 128-bit    | 128/192/256-bit | Secure              |
+| CAST5 (CAST-128)  | 64-bit     | 40-128-bit      | Legacy              |
+| CAST6 (CAST-256)  | 128-bit    | 128/192/256-bit | AES candidate       |
+| RC5               | 64-bit     | Variable        | Legacy              |
+| RC6               | 128-bit    | 128/192/256-bit | AES finalist        |
+| TEA               | 64-bit     | 128-bit         | Legacy              |
+| XTEA              | 64-bit     | 128-bit         | Legacy              |
+| XXTEA             | 64-bit     | 128-bit         | Legacy              |
+| SM4               | 128-bit    | 128-bit         | Secure              |
+| PRESENT           | 64-bit     | 80/128-bit      | Lightweight         |
+| BELT              | 128-bit    | 256-bit         | Belarusian standard |
+| Simon             | Various    | Various         | NSA lightweight     |
+| Playfair          | Digraph    | Keyword-based   | Classical cipher    |
+| Rail Fence        | Transpose  | Integer key     | Classical cipher    |
 
 #### Block Cipher Modes
 
-| Mode | Description                                          |
-|------|------------------------------------------------------|
-| ECB  | Electronic Codebook (not recommended)                |
-| CBC  | Cipher Block Chaining                                |
-| CFB  | Cipher Feedback                                      |
-| OFB  | Output Feedback                                      |
-| CTR  | Counter mode                                         |
-| XTS  | XEX-based tweaked-codebook with ciphertext stealing  |
-| EAX  | Authenticated encryption with associated data (AEAD) |
-| GCM  | Galois/Counter Mode (AEAD)                           |
-| CCM  | Counter with CBC-MAC (AEAD)                          |
-| OCB  | Offset Codebook Mode v3 (AEAD, RFC 7253)             |
+| Mode | Description                                          | Authentication |
+|------|------------------------------------------------------|----------------|
+| ECB  | Electronic Codebook (educational only)               | No             |
+| CBC  | Cipher Block Chaining                                | No             |
+| CFB  | Cipher Feedback                                      | No             |
+| OFB  | Output Feedback                                      | No             |
+| CTR  | Counter mode                                         | No             |
+| XTS  | XEX-based tweaked-codebook with ciphertext stealing  | No             |
+| EAX  | Authenticated encryption with associated data (AEAD) | Yes            |
+| GCM  | Galois/Counter Mode (AEAD)                           | Yes            |
+| CCM  | Counter with CBC-MAC (AEAD)                          | Yes            |
+| OCB  | Offset Codebook Mode v3 (AEAD, RFC 7253)             | Yes            |
 
 #### Padding Schemes
 
-| Scheme     | Description        |
-|------------|--------------------|
-| PKCS7      | PKCS #7 padding    |
-| ANSI X.923 | ANSI X9.23 padding |
+| Scheme     | Description        | Constant-Time Unpad |
+|------------|--------------------|---------------------|
+| PKCS7      | PKCS #7 padding    | Yes                 |
+| ANSI X.923 | ANSI X9.23 padding | No                  |
 
 #### Stream Ciphers
 
-| Algorithm         | Description                             |
-|-------------------|-----------------------------------------|
-| ChaCha20          | Modern stream cipher                    |
-| ChaCha20-Poly1305 | AEAD construction (RFC 8439, TLS 1.3)   |
-| Salsa20           | Predecessor to ChaCha20                 |
-| RC4               | Legacy stream cipher (deprecated)       |
-| SEAL              | Software-optimized encryption algorithm |
-| ZUC               | Chinese stream cipher (4G/5G)           |
-| Rabbit            | High-performance stream cipher          |
-| Trivium           | Hardware-oriented stream cipher         |
+| Algorithm         | Description                             | Security Status |
+|-------------------|-----------------------------------------|-----------------|
+| ChaCha20          | Modern stream cipher                    | Secure          |
+| ChaCha20-Poly1305 | AEAD construction (RFC 8439, TLS 1.3)   | Secure          |
+| Salsa20           | Predecessor to ChaCha20                 | Secure          |
+| RC4               | Legacy stream cipher                    | Broken          |
+| SEAL              | Software-optimized encryption algorithm | Legacy          |
+| ZUC               | Chinese stream cipher (4G/5G)           | Secure          |
+| Rabbit            | High-performance stream cipher          | Secure          |
+| Trivium           | Hardware-oriented stream cipher         | Secure          |
 
 #### Classical Ciphers
 
@@ -302,6 +303,8 @@ print(decrypted.decode())  # Hello, RSA!
     - [pycryptodome](https://www.pycryptodome.org/)
     - Python's built-in `hashlib` and `secrets` modules
 
+See [SECURITY.md](SECURITY.md) for detailed security considerations.
+
 ## Testing
 
 The project includes comprehensive tests for all implementations:
@@ -321,7 +324,7 @@ uv run pytest -v
 ```
 
 Tests validate implementations against reference libraries (`hashlib`, `pycryptodome`,
-`cryptography`) to ensure correctness. Coverage target: **95%+**.
+`cryptography`) to ensure correctness. Coverage target: **90%+**.
 
 ## Development
 
@@ -369,23 +372,7 @@ tests/             # Comprehensive test suite
 
 ## Contributing
 
-Contributions are welcome! Please follow these guidelines:
-
-1. **Code Style**: Follow PEP 8 and use type hints where appropriate
-2. **Testing**: Add tests for new algorithms and ensure all tests pass
-3. **Documentation**: Include docstrings and comments explaining the algorithm
-4. **Security**: Clearly mark any deprecated or broken algorithms
-5. **References**: Cite RFCs, papers, or other sources for algorithm implementations
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-algorithm`)
-3. Make your changes
-4. Run tests and linting (`uv run poe full && uv run pytest`)
-5. Commit your changes (`git commit -am 'feat: add new algorithm'`)
-6. Push to the branch (`git push origin feature/new-algorithm`)
-7. Create a Pull Request
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## References
 

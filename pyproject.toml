@@ -96,7 +96,6 @@ tasks.test-py313 = { shell = "uv run --python 3.13 --group test pytest" }
 tasks.test-py314 = { shell = "uv run --python 3.14 --group test pytest" }
 
 tasks.clean = { shell = """
-	rm -rf *.py
 	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks reports
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete

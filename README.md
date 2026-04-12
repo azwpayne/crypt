@@ -1,7 +1,5 @@
 # Crypt
 
-[![CI](https://github.com/azwpayne/crypt/actions/workflows)](https://github.com/azwpayne/crypt/actions/workflows/ci.yml)
-
 A pure Python implementation of common cryptographic algorithms for educational
 purposes.
 

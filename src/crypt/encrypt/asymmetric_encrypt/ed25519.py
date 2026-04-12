@@ -56,7 +56,7 @@ class Point:
       return NotImplemented
     return self.x == other.x and self.y == other.y
 
-  __hash__ = None
+  __hash__ = None  # type: ignore[assignment]
 
   def is_valid(self) -> bool:
     """Check if point is on the curve."""

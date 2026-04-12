@@ -97,8 +97,10 @@ def encrypt(
       processed_char = "I"
 
     if processed_char in alphabet:
-      row, col = _find_position(square, processed_char)
-    result.append(f"{row_labels[row]}{col_labels[col]}")
+      pos = _find_position(square, processed_char)
+      if pos is not None:
+        row, col = pos
+        result.append(f"{row_labels[row]}{col_labels[col]}")
 
   return " ".join(result)
 

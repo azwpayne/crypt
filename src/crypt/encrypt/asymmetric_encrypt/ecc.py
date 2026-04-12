@@ -20,7 +20,7 @@ class Point:
   def __eq__(self, other):
     return self.x == other.x and self.y == other.y and self.infinity == other.infinity
 
-  __hash__ = None
+  __hash__ = None  # type: ignore[assignment]
 
 
 INFINITY = Point(0, 0, infinity=True)

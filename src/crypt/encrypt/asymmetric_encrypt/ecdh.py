@@ -99,7 +99,7 @@ class Point:
       and self.infinity == other.infinity
     )
 
-  __hash__ = None
+  __hash__ = None  # type: ignore[assignment]
 
   def is_valid(self) -> bool:
     """Check if point is on the curve."""

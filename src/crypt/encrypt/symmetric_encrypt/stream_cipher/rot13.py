@@ -8,7 +8,7 @@
 from string import ascii_lowercase, ascii_uppercase
 
 
-def _create_rot13_table() -> str:
+def _create_rot13_table() -> dict[int, int]:
   """创建ROT13转换表"""
   # ROT13 将字母表前半部分映射到后半部分
   lower = ascii_lowercase[13:] + ascii_lowercase[:13]

@@ -15,13 +15,13 @@ if TYPE_CHECKING:
   from collections.abc import Callable
 
 # RIPEMD-160 initial hash values (IV)
-_INITIAL_H: Final[tuple[int, ...]] = (
+_INITIAL_H: Final[list[int]] = [
   0x67452301,
   0xEFCDAB89,
   0x98BADCFE,
   0x10325476,
   0xC3D2E1F0,
-)
+]
 
 # Round constants for left lane
 _KL: Final[tuple[int, ...]] = (
@@ -548,7 +548,7 @@ def ripemd160(data: bytes | str) -> str:
   message = data if isinstance(data, bytes) else data.encode()
 
   # Initialize state
-  h = list(_INITIAL_H)
+  h = _INITIAL_H[:]
 
   # Pad message
   padded = _pad_message(message)

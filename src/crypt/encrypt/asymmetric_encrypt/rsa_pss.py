@@ -16,7 +16,7 @@ from typing import Protocol
 class HashFunc(Protocol):
   """Protocol for hash functions like hashlib.sha256."""
 
-  def __call__(self, data: bytes = b"") -> hashlib._Hash: ...
+  def __call__(self, data: bytes = b"", /) -> hashlib._Hash: ...
 
 
 def mgf1(seed: bytes, length: int, hash_func: HashFunc = hashlib.sha256) -> bytes:

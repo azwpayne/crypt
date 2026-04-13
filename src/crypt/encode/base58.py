@@ -205,12 +205,12 @@ if __name__ == "__main__":
 
   # 基本Base58编码
   test_encoded = encode_base58(test_data)
-  print(f"原始数据: {test_data}")
+  print(f"原始数据: {test_data!r}")
   print(f"Base58编码: {test_encoded}")
 
   # 基本Base58解码
   test_decoded = decode_base58(test_encoded)
-  print(f"Base58解码: {test_decoded}")
+  print(f"Base58解码: {test_decoded!r}")
   print(f"数据匹配: {test_data == test_decoded}")
   print()
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
   # Base58Check解码
   decoded_check = decode_base58_check(encoded_check)
-  print(f"Base58Check解码: {decoded_check}")
+  print(f"Base58Check解码: {decoded_check!r}")
   print(f"数据匹配: {test_data == decoded_check}")
 
   # 运行完整测试

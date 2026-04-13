@@ -1,7 +1,4 @@
-# @author  : azwpayne(https://github.com/azwpayne)
-# @name    : test_ripemd160.py
-# @time    : 2026/3/15
-# @desc    : Tests for RIPEMD-160 hash algorithm
+"""Tests for RIPEMD-160 hash algorithm."""
 
 from __future__ import annotations
 

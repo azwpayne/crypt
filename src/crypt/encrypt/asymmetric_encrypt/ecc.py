@@ -1,4 +1,10 @@
-# Elliptic Curve Cryptography
+"""Elliptic Curve Cryptography (secp256k1).
+
+This implementation is for educational purposes only.
+"""
+
+from __future__ import annotations
+
 import hashlib
 import secrets
 
@@ -12,21 +18,28 @@ N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
 
 class Point:
-  def __init__(self, x, y, *, infinity=False):
+  """Point on the secp256k1 elliptic curve."""
+
+  def __init__(self, x: int, y: int, *, infinity: bool = False) -> None:
     self.x = x
     self.y = y
     self.infinity = infinity
 
-  def __eq__(self, other):
+  def __eq__(self, other: object) -> bool:
+    if not isinstance(other, Point):
+      return NotImplemented
     return self.x == other.x and self.y == other.y and self.infinity == other.infinity
 
-  __hash__ = None  # type: ignore[assignment]
+  def __hash__(self) -> int:
+    msg = "unhashable type"
+    raise TypeError(msg)
 
 
 INFINITY = Point(0, 0, infinity=True)
 
 
-def point_add(p1, p2):
+def point_add(p1: Point, p2: Point) -> Point:
+  """Add two points on the secp256k1 curve."""
   if p1.infinity:
     return p2
   if p2.infinity:
@@ -42,7 +55,8 @@ def point_add(p1, p2):
   return Point(x3, y3)
 
 
-def scalar_mult(k, point):
+def scalar_mult(k: int, point: Point) -> Point:
+  """Multiply a point by a scalar using double-and-add."""
   result = INFINITY
   addend = point
   while k:
@@ -53,18 +67,21 @@ def scalar_mult(k, point):
   return result
 
 
-def generate_keypair():
+def generate_keypair() -> tuple[int, Point]:
+  """Generate a random secp256k1 keypair."""
   private_key = secrets.randbelow(N - 1) + 1
   public_key = scalar_mult(private_key, Point(Gx, Gy))
   return private_key, public_key
 
 
-def ecdh_shared_secret(private_key, public_key):
+def ecdh_shared_secret(private_key: int, public_key: Point) -> bytes:
+  """Compute the ECDH shared secret."""
   shared_point = scalar_mult(private_key, public_key)
   return shared_point.x.to_bytes(32, "big")
 
 
-def ecdsa_sign(message, private_key):
+def ecdsa_sign(message: bytes | str, private_key: int) -> tuple[int, int]:
+  """Sign a message using ECDSA on secp256k1."""
   if isinstance(message, str):
     message = message.encode()
   z = int.from_bytes(hashlib.sha256(message).digest(), "big")
@@ -75,7 +92,8 @@ def ecdsa_sign(message, private_key):
   return r, s
 
 
-def ecdsa_verify(message, signature, public_key):
+def ecdsa_verify(message: bytes | str, signature: tuple[int, int], public_key: Point) -> bool:
+  """Verify an ECDSA signature on secp256k1."""
   if isinstance(message, str):
     message = message.encode()
   r, s = signature

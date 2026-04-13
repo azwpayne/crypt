@@ -160,9 +160,9 @@ if __name__ == "__main__":
   test_encoded = b85encode(test_data)
   test_decoded = b85decode(test_encoded)
   print("Example 1 - Basic:")
-  print(f"  Data: {test_data}")
+  print(f"  Data: {test_data!r}")
   print(f"  Encoded: {test_encoded}")
-  print(f"  Decoded: {test_decoded}")
+  print(f"  Decoded: {test_decoded!r}")
   print(f"  Match: {test_data == test_decoded}")
   print()
 
@@ -170,9 +170,9 @@ if __name__ == "__main__":
   ascii85_encoded = b85encode_ascii85(test_data)
   ascii85_decoded = b85decode_ascii85(ascii85_encoded)
   print("Example 2 - ASCII85:")
-  print(f"  Data: {test_data}")
+  print(f"  Data: {test_data!r}")
   print(f"  ASCII85: {ascii85_encoded}")
-  print(f"  Decoded: {ascii85_decoded}")
+  print(f"  Decoded: {ascii85_decoded!r}")
   print(f"  Match: {test_data == ascii85_decoded}")
   print()
 

@@ -88,7 +88,7 @@ MORSE_CODE_DICT: dict[str, str] = {
 REVERSE_MORSE_DICT: dict[str, str] = {v: k for k, v in MORSE_CODE_DICT.items()}
 
 
-def morse_encode(text: str, *, sep: str = " ", word_sep: str = " / ") -> str:
+def morse_encode(text: object, *, sep: str = " ", word_sep: str = " / ") -> str:
   """Encode text to International Morse Code.
 
   Args:
@@ -130,7 +130,7 @@ def morse_encode(text: str, *, sep: str = " ", word_sep: str = " / ") -> str:
   return word_sep.join(encoded_words)
 
 
-def morse_decode(encoded: str, *, sep: str = " ", word_sep: str = "/") -> str:
+def morse_decode(encoded: object, *, sep: str = " ", word_sep: str = "/") -> str:
   """Decode International Morse Code to text.
 
   Args:
@@ -191,7 +191,7 @@ def morse_decode(encoded: str, *, sep: str = " ", word_sep: str = "/") -> str:
 
 
 def morse_encode_binary(
-  text: str,
+  text: object,
   *,
   dot: str = "1",
   dash: str = "111",
@@ -288,7 +288,7 @@ def _decode_binary_char(
 
 
 def morse_decode_binary(
-  binary: str,
+  binary: object,
   *,
   dot: str = "1",
   dash: str = "111",
@@ -346,7 +346,7 @@ def morse_decode_binary(
   return " ".join(decoded_words)
 
 
-def morse_validate(text: str) -> bool:
+def morse_validate(text: object) -> bool:
   """Check if text contains only valid Morse code characters.
 
   Args:
@@ -368,7 +368,7 @@ def morse_validate(text: str) -> bool:
   return all(char in MORSE_CODE_DICT for char in text.upper())
 
 
-def get_morse_timing(text: str, unit_ms: float = 50.0) -> dict[str, float]:
+def get_morse_timing(text: object, unit_ms: float = 50.0) -> dict[str, float]:
   """Calculate timing information for Morse code transmission.
 
   Args:

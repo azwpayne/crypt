@@ -155,7 +155,7 @@ def frequency_analysis(text: str) -> dict[str, float]:
     return {}
 
   # 统计频率
-  freq = {}
+  freq: dict[str, int] = {}
   for c in letters:
     freq[c] = freq.get(c, 0) + 1
 

@@ -63,6 +63,10 @@ def _emsa_pss_encode(
   """
   hash_len = hash_func().digest_size
 
+  if salt_len < 0:
+    msg = "salt_len must be non-negative"
+    raise ValueError(msg)
+
   if em_bits < 8 * hash_len + 8 * salt_len + 9:
     msg = "Encoding error"
     raise ValueError(msg)

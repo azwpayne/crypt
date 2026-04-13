@@ -2,10 +2,10 @@
 # @name    : sha2_512_224.py
 # @author  : azwpayne
 # @desc    :
-
 import hashlib
 from secrets import randbelow
 from string import printable
+from typing import cast
 
 # 初始哈希值 (FIPS 180-4 第 5.3.4.2 节)
 INITIAL_HASH = (
@@ -297,7 +297,7 @@ def compress_block(
 #         h = compress_block(h, w, ROUND_CONSTANTS)
 #
 #         # 与前一哈希值相加
-#         h = tuple(
+#         h = cast(tuple[int, int, int, int, int, int, int, int], tuple(
 #             (x + y) & 0xFFFFFFFFFFFFFFFF
 #             for x, y in zip(INITIAL_HASH, h)
 #         )
@@ -336,10 +336,10 @@ def sha512_224(message: bytes) -> bytes:
     h_new = compress_block(h, w, ROUND_CONSTANTS)
 
     # 将压缩结果与当前哈希值相加（这是正确的）
-    h = tuple(
+    h = cast("tuple[int, int, int, int, int, int, int, int]", tuple(
       (current + new) & 0xFFFFFFFFFFFFFFFF
       for current, new in zip(h, h_new, strict=False)
-    )
+    ))
 
   # 提取前224位 (28字节)
   full_digest = b"".join(word.to_bytes(8, "big") for word in h)
@@ -398,7 +398,7 @@ if __name__ == "__main__":
     result = sha512_224_hex(message)
     status = "✓" if result == expected else "✗"
     print(f"测试 {i}: {status}")
-    print(f"  消息: {message[:50]}")
+    print(f"  消息: {message[:50]!r}")
     print(f"  期望: {expected}")
     print(f"  结果: {result}")
     print()

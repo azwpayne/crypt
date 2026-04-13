@@ -3,8 +3,10 @@
 # @author  : azwpayne
 # @desc    :
 
+from typing import Any, cast
 
-def ascii_encode(data: str) -> list[int]:
+
+def ascii_encode(data: object) -> list[int]:
   """
   将字符串编码为 ASCII 码列表
 
@@ -36,7 +38,7 @@ def ascii_encode(data: str) -> list[int]:
   return result
 
 
-def ascii_decode(ascii_codes: list[int]) -> str:
+def ascii_decode(ascii_codes: object) -> str:
   """
   将 ASCII 码列表解码为字符串
 
@@ -201,7 +203,7 @@ def ascii_decode_binary(bin_str: str) -> str:
   return ascii_decode(ascii_codes)
 
 
-def is_ascii_char(character: str) -> bool:
+def is_ascii_char(character: object) -> bool:
   """
   判断单个字符是否为 ASCII 字符
 
@@ -221,7 +223,7 @@ def is_ascii_char(character: str) -> bool:
   return ord(character) < 128
 
 
-def is_ascii_string(text_str: str) -> bool:
+def is_ascii_string(text_str: object) -> bool:
   """
   判断字符串是否全部由 ASCII 字符组成
 
@@ -361,7 +363,7 @@ if __name__ == "__main__":
 
   # 测试类型错误
   try:
-    ascii_encode(123)  # type: ignore[arg-type]
+    ascii_encode(cast("Any", 123))
   except TypeError as e:
     print(f"捕获异常: {e}")
 

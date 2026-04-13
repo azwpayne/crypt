@@ -13,9 +13,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "poethepoet",
-    "pyrefly",
     "ruff",
-    "ty",
 ]
 test = [
     "pytest",
@@ -56,7 +54,7 @@ test = [
     "pytest-pretty",
     "pytest-watcher",
     # 性能与资源
-    #    "pytest-benchmark",
+    # "pytest-benchmark",
     "pytest-memray",
     "pytest-leaks",
     "pytest-profiling",
@@ -128,8 +126,8 @@ addopts = [
     # 性能与超时
     "--timeout=30",
     "--timeout-method=thread",
-    #    "--benchmark-only",
-    #    "--benchmark-max-time=1.0",
+    # "--benchmark-only",
+    # "--benchmark-max-time=1.0",
     # 视觉与体验
     "-v",
     "--tb=short",
@@ -137,11 +135,11 @@ addopts = [
     "--strict-config",
     "--html=reports/test_report.html",
     "--self-contained-html",
-    #    "--sugar",
+    # "--sugar",
     "--instafail",
     # 安全与质量
     "--bandit",
-    #    "--mypy",
+    "--mypy",
     "--ruff",
 ]
 filterwarnings = [
@@ -210,6 +208,21 @@ show_mutations = true
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101"]  # 跳过assert检查（pytest使用大量assert）
+
+[tool.mypy]
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+warn_no_return = true
+follow_imports = "normal"
+ignore_missing_imports = true
+show_error_codes = true
+pretty = true
 
 [tool.pytest-watcher]
 now = true

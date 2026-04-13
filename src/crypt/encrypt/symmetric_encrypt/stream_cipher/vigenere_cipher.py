@@ -168,7 +168,7 @@ def autokey_decrypt(text: str, key: str) -> str:
 
   # 解密
   result = list(text)
-  decrypted_letters = []
+  decrypted_letters: list[str] = []
 
   for idx, (pos, char) in enumerate(letters):
     c = _char_to_num(char)
@@ -205,7 +205,7 @@ def kasiski_examination(text: str, min_length: int = 3) -> dict:
   cleaned = "".join(c.upper() for c in text if c.isalpha())
 
   # 查找所有重复模式
-  repeats = {}
+  repeats: dict[str, list[int]] = {}
   for length in range(min_length, min_length + 3):
     for i in range(len(cleaned) - length + 1):
       pattern = cleaned[i : i + length]
@@ -248,7 +248,7 @@ def friedman_test(text: str) -> float:
     return 1.0
 
   # 计算字母频率
-  freq = {}
+  freq: dict[str, int] = {}
   for c in cleaned:
     freq[c] = freq.get(c, 0) + 1
 

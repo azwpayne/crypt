@@ -121,7 +121,7 @@ class SEALState:
 
   def generate_block(self) -> bytes:
     """Generate 80 bytes (20 words) of keystream."""
-    output = []
+    output: list[int] = []
 
     # Save initial values
     reg_a = self.R[4 * NUM_ROUNDS]

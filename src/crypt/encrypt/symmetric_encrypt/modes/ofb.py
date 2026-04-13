@@ -29,13 +29,13 @@ Usage Examples:
     >>> double_encrypted = ofb3.encrypt(ciphertext)  # Actually decrypts!
     >>> assert double_encrypted == plaintext
 """
-
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
 )
+from typing import cast
 
 
 class OFBMode:
@@ -110,8 +110,8 @@ class OFBMode:
         >>> ofb = OFBMode(encrypt_func=cipher.encrypt, block_size=16,
         ...               iv=b'1234567890123456')
     """
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
     if iv is None:
       msg = "IV is required for OFB mode"
       raise ValueError(msg)
@@ -122,6 +122,7 @@ class OFBMode:
     self.block_size = block_size
     self.iv = iv
     self._encrypt_func = encrypt_func
+    self.key: bytes | None = None
 
     # If key is provided, use AES
     if key is not None:

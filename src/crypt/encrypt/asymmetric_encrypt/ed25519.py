@@ -6,6 +6,13 @@ It uses Curve25519 in Edwards form with the equation:
 where d = -121665/121666 mod p
 
 This implementation is for educational purposes only.
+
+Security Notice:
+    This implementation does NOT include side-channel countermeasures.
+    The scalar multiplication uses a classic double-and-add algorithm whose
+    memory-access and branch patterns depend on secret scalar bits, making
+    it vulnerable to timing attacks. Do NOT use this code in production
+    environments or for handling real sensitive data.
 """
 
 from __future__ import annotations
@@ -56,7 +63,9 @@ class Point:
       return NotImplemented
     return self.x == other.x and self.y == other.y
 
-  __hash__ = None  # type: ignore[assignment]
+  def __hash__(self) -> int:
+    msg = "unhashable type"
+    raise TypeError(msg)
 
   def is_valid(self) -> bool:
     """Check if point is on the curve."""

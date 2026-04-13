@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 """BLAKE3 hash algorithm implementation.
 
 This module provides BLAKE3 hashing functionality. It uses the reference
@@ -12,15 +16,13 @@ careful implementation.
 Reference: https://github.com/BLAKE3-team/BLAKE3
 """
 
-from __future__ import annotations
+_blake3: Any = None
 
 try:
   import blake3 as _blake3
-
   _HAS_BLAKE3 = True
 except ImportError:
   _HAS_BLAKE3 = False
-  _blake3 = None  # type: ignore[misc,assignment]
 
 
 # Error messages

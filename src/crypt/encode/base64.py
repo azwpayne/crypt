@@ -95,7 +95,7 @@ if __name__ == "__main__":
   for test in test_cases:
     encoded = base64_encode(test)
     decoded = base64_decode(encoded)
-    print(f"原文: {test}")
+    print(f"原文: {test!r}")
     print(f"编码: {encoded}")
-    print(f"解码: {decoded}")
+    print(f"解码: {decoded!r}")
     print(f"验证: {test == decoded}\n")

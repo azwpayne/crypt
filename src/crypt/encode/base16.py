@@ -84,7 +84,7 @@ def base16_decode(s: str) -> bytes:
 if __name__ == "__main__":
   # 测试数据
   original_data = b"Hello, World! 123"
-  print(f"原始数据: {original_data}")
+  print(f"原始数据: {original_data!r}")
 
   # 编码（大写）
   encoded_upper = base16_encode(original_data)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
   # 解码
   decoded_data = base16_decode(encoded_upper)
-  print(f"解码结果: {decoded_data}")
+  print(f"解码结果: {decoded_data!r}")
 
   if original_data != decoded_data:
     msg = "编解码不匹配"
@@ -111,7 +111,7 @@ if __name__ == "__main__":
   # 测试带空格的输入
   spaced_hex = "48 65 6C 6C 6F"
   decoded_spaced = base16_decode(spaced_hex)
-  print(f"带空格解码: {decoded_spaced}")
+  print(f"带空格解码: {decoded_spaced!r}")
 
   # 测试错误处理
   try:

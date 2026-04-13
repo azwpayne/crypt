@@ -1,10 +1,13 @@
 # @author  : azwpayne(https://github.com/azwpayne)
+
 # @name    : argon2.py
 # @time    : 2026/03/15
 # @blog    : https://paynewu.com/
 # @mail    : paynewu0719@gmail.com
 # @desc    : Argon2 Key Derivation Function (RFC 9106)
 """
+
+
 Argon2 is a memory-hard password hashing function and winner of the
 Password Hashing Competition (PHC) in 2015.
 
@@ -13,10 +16,10 @@ password hashing and key derivation.
 
 Reference: RFC 9106 - Argon2 Memory-Hard Function for Password Hashing
 """
-
 import hashlib
 import itertools
 import struct
+from typing import cast
 
 # Argon2 constants
 ARGON2_VERSION = 0x13  # Version 1.3
@@ -148,8 +151,8 @@ def _init_memory(
   **kwargs: bytes,
 ) -> list:
   """Initialize Argon2 memory matrix."""
-  key: bytes = kwargs.get("key", b"")  # type: ignore[assignment]
-  associated_data: bytes = kwargs.get("associated_data", b"")  # type: ignore[assignment]
+  key = kwargs.get("key", b"")
+  associated_data = kwargs.get("associated_data", b"")
   lanes = [
     [_Argon2Block() for _ in range(memory_blocks // parallelism)]
     for __ in range(parallelism)
@@ -265,9 +268,9 @@ def argon2i(
       ValueError: If parameters are invalid
   """
   # Extract optional kwargs
-  hash_len: int = kwargs.get("hash_len", 32)  # type: ignore[assignment]
-  key: str | bytes = kwargs.get("key", b"")  # type: ignore[assignment]
-  associated_data: str | bytes = kwargs.get("associated_data", b"")  # type: ignore[assignment]
+  hash_len = cast("int", kwargs.get("hash_len", 32))
+  key = cast("str | bytes", kwargs.get("key", b""))
+  associated_data = cast("str | bytes", kwargs.get("associated_data", b""))
   # Convert inputs to bytes
   if isinstance(password, str):
     password = password.encode("utf-8")
@@ -334,7 +337,7 @@ def argon2(
   """
   Simplified Argon2i interface compatible with common implementations.
   """
-  hash_len: int = kwargs.get("hash_len", 32)  # type: ignore[assignment]
+  hash_len = cast("int", kwargs.get("hash_len", 32))
   return argon2i(
     password=password,
     salt=salt,

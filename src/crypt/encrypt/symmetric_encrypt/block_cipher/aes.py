@@ -723,7 +723,7 @@ def key_expansion(key: bytes) -> list[int]:
     w.append(bytes(w[i - nk][j] ^ temp[j] for j in range(4)))
 
   # Flatten to list of bytes
-  expanded = []
+  expanded: list[int] = []
   for word in w:
     expanded.extend(word)
   return expanded

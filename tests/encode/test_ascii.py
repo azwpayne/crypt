@@ -2,7 +2,7 @@
 # @name    : test_ascii_module.py
 # @time    : 2026/3/13
 # @desc    : Tests for ASCII encoding/decoding
-from crypt.encode import ascii as ascii_module
+import crypt.encode.ascii as ascii_module
 
 import pytest
 
@@ -59,13 +59,13 @@ class TestAsciiEncodeDecode:
   def test_ascii_type_errors(self):
     """Test type validation."""
     with pytest.raises(TypeError, match="输入必须是字符串"):
-      ascii_module.ascii_encode(123)  # type: ignore[arg-type]
+      ascii_module.ascii_encode(123)
 
     with pytest.raises(TypeError, match="输入必须是列表"):
-      ascii_module.ascii_decode(123)  # type: ignore[arg-type]
+      ascii_module.ascii_decode(123)
 
     with pytest.raises(TypeError, match="ASCII 码必须是整数"):
-      ascii_module.ascii_decode([65, "not an int"])  # type: ignore[arg-type]
+      ascii_module.ascii_decode([65, "not an int"])
 
 
 class TestAsciiHex:
@@ -140,7 +140,7 @@ class TestAsciiValidation:
       ascii_module.is_ascii_char("AB")
 
     with pytest.raises(TypeError, match="输入必须是单个字符"):
-      ascii_module.is_ascii_char(123)  # type: ignore[arg-type]
+      ascii_module.is_ascii_char(123)
 
   def test_is_ascii_string(self):
     """Test is_ascii_string function."""
@@ -150,7 +150,7 @@ class TestAsciiValidation:
     assert ascii_module.is_ascii_string("Hello 世界") is False
 
     with pytest.raises(TypeError, match="输入必须是字符串"):
-      ascii_module.is_ascii_string(123)  # type: ignore[arg-type]
+      ascii_module.is_ascii_string(123)
 
   def test_is_ascii_printable(self):
     """Test is_ascii_printable function."""

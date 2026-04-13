@@ -57,7 +57,7 @@ DEFAULT_ESCAPE_CHARS = {
 }
 
 
-def html_encode(text: str, *, quote: bool = True) -> str:
+def html_encode(text: object, *, quote: bool = True) -> str:
   """Encode special characters to HTML entities.
 
   Encodes the characters &, <, and > to their corresponding HTML entities.
@@ -88,7 +88,7 @@ def html_encode(text: str, *, quote: bool = True) -> str:
   return html.escape(text, quote=quote)
 
 
-def html_decode(encoded: str) -> str:
+def html_decode(encoded: object) -> str:
   """Decode HTML entities to characters.
 
       Converts HTML entities (named, decimal, or hexadecimal) back to
@@ -118,7 +118,7 @@ def html_decode(encoded: str) -> str:
   return html.unescape(encoded)
 
 
-def encode_all_entities(text: str) -> str:
+def encode_all_entities(text: object) -> str:
   """Encode all non-ASCII characters to HTML entities.
 
   This encodes all characters outside the ASCII range to their
@@ -155,7 +155,7 @@ def encode_all_entities(text: str) -> str:
   return "".join(result)
 
 
-def decode_numeric_entities(encoded: str) -> str:
+def decode_numeric_entities(encoded: object) -> str:
   """Decode only numeric HTML entities (decimal and hexadecimal).
 
   Unlike html_decode, this function does not decode named entities
@@ -205,7 +205,7 @@ def decode_numeric_entities(encoded: str) -> str:
   return re.sub(pattern, replace_entity, encoded)
 
 
-def strip_tags(html_text: str) -> str:
+def strip_tags(html_text: object) -> str:
   """Remove HTML tags from text.
 
   Args:

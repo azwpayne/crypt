@@ -6,13 +6,13 @@ encryption/decryption and eliminates the need for padding.
 
 WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
-
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
 )
+from typing import cast
 
 
 # Define ModeError locally to avoid circular imports
@@ -129,8 +129,8 @@ class CTRMode:
         ValueError: If nonce is not provided or has wrong length.
         ValueError: If key is not provided and no external functions are given.
     """
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
 
     if nonce is None:
       msg = "Nonce is required for CTR mode"
@@ -149,6 +149,7 @@ class CTRMode:
     self.ctr_counter = self.initial_counter
     # Store the nonce prefix (first 12 bytes for AES)
     self.nonce_prefix = nonce[:-4]
+    self.key: bytes | None = None
 
     # If key is provided, use AES
     if key is not None:

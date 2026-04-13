@@ -39,7 +39,7 @@ def encrypt(text: str, rails: int) -> str:
     return text
 
   # 创建栅栏
-  fence = [[] for _ in range(rails)]
+  fence: list[list[str]] = [[] for _ in range(rails)]
 
   # 填充栅栏（锯齿形）
   rail = 0
@@ -164,7 +164,7 @@ def encrypt_with_offset(text: str, rails: int, offset: int) -> str:
     raise ValueError(msg)
 
   # 创建栅栏
-  fence = [[] for _ in range(rails)]
+  fence: list[list[str]] = [[] for _ in range(rails)]
 
   # 填充栅栏（从偏移位置开始）
   rail = offset % rails

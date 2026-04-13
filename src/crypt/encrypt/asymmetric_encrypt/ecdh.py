@@ -99,7 +99,9 @@ class Point:
       and self.infinity == other.infinity
     )
 
-  __hash__ = None  # type: ignore[assignment]
+  def __hash__(self) -> int:
+    msg = "unhashable type"
+    raise TypeError(msg)
 
   def is_valid(self) -> bool:
     """Check if point is on the curve."""
@@ -176,12 +178,12 @@ def generate_keypair(curve_name: str = "P-256") -> tuple[int, Point]:
 
   curve = CURVES[curve_name]
 
-  # Generate random private key
-  private_key = (
-    int.from_bytes(os.urandom((curve.n.bit_length() + 7) // 8), "big") % curve.n
-  )
-  if private_key == 0:
-    private_key = 1
+  # Generate random private key using rejection sampling to avoid modulo bias
+  n_bytes = (curve.n.bit_length() + 7) // 8
+  while True:
+    private_key = int.from_bytes(os.urandom(n_bytes), "big")
+    if 1 <= private_key < curve.n:
+      break
 
   # Compute public key
   base_point = Point(curve.Gx, curve.Gy, curve)

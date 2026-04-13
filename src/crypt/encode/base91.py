@@ -18,7 +18,7 @@ def base91_encode(inp: bytes) -> str:
   """
   b = 0
   n = 0
-  out = []
+  out: list[str] = []
 
   for byte in inp:
     b |= byte << n
@@ -139,9 +139,9 @@ def test_base91():
 
 
 def _extracted_from_test_base91_21(arg0, arg1, arg2):
-  print(f"Original: {arg0}")
+  print(f"Original: {arg0!r}")
   print(f"Encoded:  {arg1}")
-  print(f"Decoded:  {arg2}")
+  print(f"Decoded:  {arg2!r}")
   print(f"Match:    {arg0 == arg2}")
 
 
@@ -152,9 +152,9 @@ if __name__ == "__main__":
   encoded = base91_encode(data)
   decoded = base91_decode(encoded)
 
-  print(f"Original: {data}")
+  print(f"Original: {data!r}")
   print(f"Encoded:  {encoded}")
-  print(f"Decoded:  {decoded}")
+  print(f"Decoded:  {decoded!r}")
   print(f"Match:    {data == decoded}")
 
   # 字符串版本

@@ -1,5 +1,7 @@
 """Tests for Polybius Square cipher."""
 
+from __future__ import annotations
+
 from crypt.encrypt.symmetric_encrypt.stream_cipher.polybius_square import (
   decrypt,
   encrypt,
@@ -31,7 +33,6 @@ class TestPolybiusSquareEncrypt:
   def test_encrypt_j_becomes_i(self):
     """Test that J becomes I in 5x5 mode."""
     result = encrypt("JAIL", size=5)
-    # J should be treated as I
     assert isinstance(result, str)
     assert len(result.split()) == 4
 
@@ -46,17 +47,25 @@ class TestPolybiusSquareEncrypt:
     result = encrypt("", size=5)
     assert result == ""
 
-  def test_encrypt_with_spaces(self):
-    """Test encryption with spaces."""
+  def test_encrypt_skips_spaces_by_default(self):
+    """Test that spaces are skipped in default (non-strict) mode."""
     result = encrypt("HELLO WORLD", size=5)
-    # Spaces should be preserved as spaces
-    assert isinstance(result, str)
+    assert result == "23 15 31 31 34 52 34 42 31 14"
 
-  def test_encrypt_non_alpha(self):
-    """Test encryption with non-alphabetic characters."""
+  def test_encrypt_skips_non_alpha_by_default(self):
+    """Test that non-alphabetic chars are skipped in default mode."""
     result = encrypt("HELLO123!@#", size=5)
-    # Non-alpha chars should be preserved
-    assert isinstance(result, str)
+    assert result == "23 15 31 31 34"
+
+  def test_encrypt_strict_rejects_spaces(self):
+    """Test strict mode rejects spaces."""
+    with pytest.raises(ValueError, match="cannot be encoded"):
+      encrypt("HELLO WORLD", size=5, strict=True)
+
+  def test_encrypt_strict_rejects_non_alpha(self):
+    """Test strict mode rejects non-alphabetic characters."""
+    with pytest.raises(ValueError, match="cannot be encoded"):
+      encrypt("HELLO123", size=5, strict=True)
 
 
 class TestPolybiusSquareDecrypt:
@@ -95,6 +104,16 @@ class TestPolybiusSquareDecrypt:
     result = decrypt("", size=5)
     assert result == ""
 
+  def test_decrypt_strict_rejects_odd_length(self):
+    """Test strict mode rejects odd-length input."""
+    with pytest.raises(ValueError, match="must be even"):
+      decrypt("123", size=5, strict=True)
+
+  def test_decrypt_strict_rejects_invalid_coordinates(self):
+    """Test strict mode rejects invalid coordinate characters."""
+    with pytest.raises(ValueError, match="Invalid coordinate pair"):
+      decrypt("99 99", size=5, strict=True)
+
 
 class TestPolybiusSquareModes:
   """Test different Polybius Square modes."""
@@ -130,14 +149,11 @@ class TestPolybiusSquareEdgeCases:
     message = "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG"
     encrypted = encrypt(message, size=5)
     decrypted = decrypt(encrypted, size=5)
-    # J becomes I in 5x5 mode
     expected = message.replace("J", "I")
     assert decrypted == expected
 
-  def test_with_special_characters(self):
-    """Test with special characters."""
+  def test_with_special_characters_filtered(self):
+    """Test that special characters are filtered in non-strict mode."""
     message = "HELLO, WORLD!"
     encrypted = encrypt(message, size=5)
-    # Implementation filters non-alpha chars, just verify it works
-    assert isinstance(encrypted, str)
-    assert len(encrypted) > 0
+    assert encrypted == "23 15 31 31 34 52 34 42 31 14"

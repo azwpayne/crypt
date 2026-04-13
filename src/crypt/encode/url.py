@@ -12,7 +12,7 @@ UNRESERVED_CHARS = frozenset(
 HEX_DIGITS = "0123456789ABCDEF"
 
 
-def url_encode(data: bytes | str, safe: str = "") -> str:
+def url_encode(data: object, safe: str = "") -> str:
   """
   Encode bytes or string to URL percent-encoded string per RFC 3986.
 

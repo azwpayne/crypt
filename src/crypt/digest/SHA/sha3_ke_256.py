@@ -303,7 +303,7 @@ def test_shake256():
 
       status = "✓" if passed else "✗"
       print(f"Test {i}: {status}")
-      print(f"  Input:    {input_msg[:50]}{'...' if len(input_msg) > 50 else ''}")
+      print(f"  Input:    {input_msg[:50]!r}{'...' if len(input_msg) > 50 else ''}")
       print(f"  Output length: {output_len} bytes")
       print(f"  Result:   {result.hex()[:32]}...")
 

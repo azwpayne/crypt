@@ -30,7 +30,7 @@ def base92_encode(input_data: bytes) -> str:
 
   b = 0
   n = 0
-  out = []
+  out: list[str] = []
 
   for byte in input_data:
     b |= byte << n
@@ -129,9 +129,9 @@ if __name__ == "__main__":
   data = b"Hello, Base92!"
   encoded = base92_encode(data)
   decoded = base92_decode(encoded)
-  print(f"Original: {data}")
+  print(f"Original: {data!r}")
   print(f"Encoded:  {encoded}")
-  print(f"Decoded:  {decoded}")
+  print(f"Decoded:  {decoded!r}")
   print(f"Match:    {data == decoded}")
 
   # String version with Unicode

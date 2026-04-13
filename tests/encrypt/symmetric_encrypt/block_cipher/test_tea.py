@@ -94,7 +94,7 @@ class TestTEA:
     for plaintext in test_cases:
       encrypted = tea.encrypt(plaintext)
       decrypted = tea.decrypt(encrypted)
-      assert decrypted == plaintext, f"Failed for plaintext: {plaintext}"
+      assert decrypted == plaintext, f"Failed for plaintext: {plaintext!r}"
 
   def test_tea_invalid_key_length(self):
     """Test that invalid key lengths raise ValueError."""

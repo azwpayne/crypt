@@ -27,13 +27,13 @@ Usage Examples:
     >>> cfb_8bit = CFBMode(key=key, iv=iv, segment_size=8)
     >>> ciphertext = cfb_8bit.encrypt(b"Secret message")
 """
-
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
 )
+from typing import cast
 
 
 class CFBMode:
@@ -119,8 +119,8 @@ class CFBMode:
         >>> cfb = CFBMode(encrypt_func=cipher.encrypt, block_size=16,
         ...               iv=b'1234567890123456')
     """
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
     if iv is None:
       msg = "IV is required for CFB mode"
       raise ValueError(msg)
@@ -141,6 +141,7 @@ class CFBMode:
     self.segment_size = segment_size
     self._segment_bytes = segment_size // 8
     self._encrypt_func = encrypt_func
+    self.key: bytes | None = None
 
     # If key is provided, use AES
     if key is not None:

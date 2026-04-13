@@ -7,7 +7,6 @@ It supports ciphertext stealing for partial final blocks.
 Note: This is an educational implementation. For production use, please use
 well-established cryptographic libraries.
 """
-
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,
@@ -15,6 +14,7 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _get_key_params,
   key_expansion,
 )
+from typing import cast
 
 
 class XTSMode:
@@ -29,11 +29,12 @@ class XTSMode:
     **kwargs: object,
   ):
     """Initialize XTS mode."""
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
     self.block_size = block_size
     self._encrypt_func = encrypt_func
     self._decrypt_func = decrypt_func
+    self.key: bytes | None = None
 
     if key is not None:
       if len(key) % 2 != 0:

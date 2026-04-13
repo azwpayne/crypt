@@ -46,13 +46,13 @@ Usage Examples:
 
 WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
-
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,
   _get_key_params,
   key_expansion,
 )
+from typing import cast
 
 
 class EAXMode:
@@ -135,8 +135,8 @@ class EAXMode:
         >>> cipher = AES.new(b'0123456789abcdef', AES.MODE_ECB)
         >>> eax = EAXMode(encrypt_func=cipher.encrypt, block_size=16)
     """
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
     if tag_length < 1 or tag_length > block_size:
       msg = f"tag_length must be between 1 and {block_size}"
       raise ValueError(msg)
@@ -144,6 +144,7 @@ class EAXMode:
     self.block_size = block_size
     self._encrypt_func = encrypt_func
     self.tag_length = tag_length
+    self.key: bytes | None = None
 
     # If key is provided, use AES
     if key is not None:

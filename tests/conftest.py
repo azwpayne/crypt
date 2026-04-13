@@ -74,7 +74,7 @@ def generate_random_data(size: int) -> bytes:
   """
   import hashlib
 
-  chunks = []
+  chunks: list[bytes] = []
   seed = b"test_seed"
   while len(b"".join(chunks)) < size:
     seed = hashlib.sha256(seed).digest()

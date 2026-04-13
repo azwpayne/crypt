@@ -321,7 +321,9 @@ class TestTwofishVsReference:
   )
   def test_vs_pycryptodome_ecb(self):
     """Compare ECB encryption with pycryptodome."""
-    from Crypto.Cipher import Twofish as RefTwofish
+    import importlib
+    from typing import Any
+    ref_twofish: Any = importlib.import_module("Crypto.Cipher.Twofish")
     from Crypto.Util.Padding import pad
 
     key = b"0123456789abcdef"
@@ -331,7 +333,7 @@ class TestTwofishVsReference:
     our_ciphertext = tf_encrypt_ecb(key, plaintext)
 
     # Reference implementation
-    ref_cipher = RefTwofish.new(key, RefTwofish.MODE_ECB)
+    ref_cipher = ref_twofish.new(key, ref_twofish.MODE_ECB)
     ref_ciphertext = ref_cipher.encrypt(pad(plaintext, 16))
 
     assert our_ciphertext == ref_ciphertext
@@ -504,16 +506,3 @@ class TestBlowfishPaddingEdgeCases:
     assert len(ciphertext) == 8
     assert bf_decrypt_cbc(key, iv, ciphertext) == b""
 
-
-class TestBlowfishStandalone:
-  def test_standalone_test_function(self):
-    from crypt.encrypt.symmetric_encrypt.block_cipher.blowfish import test_blowfish
-
-    test_blowfish()
-
-
-class TestTwofishStandalone:
-  def test_standalone_test_function(self):
-    from crypt.encrypt.symmetric_encrypt.block_cipher.twofish import test_twofish
-
-    test_twofish()

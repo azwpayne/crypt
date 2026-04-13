@@ -248,6 +248,6 @@ if __name__ == "__main__":
 
   for msg, expected in test_cases:
     result = sha512_256(msg)
-    print(f"消息: {msg[:50]}{'...' if len(msg) > 50 else ''}")
+    print(f"消息: {msg[:50]!r}{'...' if len(msg) > 50 else ''}")
     print(f"结果: {result}")
     print(f"正确: {'✓' if result == expected else '✗'}")

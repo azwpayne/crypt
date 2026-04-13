@@ -1,9 +1,4 @@
-# @author  : azwpayne(https://github.com/azwpayne)
-# @name    : rot13.py
-# @time    : 2026/3/15
-# @blog    : https://paynewu.com/
-# @mail    : paynewu0719@gmail.com
-# @desc    : ROT13加密和解密实现（凯撒密码的特例，偏移量为13）
+"""ROT13 cipher implementation (Caesar cipher with a shift of 13)."""
 
 from string import ascii_lowercase, ascii_uppercase
 

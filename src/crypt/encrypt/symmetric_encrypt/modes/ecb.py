@@ -4,7 +4,6 @@ WARNING: ECB mode is not secure for most applications because identical plaintex
 blocks produce identical ciphertext blocks, revealing patterns in the data.
 This implementation is provided for educational purposes only.
 """
-
 import warnings
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
@@ -14,6 +13,7 @@ from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   key_expansion,
 )
 from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import pad, unpad
+from typing import cast
 
 
 class ECBMode:
@@ -53,8 +53,8 @@ class ECBMode:
     Raises:
         ValueError: If key is not provided and no external functions are given.
     """
-    expanded_key: list[int] | None = kwargs.get("expanded_key")  # type: ignore[assignment]
-    nr: int | None = kwargs.get("nr")  # type: ignore[assignment]
+    expanded_key = cast("list[int] | None", kwargs.get("expanded_key"))
+    nr = cast("int | None", kwargs.get("nr"))
     warnings.warn(
       "ECB mode is not secure for most applications. "
       "Identical plaintext blocks produce identical ciphertext blocks, "
@@ -66,6 +66,7 @@ class ECBMode:
     self.block_size = block_size
     self._encrypt_func = encrypt_func
     self._decrypt_func = decrypt_func
+    self.key: bytes | None = None
 
     # If key is provided, use AES
     if key is not None:

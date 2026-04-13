@@ -279,7 +279,7 @@ def _unpack_coeffs(data: bytes, bits_per: int, n: int) -> list[int]:
   buf = 0
   buf_bits = 0
   byte_idx = 0
-  coeffs = []
+  coeffs: list[int] = []
   while len(coeffs) < n:
     while buf_bits < bits_per:
       if byte_idx >= len(data):

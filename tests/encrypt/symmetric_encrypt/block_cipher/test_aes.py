@@ -442,7 +442,7 @@ class TestAESGeneric:
   def test_generic_invalid_mode(self):
     """Test generic function with invalid mode."""
     with pytest.raises(ValueError, match="Unsupported mode"):
-      aes_encrypt(b"test", b"0123456789abcdef", mode="invalid")
+      aes_encrypt(b"test", b"0123456789abcdef", mode="invalid")  # type: ignore[arg-type]
 
   def test_generic_missing_iv_cbc(self):
     """Test generic function with missing IV for CBC."""

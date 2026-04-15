@@ -538,7 +538,7 @@ class TestAESNISTVectors:
     plaintext = bytes.fromhex("6bc1bee22e409f96e93d7e117393172a")
 
     # Encrypt single block
-    xored = bytes([plaintext[i] ^ iv[i] for i in range(16)])
+    xored = bytes(plaintext[i] ^ iv[i] for i in range(16))
     expanded = key_expansion(key)
     result = _encrypt_block(xored, expanded, 10)
     expected = bytes.fromhex("7649abac8119b246cee98e9b12e9197d")

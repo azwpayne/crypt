@@ -67,7 +67,7 @@ class TestGenerateSHA2InitializationVector:
   def test_non_string_algorithm_raises_type_error(self):
     """Test that non-string algorithm raises TypeError."""
     with pytest.raises(TypeError, match="algorithm 参数必须是字符串"):
-      generate_sha2_initialization_vector(123)
+      generate_sha2_initialization_vector(123)  # type: ignore[reportArgumentType]
 
   def test_returns_exactly_16_values(self):
     """Test that the function returns 16 initialization values (from 16 primes)."""

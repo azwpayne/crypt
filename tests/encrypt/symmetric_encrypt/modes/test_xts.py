@@ -213,7 +213,7 @@ class TestXTSModeAgainstPyCryptodome:
     our_ciphertext = xts.encrypt(plaintext, tweak.to_bytes(16, "big"))
 
     # PyCryptodome
-    cipher = AES.new(key, AES.MODE_XTS)
+    cipher = AES.new(key, AES.MODE_XTS)  # type: ignore[reportAttributeAccessIssue]
     their_ciphertext = cipher.encrypt(plaintext, tweak=tweak.to_bytes(16, "little"))
 
     # Note: tweak encoding may differ between implementations

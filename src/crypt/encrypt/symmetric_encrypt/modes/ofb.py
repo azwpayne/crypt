@@ -29,6 +29,7 @@ Usage Examples:
     >>> double_encrypted = ofb3.encrypt(ciphertext)  # Actually decrypts!
     >>> assert double_encrypted == plaintext
 """
+
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,

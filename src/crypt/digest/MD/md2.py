@@ -37,53 +37,53 @@ _SBOX: Final[tuple[int, ...]] = (
 
 
 def md2(data: bytes | str) -> str:
-    """Compute MD2 hash of input data.
+  """Compute MD2 hash of input data.
 
-    Args:
-        data: Input data (bytes or string)
+  Args:
+      data: Input data (bytes or string)
 
-    Returns:
-        32-character hexadecimal hash string
+  Returns:
+      32-character hexadecimal hash string
 
-    Example:
-        >>> md2(b"hello")
-        'a9046c73e00331af68917d3804f70655'
-    """
-    message = data if isinstance(data, bytes) else data.encode()
+  Example:
+      >>> md2(b"hello")
+      'a9046c73e00331af68917d3804f70655'
+  """
+  message = data if isinstance(data, bytes) else data.encode()
 
-    # Step 1: Pad message to multiple of 16 bytes
-    pad_len = 16 - (len(message) % 16)
-    padded_message = message + bytes([pad_len] * pad_len)
+  # Step 1: Pad message to multiple of 16 bytes
+  pad_len = 16 - (len(message) % 16)
+  padded_message = message + bytes([pad_len] * pad_len)
 
-    # Step 2: Compute checksum and append
-    checksum = [0] * 16
-    last_checksum_byte = 0
+  # Step 2: Compute checksum and append
+  checksum = [0] * 16
+  last_checksum_byte = 0
 
-    for i in range(0, len(padded_message), 16):
-        block = padded_message[i:i + 16]
-        for j in range(16):
-            byte = block[j]
-            checksum[j] ^= _SBOX[byte ^ last_checksum_byte]
-            last_checksum_byte = checksum[j]
+  for i in range(0, len(padded_message), 16):
+    block = padded_message[i : i + 16]
+    for j in range(16):
+      byte = block[j]
+      checksum[j] ^= _SBOX[byte ^ last_checksum_byte]
+      last_checksum_byte = checksum[j]
 
-    padded_message = padded_message + bytes(checksum)
+  padded_message = padded_message + bytes(checksum)
 
-    # Step 3: Process message in 16-byte blocks
-    x = [0] * 48
+  # Step 3: Process message in 16-byte blocks
+  x = [0] * 48
 
-    for i in range(0, len(padded_message), 16):
-        block = padded_message[i:i + 16]
+  for i in range(0, len(padded_message), 16):
+    block = padded_message[i : i + 16]
 
-        # Copy block into middle section and compute XOR for third section
-        for j in range(16):
-            x[16 + j] = block[j]
-            x[32 + j] = x[16 + j] ^ x[j]
+    # Copy block into middle section and compute XOR for third section
+    for j in range(16):
+      x[16 + j] = block[j]
+      x[32 + j] = x[16 + j] ^ x[j]
 
-        # 18 rounds of substitution
-        t = 0
-        for rnd in range(18):
-            for j in range(48):
-                t = x[j] = x[j] ^ _SBOX[t]
-            t = (t + rnd) & 0xFF
+    # 18 rounds of substitution
+    t = 0
+    for rnd in range(18):
+      for j in range(48):
+        t = x[j] = x[j] ^ _SBOX[t]
+      t = (t + rnd) & 0xFF
 
-    return bytes(x[:16]).hex()
+  return bytes(x[:16]).hex()

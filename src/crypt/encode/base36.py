@@ -48,6 +48,7 @@ def base36_decode(encoded: str) -> int:
 
   return num
 
+
 # ... existing code ...
 
 
@@ -115,5 +116,3 @@ def decode_base36(encoded: str) -> bytes:
 
   # Prepend zero bytes for each leading zero
   return b"\x00" * zero_count + result
-
-

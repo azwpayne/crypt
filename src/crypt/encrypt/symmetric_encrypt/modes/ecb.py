@@ -4,6 +4,7 @@ WARNING: ECB mode is not secure for most applications because identical plaintex
 blocks produce identical ciphertext blocks, revealing patterns in the data.
 This implementation is provided for educational purposes only.
 """
+
 import warnings
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (

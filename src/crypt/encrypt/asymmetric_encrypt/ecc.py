@@ -92,7 +92,9 @@ def ecdsa_sign(message: bytes | str, private_key: int) -> tuple[int, int]:
   return r, s
 
 
-def ecdsa_verify(message: bytes | str, signature: tuple[int, int], public_key: Point) -> bool:
+def ecdsa_verify(
+  message: bytes | str, signature: tuple[int, int], public_key: Point
+) -> bool:
   """Verify an ECDSA signature on secp256k1."""
   if isinstance(message, str):
     message = message.encode()

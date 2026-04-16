@@ -27,6 +27,7 @@ Usage Examples:
     >>> cfb_8bit = CFBMode(key=key, iv=iv, segment_size=8)
     >>> ciphertext = cfb_8bit.encrypt(b"Secret message")
 """
+
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,

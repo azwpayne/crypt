@@ -323,6 +323,7 @@ class TestTwofishVsReference:
     """Compare ECB encryption with pycryptodome."""
     import importlib
     from typing import Any
+
     ref_twofish: Any = importlib.import_module("Crypto.Cipher.Twofish")
     from Crypto.Util.Padding import pad
 
@@ -505,4 +506,3 @@ class TestBlowfishPaddingEdgeCases:
     ciphertext = bf_encrypt_cbc(key, iv, b"")
     assert len(ciphertext) == 8
     assert bf_decrypt_cbc(key, iv, ciphertext) == b""
-

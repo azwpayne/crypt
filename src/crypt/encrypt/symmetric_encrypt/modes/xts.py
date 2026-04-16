@@ -7,6 +7,7 @@ It supports ciphertext stealing for partial final blocks.
 Note: This is an educational implementation. For production use, please use
 well-established cryptographic libraries.
 """
+
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,

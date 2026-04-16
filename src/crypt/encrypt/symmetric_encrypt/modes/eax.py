@@ -46,6 +46,7 @@ Usage Examples:
 
 WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
+
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _encrypt_block,

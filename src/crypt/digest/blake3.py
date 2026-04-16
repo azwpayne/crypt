@@ -20,6 +20,7 @@ _blake3: Any = None
 
 try:
   import blake3 as _blake3
+
   _HAS_BLAKE3 = True
 except ImportError:
   _HAS_BLAKE3 = False

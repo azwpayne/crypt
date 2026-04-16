@@ -336,10 +336,13 @@ def sha512_224(message: bytes) -> bytes:
     h_new = compress_block(h, w, ROUND_CONSTANTS)
 
     # 将压缩结果与当前哈希值相加（这是正确的）
-    h = cast("tuple[int, int, int, int, int, int, int, int]", tuple(
-      (current + new) & 0xFFFFFFFFFFFFFFFF
-      for current, new in zip(h, h_new, strict=False)
-    ))
+    h = cast(
+      "tuple[int, int, int, int, int, int, int, int]",
+      tuple(
+        (current + new) & 0xFFFFFFFFFFFFFFFF
+        for current, new in zip(h, h_new, strict=False)
+      ),
+    )
 
   # 提取前224位 (28字节)
   full_digest = b"".join(word.to_bytes(8, "big") for word in h)

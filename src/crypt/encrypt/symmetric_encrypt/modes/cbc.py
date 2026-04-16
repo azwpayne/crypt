@@ -6,6 +6,7 @@ encryption. For the first block, an Initialization Vector (IV) is used.
 This provides semantic security: identical plaintext blocks produce different
 ciphertext blocks due to the chaining mechanism.
 """
+
 from collections.abc import Callable
 from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
   _decrypt_block,

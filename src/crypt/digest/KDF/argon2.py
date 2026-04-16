@@ -16,6 +16,7 @@ password hashing and key derivation.
 
 Reference: RFC 9106 - Argon2 Memory-Hard Function for Password Hashing
 """
+
 import hashlib
 import itertools
 import struct

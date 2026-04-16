@@ -121,7 +121,7 @@ addopts = [
     "--cov-report=html:reports/coverage",
     "--cov-report=xml:reports/coverage.xml",
     "--cov-report=json:reports/coverage.json",
-    "--cov-fail-under=85",
+    "--cov-fail-under=90",
     "--no-cov-on-fail",
     # 性能与超时
     "--timeout=30",

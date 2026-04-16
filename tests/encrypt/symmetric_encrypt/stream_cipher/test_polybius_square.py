@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from crypt.encrypt.symmetric_encrypt.stream_cipher.polybius_square import (
   decrypt,
+  decrypt_with_custom_input,
   encrypt,
+  encrypt_with_custom_output,
+  print_square,
 )
 
 import pytest
@@ -157,3 +160,54 @@ class TestPolybiusSquareEdgeCases:
     message = "HELLO, WORLD!"
     encrypted = encrypt(message, size=5)
     assert encrypted == "23 15 31 31 34 52 34 42 31 14"
+
+
+class TestPolybiusSquareCustomLabels:
+  """Test custom label functions."""
+
+  def test_encrypt_with_custom_output(self):
+    result = encrypt_with_custom_output("HELLO")
+    assert result == "BC AE CA CA CD"
+
+  def test_decrypt_with_custom_input(self):
+    encrypted = encrypt_with_custom_output("HELLO")
+    decrypted = decrypt_with_custom_input(encrypted)
+    assert decrypted == "HELLO"
+
+  def test_print_square_default(self):
+    result = print_square()
+    assert "1 2 3 4 5" in result
+    assert "A" in result
+
+  def test_print_square_with_key(self):
+    result = print_square("KEYWORD")
+    assert "K" in result
+
+  def test_print_square_6x6(self):
+    result = print_square(size=6)
+    assert "1 2 3 4 5 6" in result
+
+
+class TestPolybiusSquareDecryptEdgeCases:
+  """Test decryption edge cases."""
+
+  def test_decrypt_skips_invalid_coordinates_by_default(self):
+    result = decrypt("99 99", size=5)
+    assert result == ""
+
+  def test_decrypt_empty_input(self):
+    result = decrypt("", size=5)
+    assert result == ""
+
+  def test_decrypt_with_custom_labels(self):
+    encrypted = "BC AE CA CA CD"
+    result = decrypt(encrypted, row_labels="ABCDE", col_labels="ABCDE")
+    assert result == "HELLO"
+
+  def test_decrypt_invalid_custom_labels_skipped(self):
+    result = decrypt("ZZ", size=5, row_labels="ABCDE", col_labels="ABCDE")
+    assert result == ""
+
+  def test_decrypt_odd_length_not_strict(self):
+    result = decrypt("123", size=5)
+    assert result == "B"

@@ -200,3 +200,27 @@ class TestCTRModeStandalone:
     from crypt.encrypt.symmetric_encrypt.modes.ctr import test_ctr_mode
 
     test_ctr_mode()
+
+
+class TestCTRErrorPaths:
+  def test_init_nonce_none_raises(self):
+    with pytest.raises(ValueError, match="Nonce is required"):
+      CTRMode(key=b"0123456789abcdef", nonce=None)
+
+  def test_encrypt_func_path(self):
+    """Test using external encrypt_func instead of AES key."""
+    nonce = b"123456789012" + b"\x00\x00\x00\x00"
+    ctr = CTRMode(encrypt_func=lambda b: b"\x00" * len(b), nonce=nonce)
+    result = ctr.encrypt(b"hello")
+    assert result == b"hello"
+
+  def test_get_counter_block_overflow(self):
+    """Test counter overflow in get_counter_block."""
+    nonce = b"\x00" * 12 + b"\x00\x00\x00\x01"
+    ctr = CTRMode(key=b"0123456789abcdef", nonce=nonce)
+    ctr.ctr_counter = 0xFFFFFFFF
+    # First call should work
+    ctr.get_counter_block(ctr.ctr_counter)
+    # Second call should overflow
+    with pytest.raises(ModeError, match="Counter overflow"):
+      ctr.get_counter_block(0x100000000)

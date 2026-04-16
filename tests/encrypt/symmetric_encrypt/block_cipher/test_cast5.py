@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 from crypt.encrypt.symmetric_encrypt.block_cipher.cast5 import (
+  CAST5,
+  _pkcs7_unpad,
   cast5_cbc_decrypt,
   cast5_cbc_encrypt,
   cast5_ecb_decrypt,
   cast5_ecb_encrypt,
   decrypt_block,
   encrypt_block,
+  key_schedule,
 )
+
+import pytest
 
 KEY_128 = b"\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10"
 BLOCK = b"\x01\x23\x45\x67\x89\xab\xcd\xef"
@@ -118,3 +123,61 @@ class TestCAST5CBC:
     ct = cast5_cbc_encrypt(data, KEY_128, IV)
     pt = cast5_cbc_decrypt(ct, KEY_128, IV)
     assert pt == data
+
+
+class TestCAST5ErrorPaths:
+  """Tests for CAST5 error paths."""
+
+  def test_invalid_key_length_too_short(self):
+    with pytest.raises(ValueError, match="Key must be 5-16 bytes"):
+      CAST5(b"\x00" * 4)
+
+  def test_invalid_key_length_too_long(self):
+    with pytest.raises(ValueError, match="Key must be 5-16 bytes"):
+      CAST5(b"\x00" * 17)
+
+  def test_key_schedule_invalid_key(self):
+    with pytest.raises(ValueError, match="Key must be 5-16 bytes"):
+      key_schedule(b"\x00" * 4)
+
+  def test_encrypt_block_invalid_size(self):
+    cipher = CAST5(KEY_128)
+    with pytest.raises(ValueError, match="Block must be 8 bytes"):
+      cipher.encrypt_block(b"\x00" * 7)
+
+  def test_decrypt_block_invalid_size(self):
+    cipher = CAST5(KEY_128)
+    with pytest.raises(ValueError, match="Block must be 8 bytes"):
+      cipher.decrypt_block(b"\x00" * 9)
+
+  def test_ecb_decrypt_invalid_ciphertext_length(self):
+    with pytest.raises(ValueError, match="Ciphertext length must be a multiple of 8"):
+      cast5_ecb_decrypt(b"\x00" * 7, KEY_128)
+
+  def test_cbc_encrypt_invalid_iv_length(self):
+    with pytest.raises(ValueError, match="IV must be 8 bytes"):
+      cast5_cbc_encrypt(b"test", KEY_128, b"\x00" * 7)
+
+  def test_cbc_decrypt_invalid_ciphertext_length(self):
+    with pytest.raises(ValueError, match="Ciphertext length must be a multiple of 8"):
+      cast5_cbc_decrypt(b"\x00" * 7, KEY_128, IV)
+
+  def test_cbc_decrypt_invalid_iv_length(self):
+    with pytest.raises(ValueError, match="IV must be 8 bytes"):
+      cast5_cbc_decrypt(b"\x00" * 8, KEY_128, b"\x00" * 7)
+
+  def test_pkcs7_unpad_empty_data(self):
+    with pytest.raises(ValueError, match="Empty data"):
+      _pkcs7_unpad(b"")
+
+  def test_pkcs7_unpad_invalid_padding_length(self):
+    with pytest.raises(ValueError, match="Invalid padding length"):
+      _pkcs7_unpad(b"\x00" * 8 + b"\x09")
+
+  def test_pkcs7_unpad_data_too_short(self):
+    with pytest.raises(ValueError, match="Data too short for padding"):
+      _pkcs7_unpad(b"\x08\x08")
+
+  def test_pkcs7_unpad_invalid_padding_bytes(self):
+    with pytest.raises(ValueError, match="Invalid padding bytes"):
+      _pkcs7_unpad(b"\x00" * 7 + b"\x02")

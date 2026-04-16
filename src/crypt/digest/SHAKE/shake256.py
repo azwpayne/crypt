@@ -208,34 +208,33 @@ def shake256_hex(data: bytes, length: int) -> str:
   return SHAKE256(data).hexdigest(length)
 
 
-def test_shake256():
-  """Basic tests for SHAKE256."""
-  # Test empty message
-  shake = SHAKE256(b"")
-  result = shake.read(32)
-  assert len(result) == 32
-
-  # Test basic message
-  shake = SHAKE256(b"abc")
-  result = shake.read(32)
-  assert len(result) == 32
-
-  # Test various lengths
-  for length in [16, 32, 64, 128]:
-    shake = SHAKE256(b"test")
-    result = shake.read(length)
-    assert len(result) == length
-
-  # Test copy
-  shake1 = SHAKE256(b"test")
-  _ = shake1.read(16)
-  shake2 = shake1.copy()
-  result1 = shake1.read(32)
-  result2 = shake2.read(32)
-  assert result1 == result2
-
-  print("All SHAKE256 tests passed!")
-
-
 if __name__ == "__main__":
+  def test_shake256():
+    """Basic tests for SHAKE256."""
+    # Test empty message
+    shake = SHAKE256(b"")
+    result = shake.read(32)
+    assert len(result) == 32
+
+    # Test basic message
+    shake = SHAKE256(b"abc")
+    result = shake.read(32)
+    assert len(result) == 32
+
+    # Test various lengths
+    for length in [16, 32, 64, 128]:
+      shake = SHAKE256(b"test")
+      result = shake.read(length)
+      assert len(result) == length
+
+    # Test copy
+    shake1 = SHAKE256(b"test")
+    _ = shake1.read(16)
+    shake2 = shake1.copy()
+    result1 = shake1.read(32)
+    result2 = shake2.read(32)
+    assert result1 == result2
+
+    print("All SHAKE256 tests passed!")
+
   test_shake256()

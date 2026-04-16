@@ -20,8 +20,14 @@ Tests include:
 from __future__ import annotations
 
 from crypt.encrypt.symmetric_encrypt.ccm import (
+  _constant_time_compare as ccm_compare,
+)
+from crypt.encrypt.symmetric_encrypt.ccm import (
   ccm_decrypt,
   ccm_encrypt,
+)
+from crypt.encrypt.symmetric_encrypt.gcm import (
+  _constant_time_compare as gcm_compare,
 )
 from crypt.encrypt.symmetric_encrypt.gcm import (
   _generate_keystream,
@@ -29,6 +35,8 @@ from crypt.encrypt.symmetric_encrypt.gcm import (
   gcm_decrypt,
   gcm_encrypt,
 )
+
+import pytest
 
 
 class TestGCM:
@@ -374,6 +382,24 @@ class TestAEADEdgeCases:
 
     assert decrypted == plaintext
 
+  def test_gcm_block_cipher_not_implemented(self):
+    """Test that block_cipher path raises NotImplementedError."""
+    key = b"0123456789abcdef"
+    iv = b"unique_iv_1234"
+    plaintext = b"test"
+    with pytest.raises(NotImplementedError, match="not yet implemented"):
+      gcm_encrypt(key, iv, plaintext, block_cipher=lambda x: x)
+
+  def test_gcm_decrypt_block_cipher_not_implemented(self):
+    """Test that decrypt block_cipher path raises NotImplementedError."""
+    key = b"0123456789abcdef"
+    iv = b"unique_iv_1234"
+    with pytest.raises(NotImplementedError, match="not yet implemented"):
+      gcm_decrypt(key, iv, b"ct", b"tag", block_cipher=lambda x: x)
+
+  def test_gcm_constant_time_compare_different_lengths(self):
+    assert gcm_compare(b"abc", b"abcd") is False
+
   def test_ccm_binary_data(self):
     """Test CCM with binary data."""
     key = bytes(range(16))
@@ -384,3 +410,6 @@ class TestAEADEdgeCases:
     decrypted = ccm_decrypt(key, nonce, ciphertext, tag)
 
     assert decrypted == plaintext
+
+  def test_ccm_constant_time_compare_different_lengths(self):
+    assert ccm_compare(b"abc", b"abcd") is False

@@ -99,3 +99,54 @@ class TestECDH:
         continue  # Skip aliases
       base = Point(curve.Gx, curve.Gy, curve)
       assert base.is_valid(), f"Base point for {name} should be valid"
+
+  def test_point_hash_raises(self):
+    """Test that Point is unhashable."""
+    _, public = generate_keypair("P-256")
+    with pytest.raises(TypeError, match="unhashable type"):
+      hash(public)
+
+  def test_point_eq_non_point(self):
+    """Test point equality with non-point."""
+    _, public = generate_keypair("P-256")
+    assert public != "not a point"
+    assert public != 42
+    assert public.__eq__(public) is True
+
+  def test_compute_shared_secret_infinity(self):
+    """Test shared secret at infinity raises ValueError."""
+    from crypt.encrypt.asymmetric_encrypt.ecdh import Point, compute_shared_secret
+
+    curve = CURVES["P-256"]
+    infinity = Point(0, 0, curve, infinity=True)
+    with pytest.raises(ValueError, match="Shared point is at infinity"):
+      compute_shared_secret(1, infinity)
+
+  def test_point_add_identity(self):
+    """Test point addition with identity."""
+    from crypt.encrypt.asymmetric_encrypt.ecdh import point_add
+
+    curve = CURVES["P-256"]
+    p1 = Point(curve.Gx, curve.Gy, curve)
+    inf = Point(0, 0, curve, infinity=True)
+    assert point_add(p1, inf) == p1
+    assert point_add(inf, p1) == p1
+
+  def test_point_add_different_y_same_x(self):
+    """Test point addition when x1==x2 but y1!=y2."""
+    from crypt.encrypt.asymmetric_encrypt.ecdh import point_add
+
+    curve = CURVES["P-256"]
+    p1 = Point(curve.Gx, curve.Gy, curve)
+    p2 = Point(curve.Gx, curve.p - curve.Gy, curve)
+    result = point_add(p1, p2)
+    assert result.infinity is True
+
+  def test_point_add_y_zero_doubling(self):
+    """Test point doubling when y=0."""
+    from crypt.encrypt.asymmetric_encrypt.ecdh import point_add
+
+    curve = CURVES["P-256"]
+    p = Point(1, 0, curve)
+    result = point_add(p, p)
+    assert result.infinity is True

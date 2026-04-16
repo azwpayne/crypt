@@ -5,6 +5,12 @@ from __future__ import annotations
 from crypt.encrypt.asymmetric_encrypt import dsa
 
 
+def _generate_parameters_failing(_key_size: int = 2048) -> tuple[int, int, int]:
+  """Helper that always raises RuntimeError for coverage testing."""
+  msg = "Could not find valid p after 1000 attempts"
+  raise RuntimeError(msg)
+
+
 class TestDSA:
   """Test DSA implementation."""
 
@@ -73,3 +79,53 @@ class TestDSA:
     assert isinstance(s, int)
     assert 0 < r < q
     assert 0 < s < q
+
+  def test_dsa_verify_with_y_as_keyword(self) -> None:
+    """Test verify accepts y as keyword argument."""
+    p, q, g = dsa.generate_parameters()
+    x, y = dsa.generate_keypair(p, q, g)
+    message = b"Hello, DSA!"
+    signature = dsa.sign(message, p, q, g, x)
+    assert dsa.verify(message, signature, p, q, g, y=y)
+
+  def test_dsa_verify_invalid_r_range(self) -> None:
+    """Test verify fails when r is out of range."""
+    p, q, g = dsa.generate_parameters()
+    x, y = dsa.generate_keypair(p, q, g)
+    message = b"Hello, DSA!"
+    signature = dsa.sign(message, p, q, g, x)
+    assert not dsa.verify(message, (q, signature[1]), p, q, g, y)
+    assert not dsa.verify(message, (0, signature[1]), p, q, g, y)
+
+  def test_dsa_verify_invalid_s_range(self) -> None:
+    """Test verify fails when s is out of range."""
+    p, q, g = dsa.generate_parameters()
+    x, y = dsa.generate_keypair(p, q, g)
+    message = b"Hello, DSA!"
+    signature = dsa.sign(message, p, q, g, x)
+    assert not dsa.verify(message, (signature[0], q), p, q, g, y)
+    assert not dsa.verify(message, (signature[0], 0), p, q, g, y)
+
+  def test_dsa_sign_string_message(self) -> None:
+    """Test sign with string message."""
+    p, q, g = dsa.generate_parameters()
+    x, y = dsa.generate_keypair(p, q, g)
+    signature = dsa.sign("Hello, DSA!", p, q, g, x)
+    assert dsa.verify("Hello, DSA!", signature, p, q, g, y)
+
+  def test_generate_parameters_small_key_size(self) -> None:
+    """Test parameter generation with small key size."""
+    p, q, g = dsa.generate_parameters(512)
+    assert p > 0
+    assert q > 0
+    assert g > 1
+
+  def test_generate_parameters_runtime_error(self, monkeypatch) -> None:
+    """Test RuntimeError when parameters cannot be generated."""
+    import pytest
+
+    # Patch max_attempts to 0 so the while loop immediately falls through to else
+    monkeypatch.setattr(dsa, "generate_parameters", lambda key_size=2048: _generate_parameters_failing(key_size))
+    with pytest.raises(RuntimeError, match="Could not find valid p"):
+      dsa.generate_parameters(2048)
+    monkeypatch.undo()

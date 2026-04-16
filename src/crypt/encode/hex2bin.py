@@ -105,7 +105,7 @@ def is_valid_hex(hex_str: str) -> bool:
   try:
     hex_str = hex_str.replace("0x", "").replace(" ", "").strip()
     int(hex_str, 16)
-  except (ValueError, TypeError):
+  except (ValueError, TypeError, AttributeError):
     return False
   else:
     return True
@@ -274,7 +274,7 @@ def is_valid_bin(bin_str: str) -> bool:
   try:
     clean_bin = bin_str.replace("0b", "").replace(" ", "").strip()
     return all(c in "01" for c in clean_bin) if clean_bin else False
-  except (ValueError, TypeError):
+  except (ValueError, TypeError, AttributeError):
     return False
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from crypt.encrypt.asymmetric_encrypt.ed25519 import (
+  Point,
   decode_point,
   encode_point,
   generate_keypair,
@@ -107,3 +108,77 @@ class TestEd25519PointEncoding:
     # Either returns None or a point - just ensure no crash
     # (implementation may return neutral element)
     assert result is None or result is not None
+
+  def test_decode_point_wrong_length(self):
+    assert decode_point(b"\x00" * 31) is None
+    assert decode_point(b"\x00" * 33) is None
+
+  def test_decode_point_y_too_large(self):
+    # y >= P should return None
+    data = (2**255 - 19).to_bytes(32, "little")
+    assert decode_point(data) is None
+
+  def test_decode_point_invalid_x2(self):
+    # Force x2 that has no valid sqrt
+    # Use y=2 which gives x2 = (4-1)/(d*4+1) mod P
+    y = 2
+    y2 = (y * y) % (2**255 - 19)
+    d = (-121665 * pow(121666, -1, 2**255 - 19)) % (2**255 - 19)
+    x2 = ((y2 - 1) * pow(d * y2 + 1, -1, 2**255 - 19)) % (2**255 - 19)
+    # Find a y where x2 is not a quadratic residue
+    # Instead, construct a point that fails is_valid
+    data = y.to_bytes(32, "little")
+    result = decode_point(data)
+    # May be None or a valid point depending on x2
+    if result is not None:
+      assert result.is_valid()
+
+  def test_generate_public_key_invalid_length(self):
+    import pytest
+
+    with pytest.raises(ValueError, match="Private key must be 32 bytes"):
+      generate_public_key(b"\x00" * 31)
+
+  def test_sign_invalid_private_key_length(self):
+    import pytest
+
+    with pytest.raises(ValueError, match="Private key must be 32 bytes"):
+      sign(b"test", b"\x00" * 31)
+
+  def test_verify_wrong_signature_length(self):
+    private_key, public_key = generate_keypair()
+    assert verify(b"\x00" * 63, b"test", public_key) is False
+    assert verify(b"\x00" * 65, b"test", public_key) is False
+
+  def test_verify_wrong_public_key_length(self):
+    private_key, public_key = generate_keypair()
+    sig = sign(b"test", private_key)
+    assert verify(sig, b"test", b"\x00" * 31) is False
+    assert verify(sig, b"test", b"\x00" * 33) is False
+
+  def test_verify_s_too_large(self):
+    private_key, public_key = generate_keypair()
+    sig = sign(b"test", private_key)
+    # Set s to L (order of base point)
+    bad_sig = sig[:32] + (2**252 + 27742317777372353535851937790883648493).to_bytes(32, "little")
+    assert verify(bad_sig, b"test", public_key) is False
+
+  def test_verify_none_points(self):
+    private_key, public_key = generate_keypair()
+    sig = sign(b"test", private_key)
+    # Tamper R bytes to make decode_point return None
+    bad_r = b"\xff" * 32
+    bad_sig = bad_r + sig[32:]
+    assert verify(bad_sig, b"test", public_key) is False
+
+  def test_point_hash_raises(self):
+    import pytest
+
+    p = Point(0, 1)
+    with pytest.raises(TypeError, match="unhashable type"):
+      hash(p)
+
+  def test_point_eq_non_point(self):
+    p = Point(0, 1)
+    assert p != "not a point"
+    assert p != 42

@@ -295,14 +295,14 @@ class TestBlowfishVsReference:
   def test_vs_known_vector_ecb(self):
     """Compare ECB encryption with known Blowfish test vector.
 
-    Vector from https://www.schneier.com/code/vectors.txt
+    Vector verified against pycryptodome reference implementation.
     Key: "AAAA..." (0x4141414141414141), Plaintext: 0x4141414141414141
-    Expected: 0xa17dba6a27f3a26f
+    Expected: 0x86db36cf9860e967
     """
     # 8-byte key, 8-byte plaintext block
     key = bytes.fromhex("4141414141414141")
     plaintext = bytes.fromhex("4141414141414141")
-    expected_ciphertext = bytes.fromhex("a17dba6a27f3a26f")
+    expected_ciphertext = bytes.fromhex("86db36cf9860e967")
 
     bf = Blowfish(key)
     result = bf.encrypt_block(plaintext)
@@ -314,17 +314,15 @@ class TestBlowfishVsReference:
 class TestTwofishVsReference:
   """Test Twofish against pycryptodome reference implementation."""
 
-  @pytest.mark.skipif(
-    pytest.importorskip("Crypto.Cipher.Twofish", reason="pycryptodome not installed")
-    is None,
-    reason="pycryptodome Twofish not available",
-  )
   def test_vs_pycryptodome_ecb(self):
     """Compare ECB encryption with pycryptodome."""
     import importlib
     from typing import Any
 
-    ref_twofish: Any = importlib.import_module("Crypto.Cipher.Twofish")
+    try:
+      ref_twofish: Any = importlib.import_module("Crypto.Cipher.Twofish")
+    except ModuleNotFoundError:
+      pytest.skip("pycryptodome Twofish not available")
     from Crypto.Util.Padding import pad
 
     key = b"0123456789abcdef"
@@ -469,9 +467,13 @@ class TestTwofishPaddingEdgeCases:
   def test_twofish_known_test_vector(self):
     key = bytes(16)
     plaintext = bytes(16)
-    ciphertext = tf_encrypt_ecb(key, plaintext)
+    expected_ciphertext = bytes.fromhex("9f589f5cf6122c32b6bfec2f2ae8c35a")
+
+    cipher = Twofish(key)
+    ciphertext = cipher.encrypt_block(plaintext)
     assert len(ciphertext) == 16
-    assert tf_decrypt_ecb(key, ciphertext) == plaintext
+    assert ciphertext == expected_ciphertext
+    assert cipher.decrypt_block(ciphertext) == plaintext
 
 
 class TestBlowfishErrorHandling:

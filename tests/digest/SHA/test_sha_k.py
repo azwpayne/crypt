@@ -105,6 +105,22 @@ class TestVerifyKTable:
   def test_verify_k_table_returns_true(self):
     assert verify_k_table() is True
 
+  def test_verify_k_table_failure_path(self, monkeypatch):
+    """Test verify_k_table failure path prints mismatches."""
+    from crypt.digest.SHA import sha_k
+
+    original_generate = sha_k.generate_sha2_k_table
+
+    def bad_generate():
+      table = original_generate()
+      # Corrupt one value to trigger failure path
+      table[0] = 0xDEADBEEF
+      return table
+
+    monkeypatch.setattr(sha_k, "generate_sha2_k_table", bad_generate)
+    result = verify_k_table()
+    assert result is False
+
 
 class TestPrintKTable:
   """Tests for the print_k_table function."""

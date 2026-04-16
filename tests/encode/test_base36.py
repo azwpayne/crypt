@@ -1,6 +1,13 @@
 """Tests for Base36 encoding."""
 
-from crypt.encode.base36 import decode_base36, encode_base36
+from crypt.encode.base36 import (
+  base36_decode,
+  base36_encode,
+  decode_base36,
+  encode_base36,
+)
+
+import pytest
 
 
 class TestBase36:
@@ -28,3 +35,30 @@ class TestBase36:
 
   def test_empty(self):
     assert encode_base36(b"") == "0"
+
+  def test_base36_encode_negative(self):
+    """Test that negative input raises ValueError."""
+    with pytest.raises(ValueError, match="Only non-negative integers are supported"):
+      base36_encode(-1)
+
+  def test_base36_decode_invalid_char(self):
+    """Test that invalid characters raise ValueError."""
+    with pytest.raises(ValueError, match="Invalid Base36 character"):
+      base36_decode("xyz!")
+
+  def test_base36_decode_empty(self):
+    """Test decoding empty string returns 0."""
+    assert base36_decode("") == 0
+    assert base36_decode("000") == 0
+
+  def test_encode_base36_all_zeros(self):
+    """Test encoding all-zero bytes."""
+    assert encode_base36(b"\x00\x00\x00") == "0000"
+
+  def test_decode_base36_all_zeros(self):
+    """Test decoding all-zero string."""
+    assert decode_base36("000") == b"\x00\x00\x00"
+
+  def test_decode_base36_zero(self):
+    """Test decoding '0' returns empty bytes."""
+    assert decode_base36("0") == b""

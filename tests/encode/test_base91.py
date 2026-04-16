@@ -79,6 +79,15 @@ class TestBase91String:
     decoded = base91.base91_decode(encoded)
     assert decoded == data
 
+  def test_base91_decode_skips_invalid_chars(self):
+    """Test that invalid characters are skipped during decode."""
+    data = b"Hello"
+    encoded = base91.base91_encode(data)
+    # Insert invalid characters that are not in the base91 alphabet
+    corrupted = encoded[:2] + "\n\t " + encoded[2:]
+    decoded = base91.base91_decode(corrupted)
+    assert decoded == data
+
 
 class TestBase91EdgeCases:
   def test_base91_encode_decode_roundtrip(self):

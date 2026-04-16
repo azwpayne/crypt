@@ -209,6 +209,13 @@ class TestDecodeNumericEntities:
     assert decode_numeric_entities("&#X41;") == "A"
     assert decode_numeric_entities("&#x41;&#X42;") == "AB"
 
+  def test_decode_numeric_overflow(self):
+    """Test that overflow entities are preserved."""
+    # Very large hex value that causes OverflowError in chr()
+    assert decode_numeric_entities("&#xFFFFFFFFFFFF;") == "&#xFFFFFFFFFFFF;"
+    # Very large decimal value that causes OverflowError in chr()
+    assert decode_numeric_entities("&#99999999999999999999;") == "&#99999999999999999999;"
+
 
 class TestStripTags:
   """Test strip_tags function."""

@@ -58,7 +58,7 @@ def base64_decode(b64_str: str) -> bytes:
   # 将base64字符转为索引值
   try:
     indices = [B64_CHARS.index(char) for char in b64_str]
-  except KeyError as e:
+  except ValueError as e:
     msg = "包含非法base64字符"
     raise ValueError(msg) from e
 

@@ -295,3 +295,22 @@ class TestBlake3DeriveKey:
     """Test that derive_key_context and key are mutually exclusive."""
     with pytest.raises(ValueError, match="Cannot use both key and derive_key_context"):
       blake3(b"data", key=b"k" * 32, derive_key_context=b"context")
+
+
+class TestBlake3ErrorPaths:
+  """Test BLAKE3 error paths and edge cases."""
+
+  def test_blake3_xof_key_too_short(self):
+    """Test blake3_xof with key that's too short."""
+    with pytest.raises(ValueError, match="key must be exactly 32 bytes"):
+      blake3_xof(b"hello", 32, key=b"short")
+
+  def test_blake3_xof_key_too_long(self):
+    """Test blake3_xof with key that's too long."""
+    with pytest.raises(ValueError, match="key must be exactly 32 bytes"):
+      blake3_xof(b"hello", 32, key=b"x" * 33)
+
+  def test_blake3_xof_negative_length(self):
+    """Test blake3_xof with negative length."""
+    with pytest.raises(ValueError, match="length must be non-negative"):
+      blake3_xof(b"hello", -1)

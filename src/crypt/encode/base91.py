@@ -107,46 +107,43 @@ def base91_decode_str(inp: str, encoding: str = "utf-8") -> str:
   return base91_decode(inp).decode(encoding)
 
 
-# 测试函数
-def test_base91():
-  """测试 base91 编码解码"""
-  test_cases = [
-    b"Hello, World!",
-    b"Python 3",
-    b"1234567890",
-    b"",
-    b"A" * 10,
-    b"\x00\x01\x02\x03\x04\x05",
-    b"Base91 encoding test with some special characters: !@#$%^&*()",
-  ]
-
-  print("Testing Base91 encode/decode:")
-  print("=" * 60)
-
-  for i, test_data in enumerate(test_cases, 1):
-    encoded_result = base91_encode(test_data)
-    decoded_result = base91_decode(encoded_result)
-
-    print(f"\nTest {i}:")
-    _extracted_from_test_base91_21(test_data, encoded_result, decoded_result)
-  # 测试字符串版本
-  print("\n" + "=" * 60)
-  print("Testing string encode/decode:")
-  test_str = "Hello, 世界! 🌍"
-  encoded_str = base91_encode_str(test_str)
-  decoded_str = base91_decode_str(encoded_str)
-  _extracted_from_test_base91_21(test_str, encoded_str, decoded_str)
-
-
-def _extracted_from_test_base91_21(arg0, arg1, arg2):
-  print(f"Original: {arg0!r}")
-  print(f"Encoded:  {arg1}")
-  print(f"Decoded:  {arg2!r}")
-  print(f"Match:    {arg0 == arg2}")
-
-
 # 使用示例
 if __name__ == "__main__":
+  def _extracted_from_test_base91_21(arg0, arg1, arg2):
+    print(f"Original: {arg0!r}")
+    print(f"Encoded:  {arg1}")
+    print(f"Decoded:  {arg2!r}")
+    print(f"Match:    {arg0 == arg2}")
+
+  def test_base91():
+    """测试 base91 编码解码"""
+    test_cases = [
+      b"Hello, World!",
+      b"Python 3",
+      b"1234567890",
+      b"",
+      b"A" * 10,
+      b"\x00\x01\x02\x03\x04\x05",
+      b"Base91 encoding test with some special characters: !@#$%^&*()",
+    ]
+
+    print("Testing Base91 encode/decode:")
+    print("=" * 60)
+
+    for i, test_data in enumerate(test_cases, 1):
+      encoded_result = base91_encode(test_data)
+      decoded_result = base91_decode(encoded_result)
+
+      print(f"\nTest {i}:")
+      _extracted_from_test_base91_21(test_data, encoded_result, decoded_result)
+    # 测试字符串版本
+    print("\n" + "=" * 60)
+    print("Testing string encode/decode:")
+    test_str = "Hello, 世界! 🌍"
+    encoded_str = base91_encode_str(test_str)
+    decoded_str = base91_decode_str(encoded_str)
+    _extracted_from_test_base91_21(test_str, encoded_str, decoded_str)
+
   # 基本使用
   data = b"Hello, Base91!"
   encoded = base91_encode(data)

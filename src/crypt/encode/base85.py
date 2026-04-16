@@ -109,44 +109,42 @@ def b85decode_ascii85(encoded: str) -> bytes:
   return b85decode(encoded)
 
 
-# 测试函数
-def test_base85():
-  """测试Base85编码解码"""
-  test_cases = [
-    b"Hello",
-    b"World",
-    b"Base85 test!",
-    b"1234567890",
-    b"",
-    b"A" * 10,
-    b"\x00\x01\x02\x03\x04",
-  ]
-
-  print("Testing Base85 encoding/decoding:")
-  print("-" * 50)
-
-  for i, test_case in enumerate(test_cases):
-    # 标准Base85
-    encoded = b85encode(test_case)
-    decoded = b85decode(encoded)
-
-    # ASCII85格式
-    test_ascii85_encoded = b85encode_ascii85(test_case)
-    test_ascii85_decoded = b85decode_ascii85(test_ascii85_encoded)
-
-    # 验证
-    success1 = decoded == test_case
-    success2 = test_ascii85_decoded == test_case
-
-    print(f"Test {i + 1}:")
-    print(f"  Original: {test_case!r}")
-    print(f"  Base85: {encoded}")
-    print(f"  ASCII85: {test_ascii85_encoded}")
-    print(f"  Decoded correctly: {success1} / {success2}")
-    print()
-
-
 if __name__ == "__main__":
+  def test_base85():
+    """测试Base85编码解码"""
+    test_cases = [
+      b"Hello",
+      b"World",
+      b"Base85 test!",
+      b"1234567890",
+      b"",
+      b"A" * 10,
+      b"\x00\x01\x02\x03\x04",
+    ]
+
+    print("Testing Base85 encoding/decoding:")
+    print("-" * 50)
+
+    for i, test_case in enumerate(test_cases):
+      # 标准Base85
+      encoded = b85encode(test_case)
+      decoded = b85decode(encoded)
+
+      # ASCII85格式
+      test_ascii85_encoded = b85encode_ascii85(test_case)
+      test_ascii85_decoded = b85decode_ascii85(test_ascii85_encoded)
+
+      # 验证
+      success1 = decoded == test_case
+      success2 = test_ascii85_decoded == test_case
+
+      print(f"Test {i + 1}:")
+      print(f"  Original: {test_case!r}")
+      print(f"  Base85: {encoded}")
+      print(f"  ASCII85: {test_ascii85_encoded}")
+      print(f"  Decoded correctly: {success1} / {success2}")
+      print()
+
   # 运行测试
   test_base85()
 

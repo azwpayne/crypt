@@ -272,35 +272,33 @@ def shake512_hex(message, output_length):
   return shake512(message, output_length).hex()
 
 
-# ========== 测试函数 ==========
-def test_shake512():
-  """测试函数，验证实现正确性"""
-  test_cases = [
-    (b"", 32),
-    (b"", 64),
-    (b"abc", 32),
-    (b"abc", 64),
-    (b"The quick brown fox jumps over the lazy dog", 32),
-    (b"The quick brown fox jumps over the lazy dog", 64),
-  ]
-
-  print("Testing SHAKE512 implementation:")
-  print("=" * 70)
-
-  all_passed = True
-  for i, (input_msg, output_len) in enumerate(test_cases, 1):
-    result = shake512(input_msg, output_len)
-
-    status = "✓"
-    print(f"Test {i}: {status}")
-    print(f"  Input:    {input_msg[:50]!r}{'...' if len(input_msg) > 50 else ''}")
-    print(f"  Output length: {output_len} bytes")
-    print(f"  Result:   {result.hex()[:32]}...")
-    print()
-
-  print("SHAKE512 tests completed!")
-  return all_passed
-
-
 if __name__ == "__main__":
+  def test_shake512():
+    """测试函数，验证实现正确性"""
+    test_cases = [
+      (b"", 32),
+      (b"", 64),
+      (b"abc", 32),
+      (b"abc", 64),
+      (b"The quick brown fox jumps over the lazy dog", 32),
+      (b"The quick brown fox jumps over the lazy dog", 64),
+    ]
+
+    print("Testing SHAKE512 implementation:")
+    print("=" * 70)
+
+    all_passed = True
+    for i, (input_msg, output_len) in enumerate(test_cases, 1):
+      result = shake512(input_msg, output_len)
+
+      status = "✓"
+      print(f"Test {i}: {status}")
+      print(f"  Input:    {input_msg[:50]!r}{'...' if len(input_msg) > 50 else ''}")
+      print(f"  Output length: {output_len} bytes")
+      print(f"  Result:   {result.hex()[:32]}...")
+      print()
+
+    print("SHAKE512 tests completed!")
+    return all_passed
+
   test_shake512()

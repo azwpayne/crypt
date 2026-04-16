@@ -235,3 +235,65 @@ class TestXTSModeAgainstPyCryptodome:
     decrypted = xts.decrypt(ciphertext, tweak)
 
     assert decrypted == plaintext
+
+
+class TestXTSErrorPaths:
+  def test_init_with_only_encrypt_func_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode(encrypt_func=lambda b: b)
+
+  def test_init_with_only_decrypt_func_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode(decrypt_func=lambda b: b)
+
+  def test_init_no_key_no_funcs_raises(self):
+    with pytest.raises(ValueError, match="Either key or both"):
+      XTSMode()
+
+  def test_init_fallback_branch(self):
+    """Test the fallback branch when key is None and funcs are provided."""
+    xts = XTSMode(
+      encrypt_func=lambda b: b,
+      decrypt_func=lambda b: b,
+    )
+    assert xts.key is None
+    assert xts.expanded_key1 == []
+    assert xts.expanded_key2 == []
+    assert xts.nr1 == 0
+    assert xts.nr2 == 0
+
+  def test_encrypt_decrypt_with_external_funcs(self):
+    """Test XTS encrypt/decrypt using external functions."""
+    xts = XTSMode(
+      encrypt_func=lambda b: b,
+      decrypt_func=lambda b: b,
+    )
+    plaintext = b"Hello, World!1234"
+    tweak = b"\x00" * 16
+    ciphertext = xts.encrypt(plaintext, tweak)
+    decrypted = xts.decrypt(ciphertext, tweak)
+    assert decrypted == plaintext
+
+  def test_encrypt_decrypt_less_than_block(self):
+    """Test XTS with less than one block using external funcs."""
+    xts = XTSMode(
+      encrypt_func=lambda b: b,
+      decrypt_func=lambda b: b,
+    )
+    plaintext = b"short"
+    tweak = b"\x00" * 16
+    ciphertext = xts.encrypt(plaintext, tweak)
+    decrypted = xts.decrypt(ciphertext, tweak)
+    assert decrypted == plaintext
+
+  def test_encrypt_decrypt_exact_block(self):
+    """Test XTS with exact block size using external funcs."""
+    xts = XTSMode(
+      encrypt_func=lambda b: b,
+      decrypt_func=lambda b: b,
+    )
+    plaintext = b"A" * 16
+    tweak = b"\x00" * 16
+    ciphertext = xts.encrypt(plaintext, tweak)
+    decrypted = xts.decrypt(ciphertext, tweak)
+    assert decrypted == plaintext

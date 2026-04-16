@@ -146,60 +146,58 @@ def decode_base58_check(encoded: str, checksum_len: int = 4) -> bytes:
   return data
 
 
-# 测试函数
-def test_base58():
-  """测试Base58编码/解码"""
-  test_cases = [
-    b"",  # 空数据
-    b"\x00",  # 单个零
-    b"\x00\x00",  # 两个零
-    b"Hello World!",  # 文本
-    b"\xff\xff\xff\xff",  # 全FF
-    b"\x00\x01\x02\x03\x04\x05",  # 递增序列
-  ]
-
-  print("测试Base58编码/解码:")
-  print("-" * 60)
-
-  for i, data in enumerate(test_cases):
-    encoded = encode_base58(data)
-    decoded = decode_base58(encoded)
-
-    status = "✓" if decoded == data else "✗"
-    print(f"测试 {i + 1}: {status}")
-    print(f"  原始: {data.hex() or '(空)'}")
-    print(f"  编码: {encoded}")
-    print(f"  解码: {decoded.hex() or '(空)'}")
-    print()
-
-  # 测试Base58Check
-  print("测试Base58Check:")
-  print("-" * 60)
-
-  data = b"Test data for checksum"
-  test_encoded_check = encode_base58_check(data)
-  test_decoded_check = decode_base58_check(test_encoded_check)
-
-  status = "✓" if test_decoded_check == data else "✗"
-  print(f"Base58Check测试: {status}")
-  print(f"  原始: {data.hex()}")
-  print(f"  编码: {test_encoded_check}")
-  print(f"  解码: {test_decoded_check.hex()}")
-
-  # 测试错误校验和
-  try:
-    # 修改最后一个字符来破坏校验和
-    corrupted = test_encoded_check[:-1] + (
-      "2" if test_encoded_check[-1] == "1" else "1"
-    )
-    decode_base58_check(corrupted)
-    print("\n校验和测试: ✗ (应该失败但没有失败)")
-  except ValueError as e:
-    print(f"\n校验和测试: ✓ 正确捕获错误: {e}")
-
-
 # 示例使用
 if __name__ == "__main__":
+  def test_base58():
+    """测试Base58编码/解码"""
+    test_cases = [
+      b"",  # 空数据
+      b"\x00",  # 单个零
+      b"\x00\x00",  # 两个零
+      b"Hello World!",  # 文本
+      b"\xff\xff\xff\xff",  # 全FF
+      b"\x00\x01\x02\x03\x04\x05",  # 递增序列
+    ]
+
+    print("测试Base58编码/解码:")
+    print("-" * 60)
+
+    for i, data in enumerate(test_cases):
+      encoded = encode_base58(data)
+      decoded = decode_base58(encoded)
+
+      status = "✓" if decoded == data else "✗"
+      print(f"测试 {i + 1}: {status}")
+      print(f"  原始: {data.hex() or '(空)'}")
+      print(f"  编码: {encoded}")
+      print(f"  解码: {decoded.hex() or '(空)'}")
+      print()
+
+    # 测试Base58Check
+    print("测试Base58Check:")
+    print("-" * 60)
+
+    data = b"Test data for checksum"
+    test_encoded_check = encode_base58_check(data)
+    test_decoded_check = decode_base58_check(test_encoded_check)
+
+    status = "✓" if test_decoded_check == data else "✗"
+    print(f"Base58Check测试: {status}")
+    print(f"  原始: {data.hex()}")
+    print(f"  编码: {test_encoded_check}")
+    print(f"  解码: {test_decoded_check.hex()}")
+
+    # 测试错误校验和
+    try:
+      # 修改最后一个字符来破坏校验和
+      corrupted = test_encoded_check[:-1] + (
+        "2" if test_encoded_check[-1] == "1" else "1"
+      )
+      decode_base58_check(corrupted)
+      print("\n校验和测试: ✗ (应该失败但没有失败)")
+    except ValueError as e:
+      print(f"\n校验和测试: ✓ 正确捕获错误: {e}")
+
   # 基本用法示例
   test_data = b"Hello Bitcoin!"
 

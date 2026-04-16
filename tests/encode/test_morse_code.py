@@ -97,6 +97,18 @@ class TestMorseDecode:
     """Test decoding multiple words."""
     assert morse_decode(".- -... / -.-. -..") == "AB CD"
 
+  def test_decode_empty_word_between_separators(self):
+    """Test decoding with empty words between separators."""
+    assert morse_decode(".- -... / / -.-. -..") == "AB CD"
+
+  def test_decode_empty_char_between_separators(self):
+    """Test decoding with empty chars between separators."""
+    assert morse_decode(".-  -...") == "AB"
+
+  def test_decode_all_empty_chars(self):
+    """Test decoding where all chars are empty after stripping."""
+    assert morse_decode("  /  ") == ""
+
 
 class TestMorseRoundTrip:
   """Test encode/decode round-trips."""
@@ -169,6 +181,10 @@ class TestMorseBinary:
     """Test binary encoding of empty string."""
     assert morse_encode_binary("") == ""
 
+  def test_encode_binary_all_unsupported(self):
+    """Test binary encoding of text with only unsupported chars."""
+    assert morse_encode_binary("日本") == ""
+
   def test_decode_binary_empty(self):
     """Test binary decoding of empty string."""
     assert morse_decode_binary("") == ""
@@ -177,6 +193,15 @@ class TestMorseBinary:
     """Test binary decoding with invalid pattern."""
     with pytest.raises(ValueError, match="Invalid binary pattern"):
       morse_decode_binary("1010102")  # 2 is not valid
+
+  def test_decode_binary_empty_word_between_gaps(self):
+    """Test binary decoding with empty words between word gaps."""
+    assert morse_decode_binary("1 0000000 1") == "E E"
+
+  def test_decode_binary_invalid_symbol(self):
+    """Test binary decoding with invalid symbol pattern."""
+    with pytest.raises(ValueError, match="Invalid binary pattern"):
+      morse_decode_binary("10102")
 
 
 class TestMorseValidation:
@@ -292,6 +317,11 @@ class TestMorseEdgeCases:
     result = morse_encode("HELLO日本")
     # Japanese characters are not supported and should be skipped
     assert result == ".... . .-.. .-.. ---"
+
+  def test_encode_all_unsupported_word(self):
+    """Test encoding a word with only unsupported characters."""
+    result = morse_encode("日本")
+    assert result == ""
 
   def test_custom_separators(self):
     """Test encoding/decoding with custom separators."""

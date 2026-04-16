@@ -6,7 +6,7 @@ RFC 2045 §6.7 compliant:
 - Tab (\t) and space (0x20) are passed through (unless at end of line).
 """
 
-_SAFE = frozenset(range(33, 127)) - {ord("=")}
+_SAFE = frozenset(range(33, 127)) | {ord("\t"), ord(" ")} - {ord("=")}
 
 
 def _encode_trailing_ws(line: list[str]) -> None:

@@ -46,6 +46,11 @@ class TestHexToBin:
     result = hex2bin.hex_to_bin_grouped("4D61726B", 8)
     assert result == "01001101 01100001 01110010 01101011"
 
+  def test_hex_to_bin_grouped_padding(self):
+    """Test grouped hex to binary with padding."""
+    result = hex2bin.hex_to_bin_grouped("1", 8)
+    assert result == "00000001"
+
   def test_hex_to_bin_array(self):
     """Test hex to bit array conversion."""
     result = hex2bin.hex_to_bin_array("3F")
@@ -106,10 +111,20 @@ class TestBinToHex:
     result = hex2bin.bin_to_hex_grouped("01001101011000010111001001101011", 1)
     assert result == "4D 61 72 6B"
 
+  def test_bin_to_hex_grouped_padding(self):
+    """Test grouped binary to hex with padding."""
+    result = hex2bin.bin_to_hex_grouped("1", 2)
+    assert result == "0001"
+
   def test_bin_byte_to_hex(self):
     """Test single byte binary to hex."""
     assert hex2bin.bin_byte_to_hex("1111") == "0F"
     assert hex2bin.bin_byte_to_hex("11010010") == "D2"
+
+  def test_bin_byte_to_hex_too_long(self):
+    """Test single byte binary too long raises ValueError."""
+    with pytest.raises(ValueError, match="单字节输入不能超过8位"):
+      hex2bin.bin_byte_to_hex("111111111")
 
   def test_bin_to_hex_with_prefix(self):
     """Test binary to hex with custom prefix."""
@@ -143,6 +158,12 @@ class TestValidation:
     assert hex2bin.is_valid_bin("0b10201") is False
     assert hex2bin.is_valid_bin("") is False
     assert hex2bin.is_valid_bin("10201") is False
+
+  def test_is_valid_bin_non_string(self):
+    """Test is_valid_bin with non-string input."""
+    # Note: is_valid_bin catches TypeError, but None.replace() raises
+    # AttributeError. Passing an int triggers TypeError on replace().
+    assert hex2bin.is_valid_bin(123) is False  # type: ignore[arg-type]
 
 
 class TestBitListConversions:

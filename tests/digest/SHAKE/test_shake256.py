@@ -1,6 +1,6 @@
 """Tests for SHAKE256 XOF (Extendable-Output Function)."""
 
-from crypt.digest.SHAKE.shake256 import SHAKE256, shake256, shake256_hex
+from crypt.digest.SHAKE.shake256 import SHAKE256, shake256, shake256_hex, shake256_pad
 
 import pytest
 
@@ -207,3 +207,51 @@ class TestSHAKE256EdgeCases:
     hasher.update(b"test")
     hex_result = hasher.hexdigest(32)
     assert len(hex_result) == 64
+
+  def test_shake256_negative_length(self):
+    """Test SHAKE256 with negative length."""
+    shake = SHAKE256(b"test")
+    with pytest.raises(ValueError, match="Length must be non-negative"):
+      shake.read(-1)
+
+  def test_shake256_zero_length(self):
+    """Test SHAKE256 with zero length."""
+    shake = SHAKE256(b"test")
+    result = shake.read(0)
+    assert result == b""
+
+  def test_shake256_update_after_read(self):
+    """Test SHAKE256 cannot update after reading."""
+    shake = SHAKE256(b"test")
+    _ = shake.read(1)
+    with pytest.raises(ValueError, match="Cannot update after reading output"):
+      shake.update(b"more")
+
+  def test_shake256_exact_rate_boundary(self):
+    """Test SHAKE256 with input exactly at rate boundary (136 bytes)."""
+    data = b"a" * 136
+    result = shake256(data, 32)
+    assert len(result) == 32
+
+  def test_shake256_long_output_multiple_squeezes(self):
+    """Test SHAKE256 with long output requiring multiple squeezes."""
+    data = b"test"
+    result = shake256(data, 500)
+    assert len(result) == 500
+
+  def test_shake256_finalize_idempotent(self):
+    """Test that calling read multiple times does not re-finalize."""
+    shake = SHAKE256(b"test")
+    result1 = shake.read(16)
+    result2 = shake.read(16)
+    # Should get continuous output, not restart
+    assert len(result1) == 16
+    assert len(result2) == 16
+    assert result1 != result2
+
+  def test_shake256_pad_exact_rate_boundary(self):
+    """Test shake256_pad when message length is exact multiple of rate."""
+    padding = shake256_pad(136, 136)
+    assert len(padding) == 136
+    assert padding[0] == 0x1F
+    assert padding[-1] == 0x80

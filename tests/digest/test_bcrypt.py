@@ -64,6 +64,11 @@ class TestBCryptBase64:
     decoded = _bcrypt_base64_decode(salt_encoded)
     assert len(decoded) == 16
 
+  def test_base64_decode_empty(self):
+    """Test decoding empty string."""
+    decoded = _bcrypt_base64_decode(b"")
+    assert decoded == b""
+
   def test_base64_known_vectors(self):
     """Test Base64 encoding with known vectors."""
     # These are computed values for verification
@@ -208,6 +213,27 @@ class TestBCryptHashing:
       bcrypt_hash("password", salt="$2b$03$salt")
     with pytest.raises(ValueError, match="Cost must be between"):
       bcrypt_hash("password", salt="$2b$32$salt")
+
+  def test_hash_missing_separator(self):
+    """Test hashing with salt missing $ separator after cost."""
+    with pytest.raises(ValueError, match="Invalid salt format: missing \\$ after cost"):
+      bcrypt_hash("password", salt="$2b$10salt")
+
+  def test_hash_salt_too_short(self):
+    """Test hashing with salt that has too few characters after cost."""
+    with pytest.raises(ValueError, match="Invalid salt length"):
+      bcrypt_hash("password", salt="$2b$10$short")
+
+  def test_hash_salt_bytes_input(self):
+    """Test hashing with salt as bytes."""
+    salt = generate_salt(cost=4)
+    hashed = bcrypt_hash("password", salt=salt.encode("ascii"))
+    assert bcrypt_verify("password", hashed)
+
+  def test_hash_empty_password_eks_blowfish(self):
+    """Test hashing with empty password triggers empty key handling in EksBlowfish."""
+    hashed = bcrypt_hash("", cost=4)
+    assert bcrypt_verify("", hashed)
 
 
 class TestBCryptVerification:

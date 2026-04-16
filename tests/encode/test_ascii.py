@@ -86,6 +86,25 @@ class TestAsciiHex:
     """Test hex decoding with 0x prefix."""
     assert ascii_module.ascii_decode_hex("0x48 0x65 0x6C 0x6C 0x6F") == "Hello"
 
+  def test_ascii_decode_hex_empty_after_cleaning(self):
+    """Test hex decoding when input is only prefixes/spaces."""
+    assert ascii_module.ascii_decode_hex("0x 0x ") == ""
+    assert ascii_module.ascii_decode_hex("  ") == ""
+
+  def test_ascii_decode_hex_invalid_hex(self):
+    """Test that invalid hex strings raise ValueError."""
+    with pytest.raises(ValueError, match="无效的十六进制字符串"):
+      ascii_module.ascii_decode_hex("0xGG")
+
+  def test_ascii_decode_hex_odd_length(self):
+    """Test hex decoding with odd length clean hex."""
+    assert ascii_module.ascii_decode_hex("1") == "\x01"
+
+  def test_ascii_decode_hex_out_of_range(self):
+    """Test hex decoding with values outside ASCII range."""
+    with pytest.raises(ValueError, match="超出 ASCII 范围的值"):
+      ascii_module.ascii_decode_hex("FF")
+
   def test_ascii_hex_roundtrip(self):
     """Test hex encode/decode roundtrip."""
     test_cases = ["Hello", "World", "Test123", ""]
@@ -125,6 +144,19 @@ class TestAsciiBinary:
     """Test that invalid binary strings raise ValueError."""
     with pytest.raises(ValueError, match="无效的二进制字符串"):
       ascii_module.ascii_decode_binary("0102")
+
+  def test_ascii_decode_binary_empty_after_cleaning(self):
+    """Test binary decoding when input is only spaces."""
+    assert ascii_module.ascii_decode_binary("  ") == ""
+
+  def test_ascii_decode_binary_padding(self):
+    """Test binary decoding with padding to 8 bits."""
+    assert ascii_module.ascii_decode_binary("1001000") == "H"
+
+  def test_ascii_decode_binary_out_of_range(self):
+    """Test binary decoding with values outside ASCII range."""
+    with pytest.raises(ValueError, match="超出 ASCII 范围的值"):
+      ascii_module.ascii_decode_binary("10000000")
 
 
 class TestAsciiValidation:

@@ -125,3 +125,32 @@ class TestOCBEdgeCases:
   def test_ciphertext_too_short(self):
     with pytest.raises(ValueError, match="Ciphertext too short"):
       ocb_decrypt(AES128_KEY, b"\x00" * 12, b"\x00" * 5, b"")
+
+  def test_partial_final_block_encrypt(self):
+    """Test encryption with partial final plaintext block."""
+    nonce = bytes.fromhex("000102030405060708090a0b")
+    plaintext = b"Hello, OCB3"  # 11 bytes, partial block
+    ct = ocb_encrypt(AES128_KEY, nonce, plaintext, b"")
+    pt = ocb_decrypt(AES128_KEY, nonce, ct, b"")
+    assert pt == plaintext
+
+  def test_partial_final_block_with_aad(self):
+    """Test encryption with partial final block and AAD."""
+    nonce = bytes.fromhex("000102030405060708090a0b")
+    plaintext = b"Partial"  # 7 bytes
+    aad = b"some aad"
+    ct = ocb_encrypt(AES128_KEY, nonce, plaintext, aad)
+    pt = ocb_decrypt(AES128_KEY, nonce, ct, aad)
+    assert pt == plaintext
+
+  def test_tag_len_boundary_values(self):
+    """Test tag_len at boundaries."""
+    nonce = bytes.fromhex("000102030405060708090a0b")
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_encrypt(AES128_KEY, nonce, b"data", b"", tag_len=0)
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_encrypt(AES128_KEY, nonce, b"data", b"", tag_len=17)
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_decrypt(AES128_KEY, nonce, b"data", b"", tag_len=0)
+    with pytest.raises(ValueError, match="tag_len must be between"):
+      ocb_decrypt(AES128_KEY, nonce, b"data", b"", tag_len=17)

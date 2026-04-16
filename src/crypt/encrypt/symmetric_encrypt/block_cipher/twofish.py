@@ -558,11 +558,13 @@ RS_MATRIX = [
   [0xA4, 0x55, 0x87, 0x5A, 0x58, 0xDB, 0x9E, 0x03],
 ]
 
-# Primitive polynomial for GF(2^8): x^8 + x^6 + x^3 + x^2 + 1 = 0x14D
-GF_POLY = 0x14D
+# Primitive polynomial for GF(2^8) used in RS matrix: x^8 + x^6 + x^3 + x^2 + 1 = 0x14D
+GF_POLY_RS = 0x14D
+# Primitive polynomial for GF(2^8) used in MDS matrix: x^8 + x^6 + x^5 + x^3 + 1 = 0x169
+GF_POLY_MDS = 0x169
 
 
-def _gf_mul(a: int, b: int) -> int:
+def _gf_mul_rs(a: int, b: int) -> int:
   """Multiply two bytes in GF(2^8) with primitive polynomial 0x14D."""
   result = 0
   for _ in range(8):
@@ -570,47 +572,22 @@ def _gf_mul(a: int, b: int) -> int:
       result ^= a
     a <<= 1
     if a & 0x100:
-      a ^= GF_POLY
+      a ^= GF_POLY_RS
     b >>= 1
   return result & 0xFF
 
 
-def _q_permutation(x: int) -> int:
-  """Apply q permutation (q0 or q1).
-
-  The q permutation uses a 4-bit substitution structure.
-  """
-  a0 = (x >> 4) & 0xF
-  b0 = x & 0xF
-  a1 = a0 ^ b0
-  b1 = (a0 ^ ((b0 << 3) | (b0 >> 1)) ^ (a0 << 3)) & 0xF
-  a2 = Q0[16 + a1] ^ Q1[16 + b1]
-  b2 = Q0[a1] ^ Q1[b1]
-  a3 = a2 ^ b2
-  b3 = (a2 ^ ((b2 << 3) | (b2 >> 1)) ^ (a2 << 3)) & 0xF
-  a4 = Q0[16 + a3] ^ Q1[16 + b3]
-  b4 = Q0[a3] ^ Q1[b3]
-  return (b4 << 4) | a4
-
-
-def _sbox(i: int, x: int, s_key: list[int]) -> int:
-  """Compute S-box value for byte x in position i.
-
-  Args:
-      i: S-box index (0-3)
-      x: Input byte
-      s_key: S-box key material
-
-  Returns:
-      S-box output byte
-  """
-  if i == 0:
-    return _q_permutation(x) ^ s_key[0]
-  if i == 1:
-    return _q_permutation(x) ^ s_key[1]
-  if i == 2:
-    return _q_permutation(x) ^ s_key[2]
-  return _q_permutation(x) ^ s_key[3]
+def _gf_mul_mds(a: int, b: int) -> int:
+  """Multiply two bytes in GF(2^8) with primitive polynomial 0x169."""
+  result = 0
+  for _ in range(8):
+    if b & 1:
+      result ^= a
+    a <<= 1
+    if a & 0x100:
+      a ^= GF_POLY_MDS
+    b >>= 1
+  return result & 0xFF
 
 
 def _mds_multiply(y: list[int]) -> int:
@@ -626,25 +603,57 @@ def _mds_multiply(y: list[int]) -> int:
   for i in range(4):
     byte_val = 0
     for j in range(4):
-      byte_val ^= _gf_mul(MDS_MATRIX[i][j], y[j])
+      byte_val ^= _gf_mul_mds(MDS_MATRIX[i][j], y[j])
     result |= byte_val << (8 * i)
   return result
 
 
-def _g_function(x: int, s_key: list[int]) -> int:
-  """Twofish g-function.
+def _h_round(
+  x_bytes: tuple[int, int, int, int],
+  q_boxes: tuple[list[int], list[int], list[int], list[int]],
+  key_word: int,
+) -> tuple[int, int, int, int]:
+  """Apply one h-function layer: q-boxes, combine, XOR key, extract bytes."""
+  x0, x1, x2, x3 = x_bytes
+  q0, q1, q2, q3 = q_boxes
+  x = (q3[x3] << 24) | (q2[x2] << 16) | (q1[x1] << 8) | q0[x0]
+  x ^= key_word
+  return x & 0xFF, (x >> 8) & 0xFF, (x >> 16) & 0xFF, (x >> 24) & 0xFF
 
-  The g-function applies S-boxes followed by MDS matrix multiplication.
+
+def _h_function(x: int, key_vec: list[int], k: int) -> int:
+  """Twofish h-function.
+
+  Applies q-box layers with key vector XORs, followed by MDS matrix multiplication.
 
   Args:
       x: 32-bit input
-      s_key: S-box key material (4 bytes)
+      key_vec: Key word vector (me, mo, or s_key)
+      k: Number of 8-byte key blocks (1, 2, 3, or 4)
 
   Returns:
       32-bit output
   """
-  y = [_sbox(i, (x >> (8 * i)) & 0xFF, s_key) for i in range(4)]
-  return _mds_multiply(y)
+  x_bytes = (x & 0xFF, (x >> 8) & 0xFF, (x >> 16) & 0xFF, (x >> 24) & 0xFF)
+
+  if k == 4:
+    x_bytes = _h_round(x_bytes, (Q1, Q0, Q0, Q1), key_vec[3])
+  if k >= 3:
+    x_bytes = _h_round(x_bytes, (Q1, Q1, Q0, Q0), key_vec[2])
+  if k >= 2:
+    x_bytes = _h_round(x_bytes, (Q0, Q1, Q0, Q1), key_vec[1])
+
+  # Layer for key_vec[0] (always present)
+  x_bytes = _h_round(x_bytes, (Q0, Q0, Q1, Q1), key_vec[0])
+
+  # Final q-box layer before MDS
+  x0, x1, x2, x3 = x_bytes
+  return _mds_multiply([Q1[x0], Q0[x1], Q1[x2], Q0[x3]])
+
+
+def _g_function(x: int, s_key: list[int], k: int) -> int:
+  """Twofish g-function (h-function with s_key)."""
+  return _h_function(x, s_key, k)
 
 
 def _rs_multiply(key_bytes: list[int]) -> int:
@@ -660,7 +669,7 @@ def _rs_multiply(key_bytes: list[int]) -> int:
   for i in range(4):
     byte_val = 0
     for j in range(8):
-      byte_val ^= _gf_mul(RS_MATRIX[i][j], key_bytes[j])
+      byte_val ^= _gf_mul_rs(RS_MATRIX[i][j], key_bytes[j])
     result |= byte_val << (8 * i)
   return result
 
@@ -715,12 +724,13 @@ class Twofish:
     self.key_words = [0] * 40
 
     # Generate S-box key material using RS matrix
-    k = key_len // 8  # Number of 8-byte key blocks
+    self.k = key_len // 8  # Number of 8-byte key blocks
     self.s_key = [0] * 4
 
-    for i in range(k):
+    for i in range(self.k):
       key_block = list(key[i * 8 : (i + 1) * 8])
-      self.s_key[i] = _rs_multiply(key_block)
+      # Reverse order to match Twofish reference implementation
+      self.s_key[self.k - 1 - i] = _rs_multiply(key_block)
 
     # Generate key schedule
     # Split key into even and odd 32-bit words
@@ -734,15 +744,17 @@ class Twofish:
 
     for i in range(20):
       # Compute A and B for this round key pair
-      a = _g_function(_rol(rho * (2 * i), 8), self.s_key)
-      b = _g_function(_rol(rho * (2 * i + 1), 0), self.s_key)
+      a = _h_function(_rol(rho * (2 * i), 8), me, self.k)
+      b = _h_function(_rol(rho * (2 * i + 1), 0), mo, self.k)
 
-      a = (a + me[i % k]) & 0xFFFFFFFF
-      b = (b + mo[i % k]) & 0xFFFFFFFF
       b = _rol(b, 8)
 
       self.key_words[2 * i] = (a + b) & 0xFFFFFFFF
       self.key_words[2 * i + 1] = _rol((a + 2 * b) & 0xFFFFFFFF, 9)
+
+  def _g_function(self, x: int) -> int:
+    """Twofish g-function (h-function with s_key)."""
+    return _h_function(x, self.s_key, self.k)
 
   def _f_function(self, r0: int, r1: int, round_num: int) -> tuple[int, int]:
     """Twofish F-function for a round.
@@ -756,8 +768,8 @@ class Twofish:
         Tuple of (f0, f1) outputs
     """
     # Apply g-function
-    t0 = _g_function(r0, self.s_key)
-    t1 = _g_function(_rol(r1, 8), self.s_key)
+    t0 = self._g_function(r0)
+    t1 = self._g_function(_rol(r1, 8))
 
     # PHT (Pseudo-Hadamard Transform)
     f0 = (t0 + t1 + self.key_words[2 * round_num + 8]) & 0xFFFFFFFF
@@ -800,14 +812,12 @@ class Twofish:
       else:
         r = [r[0], r[1], new_r2, new_r3]
 
-    # Undo the last swap and apply output whitening
-    # After 16 rounds, the output order is: r[2], r[3], r[0], r[1]
-    # But we need to apply whitening in reverse
+    # Apply output whitening
     c = [0] * 4
-    c[0] = r[2] ^ self.key_words[4]
-    c[1] = r[3] ^ self.key_words[5]
-    c[2] = r[0] ^ self.key_words[6]
-    c[3] = r[1] ^ self.key_words[7]
+    c[0] = r[0] ^ self.key_words[4]
+    c[1] = r[1] ^ self.key_words[5]
+    c[2] = r[2] ^ self.key_words[6]
+    c[3] = r[3] ^ self.key_words[7]
 
     result = bytearray()
     for word in c:
@@ -836,9 +846,6 @@ class Twofish:
       for i in range(0, 16, 4)
     ]
 
-    # Reverse the final swap
-    r = [r[2], r[3], r[0], r[1]]
-
     # 16 rounds (in reverse)
     for round_num in range(15, -1, -1):
       f0, f1 = self._f_function(r[0], r[1], round_num)
@@ -855,10 +862,10 @@ class Twofish:
 
     # Output whitening (reverse of input whitening)
     c = [0] * 4
-    c[0] = r[2] ^ self.key_words[0]
-    c[1] = r[3] ^ self.key_words[1]
-    c[2] = r[0] ^ self.key_words[2]
-    c[3] = r[1] ^ self.key_words[3]
+    c[0] = r[0] ^ self.key_words[0]
+    c[1] = r[1] ^ self.key_words[1]
+    c[2] = r[2] ^ self.key_words[2]
+    c[3] = r[3] ^ self.key_words[3]
 
     result = bytearray()
     for word in c:

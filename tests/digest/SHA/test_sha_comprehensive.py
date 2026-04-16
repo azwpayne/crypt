@@ -222,6 +222,29 @@ class TestSha2512:
     result = sha2_512.sha512(b"test")
     assert len(result) == 128  # 512 bits = 128 hex chars
 
+  def test_sha512_bytes(self):
+    """Test SHA-512 bytes output."""
+    from crypt.digest.SHA import sha2_512
+
+    result = sha2_512.sha512_bytes(b"hello")
+    expected = hashlib.sha512(b"hello").digest()
+    assert result == expected
+
+  def test_sha512_with_string_input(self):
+    """Test SHA-512 with string input."""
+    from crypt.digest.SHA import sha2_512
+
+    result = sha2_512.sha512("hello")
+    expected = hashlib.sha512(b"hello").hexdigest()
+    assert result == expected
+
+  def test_sha512_invalid_input_type(self):
+    """Test SHA-512 with invalid input type."""
+    from crypt.digest.SHA import sha2_512
+
+    with pytest.raises(TypeError, match="message must be bytes or string"):
+      sha2_512.sha512(123)  # type: ignore[arg-type]
+
 
 class TestSha3224:
   """Comprehensive tests for SHA3-224 implementation."""
@@ -244,6 +267,13 @@ class TestSha3224:
 
     result = sha3_224.sha3_224(b"test")
     assert len(result) == 28  # 224 bits = 28 bytes
+
+  def test_sha3_224_invalid_input_type(self):
+    """Test SHA3-224 with invalid input type."""
+    from crypt.digest.SHA import sha3_224
+
+    with pytest.raises(TypeError, match="message must be bytes"):
+      sha3_224.sha3_224("not bytes")  # type: ignore[arg-type]
 
 
 class TestSha3256:
@@ -268,6 +298,31 @@ class TestSha3256:
     result = sha3_256.sha3_256_hex(b"test")
     assert len(result) == 64  # 256 bits = 64 hex chars
 
+  def test_sha3_256_invalid_input_type(self):
+    """Test SHA3-256 with invalid input type."""
+    from crypt.digest.SHA import sha3_256
+
+    with pytest.raises(TypeError, match="msg must be bytes"):
+      sha3_256.sha3_256("not bytes")  # type: ignore[arg-type]
+
+  def test_sha3_256_exact_block_size(self):
+    """Test SHA3-256 with input exactly at rate boundary (136 bytes)."""
+    from crypt.digest.SHA import sha3_256
+
+    msg = b"a" * 136
+    result = sha3_256.sha3_256_hex(msg)
+    expected = SHA3_256.new(msg).hexdigest()
+    assert result == expected
+
+  def test_sha3_256_long_output_squeeze(self):
+    """Test SHA3-256 with output requiring multiple squeeze rounds."""
+    from crypt.digest.SHA import sha3_256
+
+    # sha3_256 returns fixed 32 bytes, but internal squeeze can handle more
+    result = sha3_256.sha3_256(b"test")
+    expected = SHA3_256.new(b"test").digest()
+    assert result == expected
+
 
 class TestSha3384:
   """Comprehensive tests for SHA3-384 implementation."""
@@ -291,6 +346,13 @@ class TestSha3384:
     result = sha3_384.sha3_384_hex(b"test")
     assert len(result) == 96  # 384 bits = 96 hex chars
 
+  def test_sha3_384_invalid_input_type(self):
+    """Test SHA3-384 with invalid input type."""
+    from crypt.digest.SHA import sha3_384
+
+    with pytest.raises(TypeError, match="data must be bytes"):
+      sha3_384.sha3_384("not bytes")  # type: ignore[arg-type]
+
 
 class TestSha3512:
   """Comprehensive tests for SHA3-512 implementation."""
@@ -313,6 +375,30 @@ class TestSha3512:
 
     result = sha3_512.sha3_512_hex(b"test")
     assert len(result) == 128  # 512 bits = 128 hex chars
+
+  def test_sha3_512_invalid_input_type(self):
+    """Test SHA3-512 with invalid input type."""
+    from crypt.digest.SHA import sha3_512
+
+    with pytest.raises(TypeError, match="message must be bytes"):
+      sha3_512.sha3_512("not bytes")  # type: ignore[arg-type]
+
+  def test_sha3_512_exact_block_size(self):
+    """Test SHA3-512 with input exactly at rate boundary (72 bytes)."""
+    from crypt.digest.SHA import sha3_512
+
+    msg = b"a" * 72
+    result = sha3_512.sha3_512_hex(msg)
+    expected = SHA3_512.new(msg).hexdigest()
+    assert result == expected
+
+  def test_sha3_512_empty_message(self):
+    """Test SHA3-512 with empty message."""
+    from crypt.digest.SHA import sha3_512
+
+    result = sha3_512.sha3_512_hex(b"")
+    expected = SHA3_512.new(b"").hexdigest()
+    assert result == expected
 
 
 class TestSHAKE128:

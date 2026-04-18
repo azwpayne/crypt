@@ -101,24 +101,14 @@ jobs:
 
       - name: Run tests
         run: |
-          # uv run python -m pytest tests/ \
-          #   --ignore=tests/digest/test_paillier.py \
-          #   --ignore=tests/digest/test_elgamal.py \
-          #   --ignore=tests/digest/test_trivium.py \
-          #   -x \
-          #   -q \
-          #   --cov=src \
-          #   --cov-branch \
-          #   --cov-report=term-missing:skip-covered \
-          #   --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
           uv run --group test pytest
 
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: coverage-*.xml
-          retention-days: 7
+      # - name: Upload coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
+      #     path: coverage-*.xml
+      #     retention-days: 7
 
   coverage:
     name: Coverage Report

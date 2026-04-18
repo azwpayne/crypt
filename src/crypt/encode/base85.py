@@ -110,6 +110,7 @@ def b85decode_ascii85(encoded: str) -> bytes:
 
 
 if __name__ == "__main__":
+
   def test_base85():
     """测试Base85编码解码"""
     test_cases = [

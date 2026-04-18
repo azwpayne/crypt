@@ -214,7 +214,9 @@ class TestDecodeNumericEntities:
     # Very large hex value that causes OverflowError in chr()
     assert decode_numeric_entities("&#xFFFFFFFFFFFF;") == "&#xFFFFFFFFFFFF;"
     # Very large decimal value that causes OverflowError in chr()
-    assert decode_numeric_entities("&#99999999999999999999;") == "&#99999999999999999999;"
+    assert (
+      decode_numeric_entities("&#99999999999999999999;") == "&#99999999999999999999;"
+    )
 
 
 class TestStripTags:

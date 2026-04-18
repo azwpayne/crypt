@@ -209,6 +209,7 @@ def shake256_hex(data: bytes, length: int) -> str:
 
 
 if __name__ == "__main__":
+
   def test_shake256():
     """Basic tests for SHAKE256."""
     # Test empty message

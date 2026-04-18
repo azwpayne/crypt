@@ -273,6 +273,7 @@ def shake256_hex(message, output_length):
 
 
 if __name__ == "__main__":
+
   def test_shake256():
     """测试函数，验证实现正确性"""
     # 使用 pycryptodome 的 SHAKE256 作为参考

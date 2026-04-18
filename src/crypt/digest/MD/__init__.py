@@ -8,10 +8,10 @@ This package provides:
 """
 
 __all__ = [
-    "md2",
-    "md4",
-    "md5",
-    "md6",
+  "md2",
+  "md4",
+  "md5",
+  "md6",
 ]
 
 from crypt.digest.MD import md2, md4, md5, md6

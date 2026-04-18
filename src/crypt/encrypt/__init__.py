@@ -8,8 +8,8 @@ This package provides implementations of:
 """
 
 __all__ = [
-    "asymmetric_encrypt",
-    "symmetric_encrypt",
+  "asymmetric_encrypt",
+  "symmetric_encrypt",
 ]
 
 from crypt.encrypt import asymmetric_encrypt, symmetric_encrypt

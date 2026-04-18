@@ -14,9 +14,9 @@ __author__ = "azwpayne"
 __email__ = "paynewu0719@gmail.com"
 
 __all__ = [
-    "digest",
-    "encode",
-    "encrypt",
+  "digest",
+  "encode",
+  "encrypt",
 ]
 
 from crypt import digest, encode, encrypt

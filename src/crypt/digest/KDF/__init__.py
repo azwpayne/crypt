@@ -7,7 +7,7 @@ This package provides:
 """
 
 __all__ = [
-    "argon2",
-    "pbkdf2",
-    "scrypt",
+  "argon2",
+  "pbkdf2",
+  "scrypt",
 ]

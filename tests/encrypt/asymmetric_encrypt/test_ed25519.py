@@ -160,7 +160,9 @@ class TestEd25519PointEncoding:
     private_key, public_key = generate_keypair()
     sig = sign(b"test", private_key)
     # Set s to L (order of base point)
-    bad_sig = sig[:32] + (2**252 + 27742317777372353535851937790883648493).to_bytes(32, "little")
+    bad_sig = sig[:32] + (2**252 + 27742317777372353535851937790883648493).to_bytes(
+      32, "little"
+    )
     assert verify(bad_sig, b"test", public_key) is False
 
   def test_verify_none_points(self):

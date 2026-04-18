@@ -109,6 +109,7 @@ def base91_decode_str(inp: str, encoding: str = "utf-8") -> str:
 
 # 使用示例
 if __name__ == "__main__":
+
   def _extracted_from_test_base91_21(arg0, arg1, arg2):
     print(f"Original: {arg0!r}")
     print(f"Encoded:  {arg1}")

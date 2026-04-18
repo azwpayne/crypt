@@ -83,7 +83,9 @@ class TestXTEAErrorPaths:
       decrypt_block(b"\x00" * 9, KEY)
 
   def test_ecb_decrypt_invalid_ciphertext_length(self):
-    with pytest.raises(ValueError, match="Ciphertext length must be a multiple of block size"):
+    with pytest.raises(
+      ValueError, match="Ciphertext length must be a multiple of block size"
+    ):
       xtea_ecb_decrypt(b"\x00" * 7, KEY)
 
   def test_cbc_encrypt_invalid_iv_length(self):
@@ -95,5 +97,7 @@ class TestXTEAErrorPaths:
       xtea_cbc_decrypt(b"\x00" * 8, KEY, b"\x00" * 7)
 
   def test_cbc_decrypt_invalid_ciphertext_length(self):
-    with pytest.raises(ValueError, match="Ciphertext length must be a multiple of block size"):
+    with pytest.raises(
+      ValueError, match="Ciphertext length must be a multiple of block size"
+    ):
       xtea_cbc_decrypt(b"\x00" * 7, KEY, IV)

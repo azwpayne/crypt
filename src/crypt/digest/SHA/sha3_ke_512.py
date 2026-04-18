@@ -273,6 +273,7 @@ def shake512_hex(message, output_length):
 
 
 if __name__ == "__main__":
+
   def test_shake512():
     """测试函数，验证实现正确性"""
     test_cases = [

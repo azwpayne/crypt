@@ -208,6 +208,7 @@ def shake128_hex(data: bytes, length: int) -> str:
 
 
 if __name__ == "__main__":
+
   def test_shake128():
     """Basic tests for SHAKE128."""
     # Test empty message

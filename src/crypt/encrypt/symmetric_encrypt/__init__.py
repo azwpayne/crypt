@@ -7,10 +7,10 @@ This package provides implementations of:
 """
 
 __all__ = [
-    "block_cipher",
-    "ccm",
-    "gcm",
-    "stream_cipher",
+  "block_cipher",
+  "ccm",
+  "gcm",
+  "stream_cipher",
 ]
 
 from crypt.encrypt.symmetric_encrypt import block_cipher, ccm, gcm, stream_cipher

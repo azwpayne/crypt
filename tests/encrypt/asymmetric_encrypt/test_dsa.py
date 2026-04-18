@@ -125,7 +125,11 @@ class TestDSA:
     import pytest
 
     # Patch max_attempts to 0 so the while loop immediately falls through to else
-    monkeypatch.setattr(dsa, "generate_parameters", lambda key_size=2048: _generate_parameters_failing(key_size))
+    monkeypatch.setattr(
+      dsa,
+      "generate_parameters",
+      lambda key_size=2048: _generate_parameters_failing(key_size),
+    )
     with pytest.raises(RuntimeError, match="Could not find valid p"):
       dsa.generate_parameters(2048)
     monkeypatch.undo()

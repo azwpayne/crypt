@@ -273,6 +273,7 @@ def shake224_hex(message, output_length):
 
 
 if __name__ == "__main__":
+
   def test_shake224():
     """测试函数，验证实现正确性"""
     # 使用参考实现验证 (SHAKE224 uses same Keccak parameters as SHA3-224 but with XOF)

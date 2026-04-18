@@ -148,6 +148,7 @@ def decode_base58_check(encoded: str, checksum_len: int = 4) -> bytes:
 
 # 示例使用
 if __name__ == "__main__":
+
   def test_base58():
     """测试Base58编码/解码"""
     test_cases = [

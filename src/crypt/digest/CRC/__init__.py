@@ -9,11 +9,11 @@ This package provides CRC checksums:
 """
 
 __all__ = [
-    "crc8",
-    "crc12",
-    "crc16",
-    "crc16_ccitt",
-    "crc32",
-    "crc32c",
-    "crc64",
+  "crc8",
+  "crc12",
+  "crc16",
+  "crc16_ccitt",
+  "crc32",
+  "crc32c",
+  "crc64",
 ]

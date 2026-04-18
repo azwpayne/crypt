@@ -106,7 +106,9 @@ def chacha20_encrypt(key: bytes, nonce: bytes, counter: int, plaintext: bytes) -
   return bytes(ciphertext)
 
 
-def chacha20_decrypt(key: bytes, nonce: bytes, counter: int, ciphertext: bytes) -> bytes:
+def chacha20_decrypt(
+  key: bytes, nonce: bytes, counter: int, ciphertext: bytes
+) -> bytes:
   """Decrypt ciphertext using ChaCha20.
 
   ChaCha20 is a stream cipher - encryption and decryption are the same operation.

@@ -10,8 +10,8 @@ CMAC (Cipher-based Message Authentication Code):
 """
 
 __all__ = [
-    "cmac",
-    "hmac_md5",
-    "hmac_sha1",
-    "hmac_sha256",
+  "cmac",
+  "hmac_md5",
+  "hmac_sha1",
+  "hmac_sha256",
 ]

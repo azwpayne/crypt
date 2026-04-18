@@ -273,6 +273,7 @@ def shake384_hex(message, output_length):
 
 
 if __name__ == "__main__":
+
   def test_shake384():
     """测试函数，验证实现正确性"""
     test_cases = [

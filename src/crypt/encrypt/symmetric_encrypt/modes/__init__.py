@@ -21,12 +21,12 @@ from .ocb import ocb_decrypt, ocb_encrypt
 from .ofb import OFBMode
 
 __all__ = [
-    "CBCMode",
-    "CFBMode",
-    "CTRMode",
-    "ECBMode",
-    "ModeError",
-    "OFBMode",
-    "ocb_decrypt",
-    "ocb_encrypt",
+  "CBCMode",
+  "CFBMode",
+  "CTRMode",
+  "ECBMode",
+  "ModeError",
+  "OFBMode",
+  "ocb_decrypt",
+  "ocb_encrypt",
 ]

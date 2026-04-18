@@ -113,7 +113,7 @@ jobs:
             --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
           path: coverage-*.xml
@@ -146,7 +146,7 @@ jobs:
         run: uv run coverage combine coverage-reports/
 
       - name: Upload combined coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: combined-coverage
           path: coverage-reports/
@@ -159,7 +159,7 @@ jobs:
           uv run coverage xml -o reports/coverage.xml
 
       - name: Upload HTML coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: html-coverage-report
           path: reports/coverage/

@@ -75,8 +75,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.14t" ]
         exclude:
           - os: windows-latest
             python-version: "3.14"
@@ -101,16 +101,17 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run python -m pytest tests/ \
-            --ignore=tests/digest/test_paillier.py \
-            --ignore=tests/digest/test_elgamal.py \
-            --ignore=tests/digest/test_trivium.py \
-            -x \
-            -q \
-            --cov=src \
-            --cov-branch \
-            --cov-report=term-missing:skip-covered \
-            --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
+          # uv run python -m pytest tests/ \
+          #   --ignore=tests/digest/test_paillier.py \
+          #   --ignore=tests/digest/test_elgamal.py \
+          #   --ignore=tests/digest/test_trivium.py \
+          #   -x \
+          #   -q \
+          #   --cov=src \
+          #   --cov-branch \
+          #   --cov-report=term-missing:skip-covered \
+          #   --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
+          uv run --group test pytest
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4

@@ -84,10 +84,10 @@ class TestBase64EdgeCases:
 
   def test_base64_encode_invalid_type(self):
     """Test that non-bytes/non-str input raises TypeError."""
-    with pytest.raises(TypeError, match="输入必须是bytes"):
+    with pytest.raises(TypeError, match="Input must be bytes"):
       base64.base64_encode(123)  # type: ignore[arg-type]
 
   def test_base64_decode_invalid_char(self):
     """Test that invalid characters raise ValueError."""
-    with pytest.raises(ValueError, match="包含非法base64字符"):
+    with pytest.raises(ValueError, match="Invalid Base64 character"):
       base64.base64_decode("!@#$")

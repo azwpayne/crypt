@@ -1,60 +1,79 @@
-# @time    : 2025/12/24 13:29
-# @name    : sm3.py
-# @author  : azwpayne
-# @desc    :
+"""Pure Python implementation of SM3 hash algorithm.
+
+SM3 is a cryptographic hash function standardized by the Chinese
+National Cryptography Administration. It produces a 256-bit hash value.
+
+Reference: GM/T 0004-2012 Chinese National Standard
+"""
+
+from __future__ import annotations
 
 
-def left_rotate(value, shift_bits):
+def left_rotate(value: int, shift_bits: int) -> int:
+  """Rotate a 32-bit integer left by shift_bits positions (circular shift).
+
+  Args:
+      value: 32-bit integer to rotate
+      shift_bits: Number of bits to shift left
+
+  Returns:
+      Rotated 32-bit integer
   """
-  对32位整数进行左循环移位
-
-  :param value: 要移位的32位整数
-  :param shift_bits: 左移的位数
-  :return: 循环移位后的32位整数
-  """
-  # 规范化移位位数到0-31范围内
   normalized_shift = shift_bits % 32
-  # 如果移位位数为0，直接返回原值
   if normalized_shift == 0:
     return value & 0xFFFFFFFF
-  # 执行左循环移位操作
-  # 将value左移normalized_shift位，同时将右边被移出的位移到左边
   return ((value << normalized_shift) | (value >> (32 - normalized_shift))) & 0xFFFFFFFF
 
 
-# 常量 Tj，定义为两个不同的值
+# Constants Tj: two different values for different rounds
 T = [0x79CC4519 if j < 16 else 0x7A879D8A for j in range(64)]
 
 
-# 压缩函数 FFj 和 GGj 的定义
-def ff(x, y, z, j):
+def ff(x: int, y: int, z: int, j: int) -> int:
+  """Boolean function FF for compression round j.
+
+  Args:
+      x, y, z: 32-bit integer inputs
+      j: Round index (0-63)
+
+  Returns:
+      32-bit integer result
+  """
   return x ^ y ^ z if j < 16 else (x & y) | (x & z) | (y & z)
 
 
-def gg(x, y, z, j):
-  """
-  计算SM3哈希算法中的布尔函数GG。该函数在前16轮和后48轮采用不同的逻辑运算形式，以增强消息的非线性混淆特性。
+def gg(x: int, y: int, z: int, j: int) -> int:
+  """Boolean function GG for compression round j.
 
-  :param x: 32位整数输入X
-  :param y: 32位整数输入Y
-  :param z: 32位整数输入Z
-  :param j: 轮次索引（0-63），用于选择不同的布尔函数形式
-  :return: 计算得到的32位整数结果
+  Args:
+      x, y, z: 32-bit integer inputs
+      j: Round index (0-63)
+
+  Returns:
+      32-bit integer result
   """
   return x ^ y ^ z if j < 16 else (x & y) | (~x & z)
 
 
-# P0 和 P1 置换函数
-def p0(x):
+def p0(x: int) -> int:
+  """Permutation function P0."""
   return x ^ left_rotate(x, 9) ^ left_rotate(x, 17)
 
 
-def p1(x):
+def p1(x: int) -> int:
+  """Permutation function P1."""
   return x ^ left_rotate(x, 15) ^ left_rotate(x, 23)
 
 
-# 填充消息，使得消息长度是 512 位的倍数
-def padding(message):
+def padding(message: bytes) -> bytes:
+  """Pad message to multiple of 512 bits.
+
+  Args:
+      message: Input message bytes
+
+  Returns:
+      Padded message
+  """
   msg_len = len(message) * 8
   message += b"\x80"
   while (len(message) + 8) % 64 != 0:
@@ -63,8 +82,15 @@ def padding(message):
   return message
 
 
-# 消息扩展函数
-def message_expand(block):
+def message_expand(block: bytes) -> tuple[list[int], list[int]]:
+  """Expand message block into working variables.
+
+  Args:
+      block: 64-byte message block
+
+  Returns:
+      Tuple of (W, W') message extension arrays
+  """
   w = [int.from_bytes(block[i : i + 4], "big") for i in range(0, 64, 4)]
   w.extend(
     p1(w[j - 16] ^ w[j - 9] ^ left_rotate(w[j - 3], 15))
@@ -72,14 +98,22 @@ def message_expand(block):
     ^ w[j - 6]
     for j in range(16, 68)
   )
-  w_ = [w[j] ^ w[j + 4] for j in range(64)]
-  return w, w_
+  w_prime = [w[j] ^ w[j + 4] for j in range(64)]
+  return w, w_prime
 
 
-# 压缩函数 CF
-def cf(v, block):
+def cf(v: list[int], block: bytes) -> list[int]:
+  """Compression function CF.
+
+  Args:
+      v: Current state vector (8 x 32-bit words)
+      block: 64-byte message block
+
+  Returns:
+      New state vector
+  """
   a, b, c, d, e, f, g, h = v
-  w, w_ = message_expand(block)
+  w, w_prime = message_expand(block)
 
   for j in range(64):
     ss1 = left_rotate(
@@ -87,7 +121,7 @@ def cf(v, block):
     )
     ss2 = ss1 ^ left_rotate(a, 12)
 
-    tt1 = (ff(a, b, c, j) + d + ss2 + w_[j]) & 0xFFFFFFFF
+    tt1 = (ff(a, b, c, j) + d + ss2 + w_prime[j]) & 0xFFFFFFFF
     tt2 = (gg(e, f, g, j) + h + ss1 + w[j]) & 0xFFFFFFFF
 
     d = c
@@ -102,20 +136,20 @@ def cf(v, block):
   return [(v[i] ^ x) & 0xFFFFFFFF for i, x in enumerate([a, b, c, d, e, f, g, h])]
 
 
-# 主函数
-def sm3(message):
-  """
-  计算给定消息的SM3哈希值。该函数实现了SM3摘要算法的完整流程，包括填充、分组和压缩等步骤。
-
-  该函数返回摘要结果的16进制字符串表示形式，可用于完整性校验和签名等密码学应用场景。
+def sm3(message: bytes) -> str:
+  """Compute SM3 hash of input message.
 
   Args:
-      message: 原始输入消息的字节序列
+      message: Input message bytes
 
-  Returns: 32字节长度的SM3哈希值对应的64位16进制字符串
+  Returns:
+      64-character hexadecimal hash string (256-bit)
 
+  Example:
+      >>> sm3(b"abc")
+      '66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0'
   """
-  # 初始向量 IV
+  # Initial vector IV
   iv = [
     0x7380166F,
     0x4914B2B9,

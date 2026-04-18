@@ -1,46 +1,43 @@
-# @time    : 2026/1/6 13:28
-# @name    : base64.py
-# @author  : azwpayne
-# @desc    :
+"""Pure Python implementation of Base64 encoding and decoding.
+
+This module provides functions to encode bytes to Base64 strings
+and decode Base64 strings back to bytes, following RFC 4648.
+"""
 
 B64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 
 def base64_encode(data: bytes) -> str:
-  """
-  将bytes编码为base64字符串
-  :param data:
-  :return:
-  """
+  """Encode bytes to a Base64 string.
 
+  Args:
+      data: The bytes to encode (str will be converted to bytes)
+
+  Returns:
+      Base64 encoded string with padding
+
+  Raises:
+      TypeError: If input is not bytes or str
+  """
   byte_data = bytes(data, "utf-8") if isinstance(data, str) else data
 
   if not isinstance(byte_data, bytes):
-    msg = "输入必须是bytes"
+    msg = "Input must be bytes or str"
     raise TypeError(msg)
 
   if not byte_data:
     return ""
 
-  # 将输入转换为二进制字符串
+  # Convert input to binary string
   binary_str = "".join(f"{byte:08b}" for byte in byte_data)
 
-  # 按6位分组
+  # Group by 6 bits
   groups = [binary_str[i : i + 6] for i in range(0, len(binary_str), 6)]
 
-  # result = []
-  # for group in groups:
-  #     if len(group) < 6:
-  #         # 最后一组不足6位，补0
-  #         group = group.ljust(6, '0')
-  #     # 将6位二进制转为整数，对应字符表
-  #     index = int(group, 2)
-  #     result.append(B64_CHARS[index])
-
-  # 将6位二进制组转换为字符
+  # Convert 6-bit groups to characters
   result = [B64_CHARS[int(group.ljust(6, "0"), 2)] for group in groups]
 
-  # 计算需要填充的等号数量
+  # Calculate padding needed
   padding = (3 - len(byte_data) % 3) % 3
   result.extend(["="] * padding)
 
@@ -48,31 +45,41 @@ def base64_encode(data: bytes) -> str:
 
 
 def base64_decode(b64_str: str) -> bytes:
-  """将base64字符串解码为bytes"""
+  """Decode a Base64 string to bytes.
+
+  Args:
+      b64_str: The Base64 string to decode
+
+  Returns:
+      Decoded bytes
+
+  Raises:
+      ValueError: If string contains invalid Base64 characters
+  """
   if not b64_str:
     return b""
 
-  # 移除填充字符
+  # Remove padding characters
   b64_str = b64_str.rstrip("=")
 
-  # 将base64字符转为索引值
+  # Convert Base64 characters to indices
   try:
     indices = [B64_CHARS.index(char) for char in b64_str]
   except ValueError as e:
-    msg = "包含非法base64字符"
+    msg = "Invalid Base64 character found"
     raise ValueError(msg) from e
 
-  # 将索引转为6位二进制
+  # Convert indices to 6-bit binary
   binary_str = "".join(f"{idx:06b}" for idx in indices)
 
-  # 按8位分组（字节）
+  # Group by 8 bits (bytes)
   byte_groups = [binary_str[i : i + 8] for i in range(0, len(binary_str), 8)]
 
-  # 移除最后一组不完整的字节（如果有的话）
+  # Remove last incomplete byte group if any
   if len(byte_groups[-1]) < 8:
     byte_groups = byte_groups[:-1]
 
-  # 二进制字符串转bytes
+  # Convert binary string to bytes
   return bytes(int(group, 2) for group in byte_groups if len(group) == 8)
 
 

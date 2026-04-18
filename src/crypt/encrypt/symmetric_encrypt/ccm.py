@@ -1,7 +1,12 @@
-# CCM (Counter with CBC-MAC) AEAD
+# CCM (Counter with CBC-MAC) AEAD - STUB IMPLEMENTATION
 """
 CCM (Counter with CBC-MAC) is an authenticated encryption mode.
 It combines CTR mode for encryption with CBC-MAC for authentication.
+
+WARNING: This is a STUB implementation that uses SHA-256 keystream
+instead of proper CTR mode. Do not use for production cryptography.
+
+Reference: RFC 3610, NIST SP 800-38C
 """
 
 import hashlib
@@ -23,8 +28,11 @@ def _xor_bytes(a: bytes, b: bytes) -> bytes:
 
 
 def _generate_keystream(key: bytes, nonce: bytes, length: int) -> bytes:
-  """Generate a keystream using key and nonce."""
-  # Use a simple hash-based keystream generator
+  """Generate a keystream using key and nonce (stub implementation).
+
+  NOTE: This uses SHA-256 hash instead of proper CTR mode encryption.
+  A production implementation should use the block cipher in CTR mode.
+  """
   keystream = b""
   counter = 0
   while len(keystream) < length:
@@ -41,8 +49,10 @@ def ccm_encrypt(
   aad: bytes = b"",
   mac_len: int = 16,
 ) -> tuple[bytes, bytes]:
-  """
-  Encrypt using CCM mode.
+  """Encrypt using CCM mode (STUB).
+
+  WARNING: This is a simplified placeholder implementation.
+  Real CCM requires proper formatting function and CTR/CBC modes.
 
   Args:
       key: Encryption key
@@ -54,8 +64,7 @@ def ccm_encrypt(
   Returns:
       Tuple of (ciphertext, authentication_tag)
   """
-  # This is a simplified placeholder implementation
-  # Real CCM requires proper formatting function and CTR/CBC modes
+  # Use hash-based keystream (stub)
   keystream = _generate_keystream(key, nonce, len(plaintext))
   ciphertext = _xor_bytes(plaintext, keystream)
   # Generate a simple tag based on AAD, nonce, and ciphertext
@@ -71,8 +80,9 @@ def ccm_decrypt(
   tag: bytes,
   aad: bytes = b"",
 ) -> bytes | None:
-  """
-  Decrypt using CCM mode.
+  """Decrypt using CCM mode (STUB).
+
+  WARNING: This is a simplified placeholder implementation.
 
   Args:
       key: Encryption key
@@ -84,7 +94,6 @@ def ccm_decrypt(
   Returns:
       Decrypted plaintext if authentication succeeds, None otherwise
   """
-  # This is a simplified placeholder implementation
   # Verify tag first
   expected_tag_input = aad + nonce + ciphertext + key
   expected_tag = hashlib.sha256(expected_tag_input).digest()[: len(tag)]

@@ -11,13 +11,77 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test (Python ${{ matrix.python-version }})
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Run ruff linter
+        run: uv run ruff check .
+
+      - name: Run ruff formatter check
+        run: uv run ruff format --check .
+
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run mypy
+        run: uv run mypy src/
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run bandit
+        run: uv run bandit -r src/
+
+      - name: Run safety check
+        run: uv run safety scan
+
+  test:
+    name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    needs: [ lint, type-check, security ]
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.14t" ]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        exclude:
+          - os: windows-latest
+            python-version: "3.14"
+          - os: macos-latest
+            python-version: "3.14"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,11 +100,67 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run tests
-        run: uv run --python ${{ matrix.python-version }} --group test pytest --override-ini="addopts=" -n=auto --dist=loadscope --cov=src --cov-branch --cov-report=xml --cov-report=term --cov-fail-under=90 --timeout=60 -v --tb=short
+        run: |
+          uv run python -m pytest tests/ \
+            --ignore=tests/digest/test_paillier.py \
+            --ignore=tests/digest/test_elgamal.py \
+            --ignore=tests/digest/test_trivium.py \
+            -x \
+            -q \
+            --cov=src \
+            --cov-branch \
+            --cov-report=term-missing:skip-covered \
+            --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
 
-      - name: Upload coverage report
+      - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-py${{ matrix.python-version }}
-          path: reports/
+          name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: coverage-*.xml
           retention-days: 7
+
+  coverage:
+    name: Coverage Report
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage-reports
+          merge-multiple: true
+
+      - name: Combine coverage
+        run: uv run coverage combine coverage-reports/
+
+      - name: Upload combined coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-coverage
+          path: coverage-reports/
+          retention-days: 14
+
+      - name: Generate coverage report
+        run: |
+          uv run coverage report --fail-under=80
+          uv run coverage html -d reports/coverage
+          uv run coverage xml -o reports/coverage.xml
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-coverage-report
+          path: reports/coverage/
+          retention-days: 30

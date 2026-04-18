@@ -1,7 +1,13 @@
-# GCM (Galois/Counter Mode) AEAD
+# GCM (Galois/Counter Mode) AEAD - STUB IMPLEMENTATION
 """
 Galois/Counter Mode (GCM) is an authenticated encryption mode.
-It provides both confidentiality and authenticity.
+It provides both confidentiality and authenticity using CTR mode
+for encryption and GHASH for authentication.
+
+WARNING: This is a STUB implementation that uses SHA-256 keystream
+instead of proper CTR mode. Do not use for production cryptography.
+
+Reference: NIST SP 800-38D
 """
 
 import hashlib
@@ -23,8 +29,11 @@ def _xor_bytes(a: bytes, b: bytes) -> bytes:
 
 
 def _generate_keystream(key: bytes, iv: bytes, length: int) -> bytes:
-  """Generate a keystream using key and IV."""
-  # Use a simple hash-based keystream generator
+  """Generate a keystream using key and IV (stub implementation).
+
+  NOTE: This uses SHA-256 hash instead of proper CTR mode encryption.
+  A production implementation should use the block cipher in CTR mode.
+  """
   keystream = b""
   counter = 0
   while len(keystream) < length:
@@ -41,23 +50,26 @@ def gcm_encrypt(
   aad: bytes = b"",
   block_cipher=None,
 ) -> tuple[bytes, bytes]:
-  """
-  Encrypt using GCM mode.
+  """Encrypt using GCM mode (STUB).
+
+  WARNING: This is a simplified placeholder implementation.
+  Real GCM requires proper CTR mode and GHASH authentication.
 
   Args:
       key: Encryption key
       iv: Initialization vector (nonce)
       plaintext: Data to encrypt
       aad: Additional authenticated data
-      block_cipher: Block cipher function (e.g., AES)
+      block_cipher: Block cipher function (NOT IMPLEMENTED)
 
   Returns:
       Tuple of (ciphertext, authentication_tag)
+
+  Raises:
+      NotImplementedError: If block_cipher is provided
   """
-  # This is a simplified placeholder implementation
-  # Real GCM requires proper CTR mode and GHASH authentication
   if block_cipher is None:
-    # Generate keystream based on key and IV
+    # Use hash-based keystream (stub)
     keystream = _generate_keystream(key, iv, len(plaintext))
     ciphertext = _xor_bytes(plaintext, keystream)
     # Generate a simple tag based on AAD, IV, and ciphertext
@@ -65,8 +77,6 @@ def gcm_encrypt(
     tag = hashlib.sha256(tag_input).digest()[:16]
     return ciphertext, tag
 
-  # Use provided block cipher for proper implementation
-  # ... real implementation would go here
   msg = "Block cipher-based GCM not yet implemented"
   raise NotImplementedError(msg)
 
@@ -79,8 +89,9 @@ def gcm_decrypt(
   aad: bytes = b"",
   **kwargs: object,
 ) -> bytes | None:
-  """
-  Decrypt using GCM mode.
+  """Decrypt using GCM mode (STUB).
+
+  WARNING: This is a simplified placeholder implementation.
 
   Args:
       key: Encryption key
@@ -88,13 +99,15 @@ def gcm_decrypt(
       ciphertext: Data to decrypt
       tag: Authentication tag
       aad: Additional authenticated data
-      block_cipher: Block cipher function (passed via **kwargs)
+      block_cipher: Block cipher function (NOT IMPLEMENTED, via kwargs)
 
   Returns:
       Decrypted plaintext if authentication succeeds, None otherwise
+
+  Raises:
+      NotImplementedError: If block_cipher is provided
   """
   block_cipher = kwargs.get("block_cipher")
-  # This is a simplified placeholder implementation
   if block_cipher is None:
     # Verify tag first
     expected_tag_input = aad + iv + ciphertext + key

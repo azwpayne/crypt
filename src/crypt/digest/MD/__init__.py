@@ -1,4 +1,17 @@
-# @time    : 2026/1/6 15:57
-# @name    : __init__.py.py
-# @author  : azwpayne
-# @desc    :
+"""MD (Message Digest) family implementations.
+
+This package provides:
+- MD2
+- MD4
+- MD5 (broken, legacy use only)
+- MD6
+"""
+
+__all__ = [
+    "md2",
+    "md4",
+    "md5",
+    "md6",
+]
+
+from crypt.digest.MD import md2, md4, md5, md6

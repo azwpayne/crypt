@@ -43,12 +43,7 @@ uv sync --group test
 ### Hash Functions
 
 ```python
-from crypt.digest.MD.md5 import md5
 from crypt.digest.SHA.sha2_256 import sha256
-
-# MD5 hash (for educational purposes - not for security)
-result = md5(b"Hello, World!")
-print(result.hex())  # 65a8e27d8879283831b664bd8b7f0ad4
 
 # SHA-256 hash
 result = sha256(b"Hello, World!")
@@ -75,31 +70,31 @@ print(f"Decrypted: {decrypted.decode()}")
 ### Encoding
 
 ```python
-from crypt.encode.base64 import encode as b64_encode, decode as b64_decode
-from crypt.encode.base58 import encode as b58_encode, decode as b58_decode
+from crypt.encode.base64 import base64_encode, base64_decode
+from crypt.encode.base58 import base58_encode, base58_decode
 
 # Base64 encoding
 data = b"Hello, World!"
-encoded = b64_encode(data)
+encoded = base64_encode(data)
 print(encoded)  # SGVsbG8sIFdvcmxkIQ==
 
-decoded = b64_decode(encoded)
+decoded = base64_decode(encoded)
 print(decoded)  # b"Hello, World!"
 
 # Base58 encoding (commonly used in Bitcoin)
-encoded = b58_encode(data)
+encoded = base58_encode(data)
 print(encoded)  # 72k1xXWG59fYdzSNoA
-decoded = b58_decode(encoded)
+decoded = base58_decode(encoded)
 print(decoded)  # b"Hello, World!"
 ```
 
 ### Asymmetric Encryption
 
 ```python
-# from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
+from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
 
 # Generate RSA key pair
-public_key, private_key = generate_keypair(key_size = 2048)
+public_key, private_key = generate_keypair(key_size=2048)
 
 # Encrypt
 message = b"Hello, RSA!"
@@ -128,16 +123,15 @@ print(decrypted.decode())  # Hello, RSA!
 | SHA-256             | 256-bit hash                     | Secure            |
 | SHA-384             | 384-bit hash                     | Secure            |
 | SHA-512             | 512-bit hash                     | Secure            |
-| SHA-512/224         | 224-bit truncated SHA-512        | Secure            |
+| SHA-512/224         | 224-bit truncated SHA-512       | Secure            |
 | SHA-512/256         | 256-bit truncated SHA-512        | Secure            |
 | SHA3-224            | Keccak-based 224-bit             | Secure            |
 | SHA3-256            | Keccak-based 256-bit             | Secure            |
 | SHA3-384            | Keccak-based 384-bit             | Secure            |
 | SHA3-512            | Keccak-based 512-bit             | Secure            |
-| SHAKE128            | Extendable-output function (XOF) | Secure            |
-| SHAKE256            | Extendable-output function (XOF) | Secure            |
 | **Other Hashes**    |                                  |                   |
-| BLAKE2b / BLAKE2s   | Fast cryptographic hash          | Secure            |
+| BLAKE2b             | Fast cryptographic hash (64-byte)| Secure            |
+| BLAKE2s             | Fast cryptographic hash (32-byte)| Secure            |
 | BLAKE3              | Modern fast hash                 | Secure            |
 | CRC8 / CRC12        | Cyclic redundancy checks         | Non-cryptographic |
 | CRC16 / CRC16-CCITT | Cyclic redundancy checks         | Non-cryptographic |
@@ -190,15 +184,10 @@ print(decrypted.decode())  # Hello, RSA!
 | CAST6 (CAST-256)  | 128-bit    | 128/192/256-bit | AES candidate       |
 | RC5               | 64-bit     | Variable        | Legacy              |
 | RC6               | 128-bit    | 128/192/256-bit | AES finalist        |
-| TEA               | 64-bit     | 128-bit         | Legacy              |
-| XTEA              | 64-bit     | 128-bit         | Legacy              |
-| XXTEA             | 64-bit     | 128-bit         | Legacy              |
 | SM4               | 128-bit    | 128-bit         | Secure              |
 | PRESENT           | 64-bit     | 80/128-bit      | Lightweight         |
-| BELT              | 128-bit    | 256-bit         | Belarusian standard |
 | Simon             | Various    | Various         | NSA lightweight     |
-| Playfair          | Digraph    | Keyword-based   | Classical cipher    |
-| Rail Fence        | Transpose  | Integer key     | Classical cipher    |
+| Belt              | 128-bit    | 256-bit         | Belarusian standard |
 
 #### Block Cipher Modes
 
@@ -211,16 +200,17 @@ print(decrypted.decode())  # Hello, RSA!
 | CTR  | Counter mode                                         | No             |
 | XTS  | XEX-based tweaked-codebook with ciphertext stealing  | No             |
 | EAX  | Authenticated encryption with associated data (AEAD) | Yes            |
-| GCM  | Galois/Counter Mode (AEAD)                           | Yes            |
-| CCM  | Counter with CBC-MAC (AEAD)                          | Yes            |
 | OCB  | Offset Codebook Mode v3 (AEAD, RFC 7253)             | Yes            |
+
+**Note**: GCM and CCM modes are **stub implementations** using SHA-256 keystream
+instead of proper CTR mode. They are marked for development only.
 
 #### Padding Schemes
 
-| Scheme     | Description        | Constant-Time Unpad |
-|------------|--------------------|---------------------|
-| PKCS7      | PKCS #7 padding    | Yes                 |
-| ANSI X.923 | ANSI X9.23 padding | No                  |
+| Scheme     | Description        |
+|------------|--------------------|
+| PKCS7      | PKCS #7 padding    |
+| ANSI X.923 | ANSI X9.23 padding |
 
 #### Stream Ciphers
 
@@ -231,21 +221,17 @@ print(decrypted.decode())  # Hello, RSA!
 | Salsa20           | Predecessor to ChaCha20                 | Secure          |
 | RC4               | Legacy stream cipher                    | Broken          |
 | SEAL              | Software-optimized encryption algorithm | Legacy          |
-| ZUC               | Chinese stream cipher (4G/5G)           | Secure          |
 | Rabbit            | High-performance stream cipher          | Secure          |
 | Trivium           | Hardware-oriented stream cipher         | Secure          |
+
+**Note**: ZUC is a stub (placeholder) - not yet implemented.
 
 #### Classical Ciphers
 
 | Algorithm           | Type                        |
 |---------------------|-----------------------------|
-| Caesar              | Shift cipher                |
-| Vigenere            | Polyalphabetic substitution |
-| Atbash              | Monoalphabetic substitution |
-| Affine              | Mathematical substitution   |
-| ROT13               | Caesar cipher variant       |
-| Simple Substitution | Character substitution      |
-| Polybius Square     | Fractionating cipher        |
+| Playfair            | Digraph substitution        |
+| Rail Fence          | Transposition cipher        |
 
 ### Asymmetric Encryption
 
@@ -273,14 +259,14 @@ print(decrypted.decode())  # Hello, RSA!
 | Base58           | Bitcoin-style encoding (no 0/O/I/l) |
 | Base62           | Alphanumeric encoding               |
 | Base64           | RFC 4648 Base64                     |
-| Base85           | ASCII85 encoding                    |
+| Base85           | ASCII85 encoding                   |
 | Base91           | High-density encoding               |
 | Base92           | Dense binary-to-text                |
 | Hex2Bin          | Binary-hexadecimal conversion       |
 | Morse Code       | Telegraph encoding                  |
 | URL Encoding     | Percent-encoding                    |
 | HTML Entities    | Character entity encoding           |
-| Quoted-Printable | MIME email-safe encoding            |
+| Quoted-Printable | MIME email-safe encoding           |
 | ROT47            | ASCII shift cipher encoding         |
 | ASCII            | ASCII encoding utilities            |
 
@@ -295,7 +281,9 @@ print(decrypted.decode())  # Hello, RSA!
 3. **Deprecated Algorithms**: Some implemented algorithms (MD5, SHA-1, DES, RC4) are
    cryptographically broken or deprecated. They are included for educational and legacy
    compatibility purposes only.
-4. **Use Established Libraries**: For production use, please use well-established
+4. **Stub Implementations**: GCM, CCM, and ZUC are stub implementations and should not
+   be used for production cryptography.
+5. **Use Established Libraries**: For production use, please use well-established
    libraries such as:
     - [cryptography](https://cryptography.io/)
     - [pycryptodome](https://www.pycryptodome.org/)
@@ -351,7 +339,7 @@ uv run poe full
 src/crypt/
 ├── digest/        # Hash algorithms and message authentication
 │   ├── CRC/       # CRC8, CRC12, CRC16, CRC32, CRC32C, CRC64
-│   ├── HMAC/      # HMAC-MD5, HMAC-SHA1, HMAC-SHA256
+│   ├── HMAC/      # HMAC-MD5, HMAC-SHA1, HMAC-SHA256, CMAC
 │   ├── KDF/       # PBKDF2, scrypt, Argon2
 │   ├── MD/        # MD2, MD4, MD5, MD6
 │   ├── SHA/       # SHA-0, SHA-1, SHA-2, SHA-3 family
@@ -359,12 +347,11 @@ src/crypt/
 ├── encode/        # Encoding schemes (Base16/32/36/58/62/64/85/91/92, etc.)
 └── encrypt/       # Encryption algorithms
     ├── asymmetric_encrypt/  # RSA, ECC, DSA, ECDH, Ed25519, X25519, ElGamal, Paillier
-    ├── end2end_encrypt/     # End-to-end encryption protocols
+    ├── end2end_encrypt/     # End-to-end encryption protocols (STUB)
     └── symmetric_encrypt/   # Secret-key cryptography
         ├── block_cipher/    # AES, DES, Blowfish, Twofish, Camellia, SM4, etc.
-        ├── modes/           # ECB, CBC, CFB, OFB, CTR, XTS, EAX
-        ├── padding/         # PKCS7, ANSI X.923
-        └── stream_cipher/   # ChaCha20, Salsa20, RC4, ZUC, Rabbit, Trivium, etc.
+        ├── modes/           # ECB, CBC, CFB, OFB, CTR, XTS, EAX, OCB
+        └── stream_cipher/   # ChaCha20, Salsa20, RC4, Rabbit, Trivium, etc.
 tests/             # Comprehensive test suite
 ```
 
@@ -389,7 +376,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## License
 
-This project is open source. Please see the repository for license information.
+This project is open source under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 

@@ -1,13 +1,42 @@
 [project]
 name = "crypt"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pure Python implementation of common cryptographic algorithms for educational purposes"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "blake3",
+license = { text = "MIT" }
+authors = [
+    { name = "azwpayne", email = "paynewu0719@gmail.com" }
+]
+keywords = [
     "cryptography",
-    "pycryptodome",
+    "encryption",
+    "hash",
+    "security",
+    "education",
+    "aes",
+    "rsa",
+    "sha",
+    "blake2",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Security :: Cryptography",
+    "Typing :: Typed",
+]
+dependencies = [
+    "blake3>=0.4",
+    "cryptography>=42.0",
+    "pycryptodome>=3.20",
 ]
 
 [dependency-groups]
@@ -24,7 +53,7 @@ test = [
     "pytest-repeat",
     "pytest-rerunfailures",
     "pytest-timeout",
-    # Mocking & 仿真
+    # Mocking & simulation
     "pytest-mock",
     "responses",
     "moto[all]",
@@ -32,20 +61,20 @@ test = [
     "time-machine",
     "pytest-socket",
     "testcontainers",
-    # 数据生成
+    # Data generation
     "hypothesis",
     "faker",
     "factory-boy",
     "pytest-factoryboy",
     "polyfactory",
-    # 覆盖率与变异测试
+    # Coverage & mutation testing
     "pytest-cov",
     "coverage[toml]",
     "diff-cover",
     "mutmut",
     "cosmic-ray",
     "pytest-deadfixtures",
-    # 可视化与报告
+    # Visualization & reporting
     "syrupy",
     "pytest-html",
     "allure-pytest",
@@ -53,20 +82,20 @@ test = [
     "pytest-instafail",
     "pytest-pretty",
     "pytest-watcher",
-    # 性能与资源
+    # Performance & resources
     # "pytest-benchmark",
     "pytest-memray",
     "pytest-leaks",
     "pytest-profiling",
-    # 异步
+    # Async
     "pytest-asyncio",
     "pytest-anyio",
-    # 安全与质量
+    # Security & quality
     "pytest-bandit",
     "safety",
     "pytest-mypy",
     "pytest-ruff",
-    # 高级断言
+    # Advanced assertions
     "pytest-check",
     "pytest-subtests",
     "pytest-describe",
@@ -81,7 +110,8 @@ tasks.test = [
     "test-py311",
     "test-py312",
     "test-py313",
-    "test-py314"
+    "test-py314",
+    "test-py314t",
 ]
 
 tasks.format = "ruff format"
@@ -92,6 +122,7 @@ tasks.test-py311 = { shell = "uv run --python 3.11 --group test pytest" }
 tasks.test-py312 = { shell = "uv run --python 3.12 --group test pytest" }
 tasks.test-py313 = { shell = "uv run --python 3.13 --group test pytest" }
 tasks.test-py314 = { shell = "uv run --python 3.14 --group test pytest" }
+tasks.test-py314t = { shell = "uv run --python 3.14t --group test pytest" }
 
 tasks.clean = { shell = """
 	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks reports
@@ -110,11 +141,11 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 timeout = 30
 addopts = [
-    # 并行与随机
+    # Parallel & randomization
     "-n=8",
     "--randomly-seed=last",
     "--dist=loadscope",
-    # 覆盖率
+    # Coverage
     "--cov=src",
     "--cov-branch",
     "--cov-report=term-missing:skip-covered",
@@ -123,12 +154,12 @@ addopts = [
     "--cov-report=json:reports/coverage.json",
     "--cov-fail-under=90",
     "--no-cov-on-fail",
-    # 性能与超时
+    # Performance & timeout
     "--timeout=60",
     "--timeout-method=thread",
     # "--benchmark-only",
     # "--benchmark-max-time=1.0",
-    # 视觉与体验
+    # Visual & experience
     "-v",
     "--tb=short",
     "--strict-markers",
@@ -137,32 +168,32 @@ addopts = [
     "--self-contained-html",
     # "--sugar",
     "--instafail",
-    # 安全与质量
+    # Security & quality
     "--bandit",
     "--mypy",
     "--ruff",
 ]
 filterwarnings = [
     #    "ignore::pytest_benchmark.logger.PytestBenchmarkWarning",
-    "error::UserWarning", # 将警告视为错误
+    "error::UserWarning", # Treat warnings as errors
     "ignore::DeprecationWarning:pkg_resources.*",
 ]
 markers = [
-    "unit: 纯单元测试（无IO，<10ms）",
-    "integration: 集成测试（含数据库/HTTP）",
-    "e2e: 端到端测试（完整用户流程）",
-    "slow: 执行时间>1s的测试",
-    "flaky: 已知不稳定的测试（需重试）",
-    "security: 安全相关测试",
-    "mutation: 变异测试筛选",
-    "benchmark: 性能基准测试",
-    "snapshot: 快照测试",
-    "property: Hypothesis属性测试",
+    "unit: Pure unit tests (no IO, <10ms)",
+    "integration: Integration tests (with DB/HTTP)",
+    "e2e: End-to-end tests (full user flows)",
+    "slow: Tests taking >1s to execute",
+    "flaky: Known unstable tests (needs retry)",
+    "security: Security-related tests",
+    "mutation: Mutation testing filter",
+    "benchmark: Performance benchmark tests",
+    "snapshot: Snapshot tests",
+    "property: Hypothesis property-based tests",
 ]
 [tool.pyrefly]
 strict = true
 
-# 针对测试目录的特殊配置
+# Special config for test directory
 [[tool.pyrefly.overrides]]
 pattern = "tests/**/*.py"
 strict = false
@@ -207,7 +238,7 @@ show_mutations = true
 
 [tool.bandit]
 exclude_dirs = ["tests"]
-skips = ["B101"]  # 跳过assert检查（pytest使用大量assert）
+skips = ["B101"]  # Skip assert checks (pytest uses many asserts)
 
 [tool.mypy]
 warn_return_any = false

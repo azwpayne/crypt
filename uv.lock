@@ -954,9 +954,9 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "blake3" },
-    { name = "cryptography" },
-    { name = "pycryptodome" },
+    { name = "blake3", specifier = ">=0.4" },
+    { name = "cryptography", specifier = ">=42.0" },
+    { name = "pycryptodome", specifier = ">=3.20" },
 ]
 
 [package.metadata.requires-dev]

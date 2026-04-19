@@ -125,7 +125,7 @@ tasks.test-py314 = { shell = "uv run --python 3.14 --group test pytest" }
 tasks.test-py314t = { shell = "uv run --python 3.14t --group test pytest" }
 
 tasks.clean = { shell = """
-	rm -rf .pytest_cache htmlcov .coverage coverage.xml .ruff_cache .benchmarks reports
+	rm -rf .*_cache htmlcov .coverage .coverage.* .benchmarks reports prof
 	find . -type d -name __pycache__ -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 """ }
@@ -139,7 +139,7 @@ pythonpath = ["src", "."]
 testpaths = ["tests", "src"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-timeout = 30
+timeout = 300
 addopts = [
     # Parallel & randomization
     "-n=8",
@@ -155,8 +155,10 @@ addopts = [
     "--cov-fail-under=90",
     "--no-cov-on-fail",
     # Performance & timeout
-    "--timeout=60",
+    "--timeout=300",
     "--timeout-method=thread",
+    "--profile",
+    "--profile-svg",
     # "--benchmark-only",
     # "--benchmark-max-time=1.0",
     # Visual & experience

@@ -317,8 +317,22 @@ class TestEAXNonce:
 class TestEAXAgainstPyCryptodome:
   """Tests comparing EAX implementation against pycryptodome."""
 
+  @pytest.mark.xfail(
+    reason="EAX output does not match pycryptodome CMAC assembly; implementation needs audit — see issue",
+    strict=True,
+  )
   def test_against_pycryptodome_basic(self):
-    """Compare basic encryption with PyCryptodome."""
+    """Compare basic encryption with PyCryptodome.
+
+    Strict assertion: our EAX output must match pycryptodome byte-for-byte.
+    Previously this used try/except ValueError: pass which masked any
+    divergence — that made the test a no-op rather than evidence of
+    correctness.
+
+    Currently XFAIL: our EAX ciphertext/tag diverge from pycryptodome at
+    the first byte. strict=True means once the implementation is corrected
+    this test will XPASS-fail, forcing removal of the marker.
+    """
     key = b"0123456789abcdef"
     nonce = b"unique_nonce_16b"
     plaintext = b"Hello, EAX mode!"
@@ -331,24 +345,22 @@ class TestEAXAgainstPyCryptodome:
     cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     pycryptodome_ciphertext, pycryptodome_tag = cipher.encrypt_and_digest(plaintext)
 
-    # Both should produce valid results (may differ due to different CMAC implementations)
-    # but both should decrypt correctly
-    our_decrypted = eax.decrypt(our_ciphertext, nonce, our_tag)
-    assert our_decrypted == plaintext
+    # Our ciphertext and tag must match pycryptodome exactly.
+    assert our_ciphertext == pycryptodome_ciphertext
+    assert our_tag == pycryptodome_tag
 
-    # Verify with PyCryptodome
-    cipher_verify = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
-    try:
-      pycryptodome_decrypted = cipher_verify.decrypt_and_verify(
-        pycryptodome_ciphertext, pycryptodome_tag
-      )
-      assert pycryptodome_decrypted == plaintext
-    except ValueError:
-      # Expected if implementations differ
-      pass
-
+  @pytest.mark.xfail(
+    reason="EAX output does not match pycryptodome CMAC assembly; implementation needs audit — see issue",
+    strict=True,
+  )
   def test_against_pycryptodome_with_aad(self):
-    """Compare AEAD with PyCryptodome."""
+    """Compare AEAD with PyCryptodome.
+
+    Strict assertion: our EAX output (with AAD) must match pycryptodome
+    byte-for-byte. See test_against_pycryptodome_basic for rationale.
+
+    Currently XFAIL (see basic test for details).
+    """
     key = b"0123456789abcdef"
     nonce = b"unique_nonce_16b"
     plaintext = b"Secret message with AAD"
@@ -357,25 +369,15 @@ class TestEAXAgainstPyCryptodome:
     # Our implementation
     eax = EAXMode(key=key)
     our_ciphertext, our_tag = eax.encrypt(plaintext, nonce, aad)
-    our_decrypted = eax.decrypt(our_ciphertext, nonce, our_tag, aad)
-    assert our_decrypted == plaintext
 
     # PyCryptodome implementation
     cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
     cipher.update(aad)
     pycryptodome_ciphertext, pycryptodome_tag = cipher.encrypt_and_digest(plaintext)
 
-    # Verify with PyCryptodome
-    cipher_verify = CRYPTO_AES.new(key, CRYPTO_AES.MODE_EAX, nonce=nonce)
-    cipher_verify.update(aad)
-    try:
-      pycryptodome_decrypted = cipher_verify.decrypt_and_verify(
-        pycryptodome_ciphertext, pycryptodome_tag
-      )
-      assert pycryptodome_decrypted == plaintext
-    except ValueError:
-      # Expected if implementations differ
-      pass
+    # Our ciphertext and tag must match pycryptodome exactly.
+    assert our_ciphertext == pycryptodome_ciphertext
+    assert our_tag == pycryptodome_tag
 
 
 class TestEAXDifferentKeys:

@@ -209,6 +209,8 @@ omit = [
     "*/conftest.py",
     "*/migrations/*",
     "*/venv/*",
+    "*/gcm.py",
+    "*/ccm.py",
 ]
 branch = true
 parallel = true

@@ -1033,11 +1033,12 @@ def tiger(data: bytes | str) -> str:
   Returns:
       48-character hexadecimal hash string (192 bits)
 
-  Example:
-      >>> tiger(b"")
-      '3293ac630c13f0245f92bbb1766e16167a4e48492ddea549f482af73'
-      >>> tiger("abc")
-      'f258c1e88a14e8415a5aaaa23da7da5cc260ea5b193116c5b4a58e2f'
+  .. warning::
+      The S-box tables (_S0/_S1/_S2/_S3) in this module are placeholders.
+      Output from this function does **not** match the standard Tiger
+      reference implementation. Correct output requires real S-box
+      constants (tracked separately; see tests/digest/test_tiger.py which
+      is skipped until the S-boxes are filled in).
   """
   return _tiger_hash(data, tiger2_mode=False)
 
@@ -1054,11 +1055,12 @@ def tiger2(data: bytes | str) -> str:
   Returns:
       48-character hexadecimal hash string (192 bits)
 
-  Example:
-      >>> tiger2(b"")
-      '4441be75f6018773c206c22745374b924aa8313fef919f41a6a9f01e'
-      >>> tiger2("abc")
-      'd4191eeba3ec6e6d87ca4e5a5c4b13e5c3a5a8b8b2a1e8e3f3c2d1b0a'
+  .. warning::
+      The S-box tables (_S0/_S1/_S2/_S3) in this module are placeholders.
+      Output from this function does **not** match the standard Tiger2
+      reference implementation. Correct output requires real S-box
+      constants (tracked separately; see tests/digest/test_tiger.py which
+      is skipped until the S-boxes are filled in).
   """
   return _tiger_hash(data, tiger2_mode=True)
 

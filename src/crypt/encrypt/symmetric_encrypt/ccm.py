@@ -1,5 +1,25 @@
 # CCM (Counter with CBC-MAC) AEAD - STUB IMPLEMENTATION
 """
+.. warning:: NOT REAL CCM — SHA-256-BASED STRUCTURAL PLACEHOLDER
+
+This module does **not** implement CCM as specified in RFC 3610 / NIST SP 800-38C.
+It is a teaching stub that replaces every cryptographic primitive with SHA-256:
+
+- **Keystream**: ``SHA-256(key || nonce || counter)`` instead of AES-CTR.
+- **Authentication tag**: ``SHA-256(AAD || nonce || ciphertext || key)[:mac_len]``
+  (note the key is hashed *into* the tag, which is not how real CBC-MAC works).
+
+Consequences:
+
+- Output is **not interoperable** with any real CCM implementation.
+- Output is **not secure** — the tag construction leaks no useful authenticity
+  guarantees; the keystream has no proven IND-CPA security.
+- This code exists solely to show the *structure* of an AEAD encrypt/decrypt API
+  in a teaching library.
+
+For production use, prefer ``pycryptodome`` or ``cryptography`` which provide
+verified CCM implementations backed by AES-NI hardware acceleration.
+
 CCM (Counter with CBC-MAC) is an authenticated encryption mode.
 It combines CTR mode for encryption with CBC-MAC for authentication.
 
@@ -49,7 +69,7 @@ def ccm_encrypt(
   aad: bytes = b"",
   mac_len: int = 16,
 ) -> tuple[bytes, bytes]:
-  """Encrypt using CCM mode (STUB).
+  """(STUB — NOT REAL CCM, see module warning) Encrypt using CCM mode (STUB).
 
   WARNING: This is a simplified placeholder implementation.
   Real CCM requires proper formatting function and CTR/CBC modes.
@@ -80,7 +100,7 @@ def ccm_decrypt(
   tag: bytes,
   aad: bytes = b"",
 ) -> bytes | None:
-  """Decrypt using CCM mode (STUB).
+  """(STUB — NOT REAL CCM, see module warning) Decrypt using CCM mode (STUB).
 
   WARNING: This is a simplified placeholder implementation.
 

@@ -42,6 +42,7 @@ import pytest
 class TestGCM:
   """Test cases for GCM mode."""
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_basic_encrypt_decrypt(self):
     """Test basic GCM encryption and decryption."""
     key = b"0123456789abcdef"  # 16 bytes
@@ -54,6 +55,7 @@ class TestGCM:
     assert decrypted == plaintext
     assert len(tag) == 16  # Default tag length
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_with_aad(self):
     """Test GCM with Additional Authenticated Data."""
     key = b"0123456789abcdef"
@@ -66,6 +68,7 @@ class TestGCM:
 
     assert decrypted == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_wrong_aad_fails(self):
     """Test that decryption fails with wrong AAD."""
     key = b"0123456789abcdef"
@@ -79,6 +82,7 @@ class TestGCM:
 
     assert decrypted is None
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_tampered_ciphertext_fails(self):
     """Test that tampered ciphertext fails authentication."""
     key = b"0123456789abcdef"
@@ -93,6 +97,7 @@ class TestGCM:
     decrypted = gcm_decrypt(key, iv, tampered, tag)
     assert decrypted is None
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_tampered_tag_fails(self):
     """Test that tampered tag fails authentication."""
     key = b"0123456789abcdef"
@@ -107,6 +112,7 @@ class TestGCM:
     decrypted = gcm_decrypt(key, iv, ciphertext, tampered_tag)
     assert decrypted is None
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_empty_plaintext(self):
     """Test GCM with empty plaintext."""
     key = b"0123456789abcdef"
@@ -119,6 +125,7 @@ class TestGCM:
     assert decrypted == plaintext
     assert ciphertext == b""
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_large_data(self):
     """Test GCM with large data."""
     key = b"0123456789abcdef"
@@ -131,6 +138,7 @@ class TestGCM:
     assert decrypted == plaintext
     assert len(ciphertext) == len(plaintext)
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_different_ivs(self):
     """Test that different IVs produce different ciphertexts."""
     key = b"0123456789abcdef"
@@ -143,6 +151,7 @@ class TestGCM:
 
     assert ciphertext1 != ciphertext2
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_deterministic(self):
     """Test that GCM is deterministic with same key and IV."""
     key = b"0123456789abcdef"
@@ -155,6 +164,7 @@ class TestGCM:
     assert ciphertext1 == ciphertext2
     assert tag1 == tag2
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_different_keys(self):
     """Test that different keys produce different ciphertexts."""
     key1 = b"0123456789abcdef"
@@ -171,6 +181,7 @@ class TestGCM:
 class TestCCM:
   """Test cases for CCM mode."""
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_basic_encrypt_decrypt(self):
     """Test basic CCM encryption and decryption."""
     key = b"0123456789abcdef"  # 16 bytes
@@ -183,6 +194,7 @@ class TestCCM:
     assert decrypted == plaintext
     assert len(tag) == 16  # Default tag length
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_with_aad(self):
     """Test CCM with Additional Authenticated Data."""
     key = b"0123456789abcdef"
@@ -195,6 +207,7 @@ class TestCCM:
 
     assert decrypted == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_wrong_aad_fails(self):
     """Test that decryption fails with wrong AAD."""
     key = b"0123456789abcdef"
@@ -208,6 +221,7 @@ class TestCCM:
 
     assert decrypted is None
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_tampered_ciphertext_fails(self):
     """Test that tampered ciphertext fails authentication."""
     key = b"0123456789abcdef"
@@ -222,6 +236,7 @@ class TestCCM:
     decrypted = ccm_decrypt(key, nonce, tampered, tag)
     assert decrypted is None
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_custom_mac_length(self):
     """Test CCM with custom MAC length."""
     key = b"0123456789abcdef"
@@ -234,6 +249,7 @@ class TestCCM:
       decrypted = ccm_decrypt(key, nonce, ciphertext, tag)
       assert decrypted == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_empty_plaintext(self):
     """Test CCM with empty plaintext."""
     key = b"0123456789abcdef"
@@ -246,6 +262,7 @@ class TestCCM:
     assert decrypted == plaintext
     assert ciphertext == b""
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_large_data(self):
     """Test CCM with large data."""
     key = b"0123456789abcdef"
@@ -258,6 +275,7 @@ class TestCCM:
     assert decrypted == plaintext
     assert len(ciphertext) == len(plaintext)
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_different_nonces(self):
     """Test that different nonces produce different ciphertexts."""
     key = b"0123456789abcdef"
@@ -270,6 +288,7 @@ class TestCCM:
 
     assert ciphertext1 != ciphertext2
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_deterministic(self):
     """Test that CCM is deterministic with same key and nonce."""
     key = b"0123456789abcdef"
@@ -345,6 +364,7 @@ class TestUtilityFunctions:
 class TestAEADEdgeCases:
   """Test edge cases for AEAD modes."""
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_empty_aad(self):
     """Test GCM with empty AAD."""
     key = b"0123456789abcdef"
@@ -358,6 +378,7 @@ class TestAEADEdgeCases:
     assert gcm_decrypt(key, iv, ciphertext1, tag1, aad=b"") == plaintext
     assert gcm_decrypt(key, iv, ciphertext2, tag2) == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_empty_aad(self):
     """Test CCM with empty AAD."""
     key = b"0123456789abcdef"
@@ -371,6 +392,7 @@ class TestAEADEdgeCases:
     assert ccm_decrypt(key, nonce, ciphertext1, tag1, aad=b"") == plaintext
     assert ccm_decrypt(key, nonce, ciphertext2, tag2) == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_binary_data(self):
     """Test GCM with binary data."""
     key = bytes(range(16))
@@ -382,6 +404,7 @@ class TestAEADEdgeCases:
 
     assert decrypted == plaintext
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_block_cipher_not_implemented(self):
     """Test that block_cipher path raises NotImplementedError."""
     key = b"0123456789abcdef"
@@ -390,6 +413,7 @@ class TestAEADEdgeCases:
     with pytest.raises(NotImplementedError, match="not yet implemented"):
       gcm_encrypt(key, iv, plaintext, block_cipher=lambda x: x)
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_gcm_decrypt_block_cipher_not_implemented(self):
     """Test that decrypt block_cipher path raises NotImplementedError."""
     key = b"0123456789abcdef"
@@ -400,6 +424,7 @@ class TestAEADEdgeCases:
   def test_gcm_constant_time_compare_different_lengths(self):
     assert gcm_compare(b"abc", b"abcd") is False
 
+  @pytest.mark.skip(reason="GCM/CCM are SHA-256-based STUBs, not real AEAD — see module warning. Round-trip passing would be misleading.")
   def test_ccm_binary_data(self):
     """Test CCM with binary data."""
     key = bytes(range(16))

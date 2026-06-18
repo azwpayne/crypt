@@ -1,5 +1,25 @@
 # GCM (Galois/Counter Mode) AEAD - STUB IMPLEMENTATION
 """
+.. warning:: NOT REAL GCM — SHA-256-BASED STRUCTURAL PLACEHOLDER
+
+This module does **not** implement GCM as specified in NIST SP 800-38D.
+It is a teaching stub that replaces every cryptographic primitive with SHA-256:
+
+- **Keystream**: ``SHA-256(key || IV || counter)`` instead of AES-CTR.
+- **Authentication tag**: ``SHA-256(AAD || IV || ciphertext || key)[:16]``
+  (note the key is hashed *into* the tag, which is not how real GCM/GHASH works).
+
+Consequences:
+
+- Output is **not interoperable** with any real GCM implementation.
+- Output is **not secure** — the tag construction leaks no useful authenticity
+  guarantees; the keystream has no proven IND-CPA security.
+- This code exists solely to show the *structure* of an AEAD encrypt/decrypt API
+  in a teaching library.
+
+For production use, prefer ``pycryptodome`` or ``cryptography`` which provide
+verified GCM implementations backed by AES-NI hardware acceleration.
+
 Galois/Counter Mode (GCM) is an authenticated encryption mode.
 It provides both confidentiality and authenticity using CTR mode
 for encryption and GHASH for authentication.
@@ -50,7 +70,7 @@ def gcm_encrypt(
   aad: bytes = b"",
   block_cipher=None,
 ) -> tuple[bytes, bytes]:
-  """Encrypt using GCM mode (STUB).
+  """(STUB — NOT REAL GCM, see module warning) Encrypt using GCM mode (STUB).
 
   WARNING: This is a simplified placeholder implementation.
   Real GCM requires proper CTR mode and GHASH authentication.
@@ -89,7 +109,7 @@ def gcm_decrypt(
   aad: bytes = b"",
   **kwargs: object,
 ) -> bytes | None:
-  """Decrypt using GCM mode (STUB).
+  """(STUB — NOT REAL GCM, see module warning) Decrypt using GCM mode (STUB).
 
   WARNING: This is a simplified placeholder implementation.
 

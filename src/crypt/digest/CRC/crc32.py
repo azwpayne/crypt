@@ -19,12 +19,12 @@ def calculate_crc32(data):
   return crc ^ 0xFFFFFFFF  # 取反
 
 
-# 示例数据
-data = b"azwpayne"
 
-crc32 = calculate_crc32(data)
-# 打印结果
-print("CRC32:", format(crc32, "08x"))
+if __name__ == "__main__":
+  # 示例数据
+  data = b"azwpayne"
+  crc32 = calculate_crc32(data)
+  print("CRC32:", format(crc32, "08x"))
 
 
 # 正式
@@ -61,7 +61,7 @@ def get_reverse(temp_data, byte_length):
   return reverse_data
 
 
-data = b"azwpayne"
-
-crc32 = get_crc32(data)
-print("CRC32:", format(crc32, "0x"))
+if __name__ == "__main__":
+  data = b"azwpayne"
+  crc32 = get_crc32(data)
+  print("CRC32:", format(crc32, "0x"))

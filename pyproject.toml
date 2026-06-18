@@ -238,6 +238,9 @@ ignore_errors = ["bad-argument-type"]
 
 [tool.coverage.run]
 source = ["src"]
+# Store relative paths in data files so coverage from the ubuntu + macos
+# matrix cells can be combined without "No source for code" path mismatches.
+relative_files = true
 omit = [
     "*/tests/*",
     "*/test_*",

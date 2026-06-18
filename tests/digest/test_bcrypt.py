@@ -10,6 +10,7 @@ Test vectors are sourced from:
 
 from __future__ import annotations
 
+import os
 from crypt.digest.bcrypt import (
   BCRYPT_MIN_COST,
   _bcrypt_base64_decode,
@@ -456,6 +457,14 @@ class TestBCryptAliases:
 
 class TestBCryptPerformance:
   """Test performance characteristics (basic smoke tests)."""
+
+  # Timing assertions are non-deterministic on shared CI runners (varying
+  # hardware / scheduling noise). bcrypt correctness and cost-scaling are
+  # covered by the other test classes; these are local perf-smoke checks only.
+  pytestmark = pytest.mark.skipif(
+    os.getenv("CI") is not None,
+    reason="timing depends on runner hardware; run locally",
+  )
 
   def test_higher_cost_slower(self):
     """Test that higher cost takes more iterations."""

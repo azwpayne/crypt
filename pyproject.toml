@@ -35,7 +35,7 @@ classifiers = [
 ]
 dependencies = [
     "blake3>=0.4",
-    "cryptography>=42.0",
+    "cryptography>=48.0.1",
     "pycryptodome>=3.20",
 ]
 

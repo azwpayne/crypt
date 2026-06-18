@@ -177,7 +177,11 @@ timeout = 300
 addopts = [
     # Parallel & randomization
     "-n=8",
-    "--randomly-seed=last",
+    # Fixed seed (not "last"): on fresh CI there is no cached "last" seed, so
+    # each xdist worker would pick a different one and diverge ("Different tests
+    # collected between gwN and gwM"). A fixed seed keeps randomization while
+    # guaranteeing identical collection order across workers.
+    "--randomly-seed=42",
     "--dist=loadscope",
     # Coverage
     "--cov=src",

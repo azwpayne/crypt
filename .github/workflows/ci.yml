@@ -100,6 +100,11 @@ jobs:
 
       - name: Run tests
         run: uv run --group test pytest
+        env:
+          # Deterministic hashing so every xdist worker collects tests in the
+          # same order (avoids "Different tests collected between gwN and gwM"
+          # when a parametrize source iterates a set/dict).
+          PYTHONHASHSEED: "0"
 
       - name: Upload coverage data
         uses: actions/upload-artifact@v4

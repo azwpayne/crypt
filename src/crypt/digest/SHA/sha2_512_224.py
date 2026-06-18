@@ -338,10 +338,7 @@ def sha512_224(message: bytes) -> bytes:
     # 将压缩结果与当前哈希值相加（这是正确的）
     h = cast(
       "tuple[int, int, int, int, int, int, int, int]",
-      tuple(
-        (current + new) & 0xFFFFFFFFFFFFFFFF
-        for current, new in zip(h, h_new, strict=False)
-      ),
+      tuple((current + new) & 0xFFFFFFFFFFFFFFFF for current, new in zip(h, h_new, strict=False)),
     )
 
   # 提取前224位 (28字节)
@@ -367,17 +364,11 @@ def sha512_224_hex(message: bytes) -> str:
 
 if __name__ == "__main__":
   for _ in range(0x10):
-    example_str = "".join(
-      printable[randbelow(len(printable))] for _ in range(randbelow(0x10) + 1)
-    )
+    example_str = "".join(printable[randbelow(len(printable))] for _ in range(randbelow(0x10) + 1))
     print(f"输入字符串: {example_str}")
     result = sha512_224_hex(example_str.encode())
 
-    status = (
-      "✓"
-      if result == hashlib.new("sha512_224", example_str.encode()).hexdigest()
-      else "✗"
-    )
+    status = "✓" if result == hashlib.new("sha512_224", example_str.encode()).hexdigest() else "✗"
     print(f"输出结果: {result}")
     print(f"验证结果: {status}")
 

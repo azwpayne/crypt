@@ -49,9 +49,7 @@ class TestAESKeyExpansion:
 
   def test_key_expansion_256(self):
     """Test AES-256 key expansion."""
-    key = bytes.fromhex(
-      "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
-    )
+    key = bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
     expanded = key_expansion(key)
     # Should produce 15 round keys (60 words = 240 bytes)
     assert len(expanded) == 240
@@ -386,9 +384,7 @@ class TestAESCTR:
     our_ciphertext = aes_ctr_crypt(plaintext, key, full_nonce)
 
     # PyCryptodome reference
-    cipher = CRYPTO_AES.new(
-      key, CRYPTO_AES.MODE_CTR, nonce=nonce, initial_value=initial_value
-    )
+    cipher = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CTR, nonce=nonce, initial_value=initial_value)
     expected_ciphertext = cipher.encrypt(plaintext)
 
     assert our_ciphertext == expected_ciphertext

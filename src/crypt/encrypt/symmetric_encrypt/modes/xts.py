@@ -164,9 +164,7 @@ class XTSMode:
       ciphertext.extend(self._xex_encrypt(block, tweaks[i]))
 
     # Get the last full block
-    last_full_block = plaintext[
-      (num_full_blocks - 1) * self.block_size : num_full_blocks * self.block_size
-    ]
+    last_full_block = plaintext[(num_full_blocks - 1) * self.block_size : num_full_blocks * self.block_size]
 
     # Get the partial block
     partial_block = plaintext[num_full_blocks * self.block_size :]
@@ -239,8 +237,7 @@ class XTSMode:
 
     # Get CC[0:partial_len] (stored where a full block would be)
     cc_prefix = ciphertext[
-      (num_full_blocks - 1) * self.block_size : (num_full_blocks - 1) * self.block_size
-      + partial_len
+      (num_full_blocks - 1) * self.block_size : (num_full_blocks - 1) * self.block_size + partial_len
     ]
 
     # Get C_stolen (the last full cipher block)

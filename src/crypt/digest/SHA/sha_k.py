@@ -21,7 +21,6 @@ def generate_sha2_k_table():
     >>> all(0 <= k <= 0xFFFFFFFF for k in k_table)
     True
   """
-
   # # 1. 生成前 64 个质数
   sieve = generate_n_sieve(64)
 
@@ -37,10 +36,7 @@ def generate_sha2_k_table():
   #   k_table.append(k_value)
   #
   # return k_table
-  return [
-    int((p ** (1.0 / 3.0) - int(p ** (1.0 / 3.0))) * (2**32)) & 0xFFFFFFFF
-    for p in sieve
-  ]
+  return [int((p ** (1.0 / 3.0) - int(p ** (1.0 / 3.0))) * (2**32)) & 0xFFFFFFFF for p in sieve]
 
 
 # 3. 验证与标准 SHA-256 常量是否一致

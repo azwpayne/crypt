@@ -191,9 +191,7 @@ if __name__ == "__main__":
     # 测试错误校验和
     try:
       # 修改最后一个字符来破坏校验和
-      corrupted = test_encoded_check[:-1] + (
-        "2" if test_encoded_check[-1] == "1" else "1"
-      )
+      corrupted = test_encoded_check[:-1] + ("2" if test_encoded_check[-1] == "1" else "1")
       decode_base58_check(corrupted)
       print("\n校验和测试: ✗ (应该失败但没有失败)")
     except ValueError as e:

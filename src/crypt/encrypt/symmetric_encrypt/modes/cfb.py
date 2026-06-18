@@ -29,11 +29,7 @@ Usage Examples:
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-  _encrypt_block,
-  _get_key_params,
-  key_expansion,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import _encrypt_block, _get_key_params, key_expansion
 from typing import cast
 
 
@@ -148,9 +144,7 @@ class CFBMode:
     if key is not None:
       self.key = key
       _nk, self.nr = _get_key_params(key)
-      self.expanded_key = (
-        expanded_key if expanded_key is not None else key_expansion(key)
-      )
+      self.expanded_key = expanded_key if expanded_key is not None else key_expansion(key)
     elif expanded_key is not None and nr is not None:
       self.key = None
       self.expanded_key = expanded_key
@@ -214,9 +208,7 @@ class CFBMode:
         shift_reg = cipher_segment.ljust(self.block_size, b"\x00")
       else:
         # Partial: shift left by segment bytes and add new ciphertext
-        shift_reg = shift_reg[self._segment_bytes :] + cipher_segment.ljust(
-          self._segment_bytes, b"\x00"
-        )
+        shift_reg = shift_reg[self._segment_bytes :] + cipher_segment.ljust(self._segment_bytes, b"\x00")
 
     return bytes(ciphertext)
 
@@ -261,9 +253,7 @@ class CFBMode:
         shift_reg = segment.ljust(self.block_size, b"\x00")
       else:
         # Partial: shift left by segment bytes and add new ciphertext
-        shift_reg = shift_reg[self._segment_bytes :] + segment.ljust(
-          self._segment_bytes, b"\x00"
-        )
+        shift_reg = shift_reg[self._segment_bytes :] + segment.ljust(self._segment_bytes, b"\x00")
 
     return bytes(plaintext)
 

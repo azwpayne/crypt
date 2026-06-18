@@ -40,8 +40,8 @@ def _g_func(x: int) -> int:
   """The g function used in Rabbit state update."""
   # g(x) = ((x + x) ^ (x * x)) mod 2^32
   # Actually g(x) = (x*x) ^ (x*x << 1) in the specification
-  a = x & 0xFFFF
-  b = x >> 16
+  x & 0xFFFF
+  x >> 16
   # Compute (x*x) using 16-bit operations to avoid overflow issues
   # Actually the original uses full 32-bit: g(x) = ((x + x) << 16) ^ ((x * x) << 1)
   # Let me use the correct formula from the paper

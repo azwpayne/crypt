@@ -106,9 +106,7 @@ def chacha20_encrypt(key: bytes, nonce: bytes, counter: int, plaintext: bytes) -
   return bytes(ciphertext)
 
 
-def chacha20_decrypt(
-  key: bytes, nonce: bytes, counter: int, ciphertext: bytes
-) -> bytes:
+def chacha20_decrypt(key: bytes, nonce: bytes, counter: int, ciphertext: bytes) -> bytes:
   """Decrypt ciphertext using ChaCha20.
 
   ChaCha20 is a stream cipher - encryption and decryption are the same operation.
@@ -131,9 +129,7 @@ def chacha20_decrypt(
 # Decrypted plaintext: 30313233343536373839
 if __name__ == "__main__":
   # Example key (32 bytes) and nonce (12 bytes)
-  test_key = bytes.fromhex(
-    "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
-  )
+  test_key = bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
   test_nonce = bytes.fromhex("202122232425262728292a2b")
   test_counter = 0
   test_plaintext = bytes.fromhex("30313233343536373839")

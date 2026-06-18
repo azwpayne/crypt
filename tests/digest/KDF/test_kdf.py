@@ -69,9 +69,7 @@ class TestPBKDF2:
     ("password", "salt", "iterations", "dklen", "expected"),
     RFC6070_VECTORS_SHA1,
   )
-  def test_pbkdf2_rfc6070_sha1_vectors(
-    self, password, salt, iterations, dklen, expected
-  ):
+  def test_pbkdf2_rfc6070_sha1_vectors(self, password, salt, iterations, dklen, expected):
     """Test PBKDF2 against RFC 6070 test vectors (SHA1)."""
     result = pbkdf2(password, salt, iterations, dklen, hash_name="sha1")
     assert result.hex() == expected
@@ -481,8 +479,7 @@ class TestArgon2:
         hash_len=hash_len,
       )
       assert len(result) == hash_len, (
-        f"Failed for memory_cost={memory_cost}, "
-        f"time_cost={time_cost}, parallelism={parallelism}"
+        f"Failed for memory_cost={memory_cost}, time_cost={time_cost}, parallelism={parallelism}"
       )
 
 
@@ -496,9 +493,7 @@ class TestKDFComparison:
 
     pbkdf2_result = pbkdf2(password, salt, 100, 32)
     scrypt_result = scrypt(password, salt, n=2, r=1, p=1, dklen=32)
-    argon2_result = argon2i(
-      password, salt, memory_cost=64, time_cost=1, parallelism=1, hash_len=32
-    )
+    argon2_result = argon2i(password, salt, memory_cost=64, time_cost=1, parallelism=1, hash_len=32)
 
     # All should produce different results
     assert pbkdf2_result != scrypt_result

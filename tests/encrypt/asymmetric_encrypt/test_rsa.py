@@ -54,8 +54,8 @@ class TestKeyGeneration:
 
   def test_key_generation_512_bits(self):
     """Test key generation with 512 bits."""
-    public_key, private_key = generate_keypair(bits=512)
-    e, n = public_key
+    public_key, _private_key = generate_keypair(bits=512)
+    _e, n = public_key
 
     # n should be approximately 512 bits
     assert n.bit_length() >= 510  # Allow small variance
@@ -63,8 +63,8 @@ class TestKeyGeneration:
 
   def test_key_generation_1024_bits(self):
     """Test key generation with 1024 bits."""
-    public_key, private_key = generate_keypair(bits=1024)
-    e, n = public_key
+    public_key, _private_key = generate_keypair(bits=1024)
+    _e, n = public_key
 
     # n should be approximately 1024 bits
     assert n.bit_length() >= 1022  # Allow small variance
@@ -72,8 +72,8 @@ class TestKeyGeneration:
 
   def test_key_generation_2048_bits(self):
     """Test key generation with 2048 bits."""
-    public_key, private_key = generate_keypair(bits=2048)
-    e, n = public_key
+    public_key, _private_key = generate_keypair(bits=2048)
+    _e, n = public_key
 
     # n should be approximately 2048 bits
     assert n.bit_length() >= 2046  # Allow small variance
@@ -180,7 +180,7 @@ class TestEncryptionDecryption:
   def test_encrypt_decrypt_max_message_size_512(self):
     """Test encryption with maximum message size for 512-bit key."""
     public_key, private_key = generate_keypair(bits=512)
-    e, n = public_key
+    _e, n = public_key
 
     # Maximum message size is floor((n.bit_length() - 1) / 8) bytes
     max_bytes = (n.bit_length() - 1) // 8
@@ -193,8 +193,8 @@ class TestEncryptionDecryption:
 
   def test_encrypt_rejects_message_too_long(self):
     """Test that encryption rejects messages that are too long."""
-    public_key, private_key = generate_keypair(bits=512)
-    e, n = public_key
+    public_key, _private_key = generate_keypair(bits=512)
+    _e, _n = public_key
 
     # Message must be smaller than n
     message = b"A" * 100  # This should be too long for 512-bit key
@@ -270,7 +270,7 @@ class TestSigningVerification:
 
   def test_verify_fails_with_wrong_key(self):
     """Test that verification fails with wrong public key."""
-    public_key1, private_key1 = generate_keypair(bits=512)
+    _public_key1, private_key1 = generate_keypair(bits=512)
     public_key2, _ = generate_keypair(bits=512)
     message = b"Test message"
 
@@ -291,7 +291,7 @@ class TestSigningVerification:
 
   def test_sign_rejects_message_too_long(self):
     """Test that signing rejects messages that are too long."""
-    public_key, private_key = generate_keypair(bits=512)
+    _public_key, private_key = generate_keypair(bits=512)
     message = b"A" * 100  # Too long for 512-bit key
 
     with pytest.raises(ValueError, match="too long"):
@@ -333,11 +333,12 @@ class TestEdgeCases:
 
   def test_encryption_produces_different_ciphertexts(self):
     """Test that encrypting the same message produces different ciphertexts
-    (due to randomness in key generation, not encryption itself)."""
+    (due to randomness in key generation, not encryption itself).
+    """
     message = b"Same message"
 
-    public_key1, private_key1 = generate_keypair(bits=512)
-    public_key2, private_key2 = generate_keypair(bits=512)
+    public_key1, _private_key1 = generate_keypair(bits=512)
+    public_key2, _private_key2 = generate_keypair(bits=512)
 
     ciphertext1 = encrypt(message, public_key1)
     ciphertext2 = encrypt(message, public_key2)
@@ -359,7 +360,7 @@ class TestEdgeCases:
 
   def test_decrypt_empty_ciphertext(self):
     """Test decrypting empty ciphertext."""
-    public_key, private_key = generate_keypair(bits=512)
+    _public_key, private_key = generate_keypair(bits=512)
 
     # Empty ciphertext should decrypt to empty
     decrypted = decrypt(b"\x00", private_key)
@@ -367,7 +368,7 @@ class TestEdgeCases:
 
   def test_verify_empty_signature(self):
     """Test verification with empty signature."""
-    public_key, private_key = generate_keypair(bits=512)
+    public_key, _private_key = generate_keypair(bits=512)
     message = b"Test message"
 
     # Empty signature should fail verification

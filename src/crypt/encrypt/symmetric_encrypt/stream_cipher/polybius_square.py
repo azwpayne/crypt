@@ -1,9 +1,7 @@
 """Polybius square cipher implementation."""
 
 
-def _create_square(
-  key: str = "", size: int = 5
-) -> tuple[list[list[str]], str, dict[str, tuple[int, int]]]:
+def _create_square(key: str = "", size: int = 5) -> tuple[list[list[str]], str, dict[str, tuple[int, int]]]:
   """Create a Polybius square and character position map.
 
   Args:
@@ -36,16 +34,12 @@ def _create_square(
 
   square = [full_sequence[i * size : (i + 1) * size] for i in range(size)]
 
-  position_map = {
-    char: (row_idx, col_idx)
-    for row_idx, row in enumerate(square)
-    for col_idx, char in enumerate(row)
-  }
+  position_map = {char: (row_idx, col_idx) for row_idx, row in enumerate(square) for col_idx, char in enumerate(row)}
 
   return square, alphabet, position_map
 
 
-def encrypt(  # noqa: PLR0913
+def encrypt(
   text: str,
   key: str = "",
   size: int = 5,
@@ -96,7 +90,7 @@ def encrypt(  # noqa: PLR0913
   return " ".join(result)
 
 
-def decrypt(  # noqa: PLR0913
+def decrypt(
   encrypted_text: str,
   key: str = "",
   size: int = 5,

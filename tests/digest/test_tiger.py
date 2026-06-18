@@ -16,9 +16,7 @@ import pytest
 class TestTiger:
   """Test Tiger hash implementation."""
 
-  @pytest.mark.skip(
-    reason="Tiger S-boxes need to be populated with correct values from reference implementation"
-  )
+  @pytest.mark.skip(reason="Tiger S-boxes need to be populated with correct values from reference implementation")
   def test_tiger_vectors(self):
     """Verify Tiger against known test vectors."""
     # Tiger test vectors from the Tiger paper

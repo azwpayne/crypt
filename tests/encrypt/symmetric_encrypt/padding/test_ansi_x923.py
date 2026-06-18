@@ -1,10 +1,6 @@
 """Tests for ANSI X.923 padding implementation."""
 
-from crypt.encrypt.symmetric_encrypt.padding.ansi_x923 import (
-  _constant_time_compare,
-  pad,
-  unpad,
-)
+from crypt.encrypt.symmetric_encrypt.padding.ansi_x923 import _constant_time_compare, pad, unpad
 
 import pytest
 

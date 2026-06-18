@@ -10,12 +10,7 @@ import base64 as stdlib_base64
 from crypt.encode.base16 import base16_decode, base16_encode
 from crypt.encode.base32 import base32_decode, base32_encode
 from crypt.encode.base36 import base36_decode, base36_encode
-from crypt.encode.base58 import (
-  decode_base58,
-  decode_base58_check,
-  encode_base58,
-  encode_base58_check,
-)
+from crypt.encode.base58 import decode_base58, decode_base58_check, encode_base58, encode_base58_check
 from crypt.encode.base62 import base62_decode, base62_encode
 from crypt.encode.base64 import base64_decode, base64_encode
 from crypt.encode.base85 import base85_decode, base85_encode

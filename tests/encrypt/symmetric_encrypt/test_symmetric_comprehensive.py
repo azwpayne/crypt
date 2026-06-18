@@ -38,10 +38,7 @@ class TestAESComprehensive:
 
   def test_aes_ecb_roundtrip(self, aes_keys, test_data):
     """Test AES ECB encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_ecb_decrypt,
-      aes_ecb_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_ecb_decrypt, aes_ecb_encrypt
 
     for key_size, key in aes_keys.items():
       for data in test_data:
@@ -51,10 +48,7 @@ class TestAESComprehensive:
 
   def test_aes_cbc_roundtrip(self, aes_keys, test_data):
     """Test AES CBC encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_cbc_decrypt,
-      aes_cbc_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_cbc_decrypt, aes_cbc_encrypt
 
     iv = b"\x00" * 16
     for key_size, key in aes_keys.items():
@@ -76,9 +70,7 @@ class TestAESComprehensive:
 
   def test_aes_vs_pycryptodome(self, aes_keys):
     """Test AES against PyCryptodome reference."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_cbc_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_cbc_encrypt
 
     iv = b"\x00" * 16
     data = b"Hello, World! This is a test message."
@@ -116,10 +108,7 @@ class TestDESComprehensive:
 
   def test_des_roundtrip(self, des_key, test_data):
     """Test DES encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-      des_decrypt,
-      des_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.des import des_decrypt, des_encrypt
 
     iv = b"\x00" * 8
     for data in test_data:
@@ -150,10 +139,7 @@ class TestDES3Comprehensive:
 
   def test_des3_roundtrip(self, des3_key, test_data):
     """Test 3DES encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.des3 import (
-      des3_decrypt,
-      des3_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.des3 import des3_decrypt, des3_encrypt
 
     iv = b"\x00" * 8
     for data in test_data:
@@ -179,10 +165,7 @@ class TestBlowfishComprehensive:
 
   def test_blowfish_roundtrip(self, test_data):
     """Test Blowfish encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.blowfish import (
-      decrypt_cbc,
-      encrypt_cbc,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.blowfish import decrypt_cbc, encrypt_cbc
 
     key = b"testkey123456789"  # 16 bytes
     iv = b"\x00" * 8
@@ -219,10 +202,7 @@ class TestStreamCiphers:
 
   def test_chacha20_roundtrip(self, test_data):
     """Test ChaCha20 encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.stream_cipher.chacha20 import (
-      chacha20_decrypt,
-      chacha20_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.stream_cipher.chacha20 import chacha20_decrypt, chacha20_encrypt
 
     key = b"\x00" * 32
     nonce = b"\x00" * 12
@@ -235,10 +215,7 @@ class TestStreamCiphers:
 
   def test_salsa20_roundtrip(self, test_data):
     """Test Salsa20 encryption/decryption roundtrip."""
-    from crypt.encrypt.symmetric_encrypt.stream_cipher.salsa20 import (
-      salsa20_decrypt,
-      salsa20_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.stream_cipher.salsa20 import salsa20_decrypt, salsa20_encrypt
 
     key = b"\x00" * 32
     nonce = b"\x00" * 8
@@ -255,10 +232,7 @@ class TestClassicCiphers:
 
   def test_caesar_cipher(self):
     """Test Caesar cipher encryption/decryption."""
-    from crypt.encrypt.symmetric_encrypt.stream_cipher.caesar import (
-      caesar_decrypt,
-      caesar_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.stream_cipher.caesar import caesar_decrypt, caesar_encrypt
 
     plaintext = "HELLOWORLD"
     for shift in range(26):
@@ -277,10 +251,7 @@ class TestClassicCiphers:
 
   def test_vigenere_cipher(self):
     """Test Vigenere cipher encryption/decryption."""
-    from crypt.encrypt.symmetric_encrypt.stream_cipher.vigenere_cipher import (
-      vigenere_decrypt,
-      vigenere_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.stream_cipher.vigenere_cipher import vigenere_decrypt, vigenere_encrypt
 
     plaintext = "HELLOWORLD"
     key = "KEY"
@@ -290,10 +261,7 @@ class TestClassicCiphers:
 
   def test_atbash_cipher(self):
     """Test Atbash cipher encryption/decryption."""
-    from crypt.encrypt.symmetric_encrypt.stream_cipher.atbash_cipher import (
-      atbash_decrypt,
-      atbash_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.stream_cipher.atbash_cipher import atbash_decrypt, atbash_encrypt
 
     plaintext = "HELLOWORLD"
     encrypted = atbash_encrypt(plaintext)
@@ -306,20 +274,14 @@ class TestEncryptionEdgeCases:
 
   def test_empty_plaintext(self):
     """Test encryption with empty plaintext."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_ecb_decrypt,
-      aes_ecb_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_ecb_decrypt, aes_ecb_encrypt
 
     key = b"\x00" * 16
     self._extracted_from_test_binary_data_9(aes_ecb_encrypt, b"", key, aes_ecb_decrypt)
 
   def test_large_data(self):
     """Test encryption with large data."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_ecb_decrypt,
-      aes_ecb_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_ecb_decrypt, aes_ecb_encrypt
 
     key = b"\x00" * 16
     data = b"x" * 10000
@@ -328,19 +290,14 @@ class TestEncryptionEdgeCases:
 
   def test_binary_data(self):
     """Test encryption with all byte values."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      aes_ecb_decrypt,
-      aes_ecb_encrypt,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import aes_ecb_decrypt, aes_ecb_encrypt
 
     key = b"\x00" * 16
     data = bytes(range(256))
 
     self._extracted_from_test_binary_data_9(aes_ecb_encrypt, data, key, aes_ecb_decrypt)
 
-  def _extracted_from_test_binary_data_9(
-    self, aes_ecb_encrypt, arg1, key, aes_ecb_decrypt
-  ):
+  def _extracted_from_test_binary_data_9(self, aes_ecb_encrypt, arg1, key, aes_ecb_decrypt):
     encrypted = aes_ecb_encrypt(arg1, key)
     decrypted = aes_ecb_decrypt(encrypted, key)
     assert decrypted == arg1

@@ -654,18 +654,10 @@ def mix_columns(state: bytearray, *, inv: bool = False) -> None:
 
     if inv:
       # Inverse MixColumns: multiply by [0x0e, 0x0b, 0x0d, 0x09]
-      state[i] = (
-        _gf_mul(0x0E, a0) ^ _gf_mul(0x0B, a1) ^ _gf_mul(0x0D, a2) ^ _gf_mul(0x09, a3)
-      )
-      state[i + 1] = (
-        _gf_mul(0x09, a0) ^ _gf_mul(0x0E, a1) ^ _gf_mul(0x0B, a2) ^ _gf_mul(0x0D, a3)
-      )
-      state[i + 2] = (
-        _gf_mul(0x0D, a0) ^ _gf_mul(0x09, a1) ^ _gf_mul(0x0E, a2) ^ _gf_mul(0x0B, a3)
-      )
-      state[i + 3] = (
-        _gf_mul(0x0B, a0) ^ _gf_mul(0x0D, a1) ^ _gf_mul(0x09, a2) ^ _gf_mul(0x0E, a3)
-      )
+      state[i] = _gf_mul(0x0E, a0) ^ _gf_mul(0x0B, a1) ^ _gf_mul(0x0D, a2) ^ _gf_mul(0x09, a3)
+      state[i + 1] = _gf_mul(0x09, a0) ^ _gf_mul(0x0E, a1) ^ _gf_mul(0x0B, a2) ^ _gf_mul(0x0D, a3)
+      state[i + 2] = _gf_mul(0x0D, a0) ^ _gf_mul(0x09, a1) ^ _gf_mul(0x0E, a2) ^ _gf_mul(0x0B, a3)
+      state[i + 3] = _gf_mul(0x0B, a0) ^ _gf_mul(0x0D, a1) ^ _gf_mul(0x09, a2) ^ _gf_mul(0x0E, a3)
     else:
       # Forward MixColumns: multiply by [0x02, 0x03, 0x01, 0x01]
       state[i] = _gf_mul(0x02, a0) ^ _gf_mul(0x03, a1) ^ a2 ^ a3

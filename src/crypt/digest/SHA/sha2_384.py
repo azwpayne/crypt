@@ -111,7 +111,7 @@ def _right_rotate(n: int, bits: int) -> int:
 
 
 def _maj(x: int, y: int, z: int) -> int:
-  """majority 函数: (x ∧ y) ⊕ (x ∧ z) ⊕ (y ∧ z)"""
+  """Majority 函数: (x ∧ y) ⊕ (x ∧ z) ⊕ (y ∧ z)"""
   return (x & y) ^ (x & z) ^ (y & z)
 
 
@@ -168,9 +168,7 @@ def _process_block(block: bytes, h: list) -> list:
   w += [0] * (80 - 16)
 
   for t in range(16, 80):
-    w[t] = (
-      _gamma1(w[t - 2]) + w[t - 7] + _gamma0(w[t - 15]) + w[t - 16]
-    ) & 0xFFFFFFFFFFFFFFFF
+    w[t] = (_gamma1(w[t - 2]) + w[t - 7] + _gamma0(w[t - 15]) + w[t - 16]) & 0xFFFFFFFFFFFFFFFF
 
   # 初始化工作变量
   a, b, c, d, e, f, g, h0 = h
@@ -190,10 +188,7 @@ def _process_block(block: bytes, h: list) -> list:
     a = (t1 + t2) & 0xFFFFFFFFFFFFFFFF
 
   # 更新哈希值
-  return [
-    (x + y) & 0xFFFFFFFFFFFFFFFF
-    for x, y in zip([a, b, c, d, e, f, g, h0], h, strict=False)
-  ]
+  return [(x + y) & 0xFFFFFFFFFFFFFFFF for x, y in zip([a, b, c, d, e, f, g, h0], h, strict=False)]
 
 
 def sha384(message: bytes) -> bytes:
@@ -258,9 +253,7 @@ def _run_tests():
   large_msg = b"a" * 1000000
   expected_large = "9d0e1809716474cb086e834e310a4a1ced149e9c00f248527972cec5704c2a5b07b8b3dc38ecc4ebae97ddd87f3d8985"
   result_large = sha384_hex(large_msg)
-  print(
-    f"Large message test (1M 'a'): {'✓' if result_large == expected_large else '✗'}"
-  )
+  print(f"Large message test (1M 'a'): {'✓' if result_large == expected_large else '✗'}")
 
 
 if __name__ == "__main__":

@@ -299,22 +299,13 @@ SBOX = [
 
 
 def _tau(a):
-  return (
-    (SBOX[(a >> 24) & 0xFF] << 24)
-    | (SBOX[(a >> 16) & 0xFF] << 16)
-    | (SBOX[(a >> 8) & 0xFF] << 8)
-    | SBOX[a & 0xFF]
-  )
+  return (SBOX[(a >> 24) & 0xFF] << 24) | (SBOX[(a >> 16) & 0xFF] << 16) | (SBOX[(a >> 8) & 0xFF] << 8) | SBOX[a & 0xFF]
 
 
 def _l(b):
   b &= 0xFFFFFFFF
   return (
-    b
-    ^ ((b << 2) | (b >> 30))
-    ^ ((b << 10) | (b >> 22))
-    ^ ((b << 18) | (b >> 14))
-    ^ ((b << 24) | (b >> 8))
+    b ^ ((b << 2) | (b >> 30)) ^ ((b << 10) | (b >> 22)) ^ ((b << 18) | (b >> 14)) ^ ((b << 24) | (b >> 8))
   ) & 0xFFFFFFFF
 
 
@@ -331,9 +322,7 @@ def _key_expand(key):
   k_vals = [int.from_bytes(key[i * 4 : i * 4 + 4], "big") ^ FK[i] for i in range(4)]
   rk = []
   for i in range(32):
-    k_vals.append(
-      k_vals[i] ^ _l_prime(_tau(k_vals[i + 1] ^ k_vals[i + 2] ^ k_vals[i + 3] ^ CK[i]))
-    )
+    k_vals.append(k_vals[i] ^ _l_prime(_tau(k_vals[i + 1] ^ k_vals[i + 2] ^ k_vals[i + 3] ^ CK[i])))
     rk.append(k_vals[i + 4])
   return rk
 
@@ -350,7 +339,5 @@ def sm4_decrypt(block, key):
   rk = _key_expand(key)
   x_vals = [int.from_bytes(block[i * 4 : i * 4 + 4], "big") for i in range(4)]
   for i in range(32):
-    x_vals.append(
-      _f(x_vals[i], x_vals[i + 1], x_vals[i + 2], x_vals[i + 3], rk[31 - i])
-    )
+    x_vals.append(_f(x_vals[i], x_vals[i + 1], x_vals[i + 2], x_vals[i + 3], rk[31 - i]))
   return b"".join(x_vals[35 - i].to_bytes(4, "big") for i in range(4))

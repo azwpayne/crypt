@@ -377,16 +377,7 @@ def _f_function(x: int, k: int) -> int:
   h8 = z1 ^ z4 ^ z5 ^ z6 ^ z7
 
   # Combine into 64-bit output
-  return (
-    (h1 << 56)
-    | (h2 << 48)
-    | (h3 << 40)
-    | (h4 << 32)
-    | (h5 << 24)
-    | (h6 << 16)
-    | (h7 << 8)
-    | h8
-  )
+  return (h1 << 56) | (h2 << 48) | (h3 << 40) | (h4 << 32) | (h5 << 24) | (h6 << 16) | (h7 << 8) | h8
 
 
 def _fl_function(x: int, k: int) -> int:
@@ -574,9 +565,7 @@ class Camellia:
     self._generate_subkeys_128_wk(kl, ka)
     self._generate_subkeys_128_rk(kl, ka)
 
-  def _generate_subkeys_192_256(
-    self, kl: list[int], kr: list[int], ka: list[int], kb: list[int]
-  ) -> None:
+  def _generate_subkeys_192_256(self, kl: list[int], kr: list[int], ka: list[int], kb: list[int]) -> None:
     """Generate subkeys for 192/256-bit key."""
     # Whitening keys
     self.kw[0] = kl[0]

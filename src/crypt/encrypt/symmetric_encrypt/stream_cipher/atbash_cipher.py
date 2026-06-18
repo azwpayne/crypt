@@ -13,9 +13,7 @@ def _create_atbash_table() -> dict[int, int]:
   # 阿塔巴什：A <-> Z, B <-> Y, C <-> X, ...
   lower_reversed = ascii_lowercase[::-1]
   upper_reversed = ascii_uppercase[::-1]
-  return str.maketrans(
-    ascii_lowercase + ascii_uppercase, lower_reversed + upper_reversed
-  )
+  return str.maketrans(ascii_lowercase + ascii_uppercase, lower_reversed + upper_reversed)
 
 
 # 预计算转换表

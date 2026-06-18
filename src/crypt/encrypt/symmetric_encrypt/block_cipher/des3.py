@@ -18,13 +18,7 @@ Effective key length: 112 bits (2-key) or 168 bits (3-key).
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-  DES,
-  _bytes_to_int,
-  _int_to_bytes,
-  _pkcs7_pad,
-  _pkcs7_unpad,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.des import DES, _bytes_to_int, _int_to_bytes, _pkcs7_pad, _pkcs7_unpad
 
 
 class DES3:
@@ -270,10 +264,7 @@ def _feistel_function(right: int, subkey: int) -> int:
   The Feistel (F) function.
   Expands 32 bits to 48, XORs with subkey, S-box substitution, P-permutation.
   """
-  from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-    E_TABLE,
-    P_TABLE,
-  )
+  from crypt.encrypt.symmetric_encrypt.block_cipher.des import E_TABLE, P_TABLE
 
   # Expansion: 32 bits -> 48 bits
   expanded = _permute(right, E_TABLE, 32)
@@ -290,10 +281,7 @@ def _feistel_function(right: int, subkey: int) -> int:
 
 def _des_block_encrypt(block: int, subkeys: list[int]) -> int:
   """Encrypt a single 64-bit block using DES."""
-  from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-    FP_TABLE,
-    IP_TABLE,
-  )
+  from crypt.encrypt.symmetric_encrypt.block_cipher.des import FP_TABLE, IP_TABLE
 
   # Initial Permutation
   block = _permute(block, IP_TABLE, 64)
@@ -318,10 +306,7 @@ def _des_block_encrypt(block: int, subkeys: list[int]) -> int:
 
 def _des_block_decrypt(block: int, subkeys: list[int]) -> int:
   """Decrypt a single 64-bit block using DES."""
-  from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-    FP_TABLE,
-    IP_TABLE,
-  )
+  from crypt.encrypt.symmetric_encrypt.block_cipher.des import FP_TABLE, IP_TABLE
 
   # Initial Permutation
   block = _permute(block, IP_TABLE, 64)

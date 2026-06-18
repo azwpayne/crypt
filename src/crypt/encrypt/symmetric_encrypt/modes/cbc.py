@@ -80,9 +80,7 @@ class CBCMode:
     if key is not None:
       self.key = key
       _nk, self.nr = _get_key_params(key)
-      self.expanded_key = (
-        expanded_key if expanded_key is not None else key_expansion(key)
-      )
+      self.expanded_key = expanded_key if expanded_key is not None else key_expansion(key)
     elif expanded_key is not None and nr is not None:
       self.key = None
       self.expanded_key = expanded_key
@@ -156,9 +154,7 @@ class CBCMode:
         decrypted_block = _decrypt_block(block, self.expanded_key, self.nr)
 
       # XOR with previous ciphertext block (or IV for first block)
-      xored = bytes(
-        [decrypted_block[j] ^ prev_block[j] for j in range(self.block_size)]
-      )
+      xored = bytes([decrypted_block[j] ^ prev_block[j] for j in range(self.block_size)])
       plaintext.extend(xored)
       prev_block = block
 
@@ -203,9 +199,7 @@ def test_cbc_mode():
   ciphertext = cbc.encrypt(identical_blocks)
   block1 = ciphertext[:16]
   block2 = ciphertext[16:32]
-  assert block1 != block2, (
-    "CBC mode should produce different ciphertext for identical blocks"
-  )
+  assert block1 != block2, "CBC mode should produce different ciphertext for identical blocks"
 
   print("All CBC mode tests passed!")
 

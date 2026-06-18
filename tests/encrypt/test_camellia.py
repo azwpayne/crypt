@@ -269,9 +269,7 @@ class TestCamelliaNISTVectors:
 
   def test_rfc3713_256bit_key(self):
     """Test with RFC 3713 256-bit key test vector."""
-    key = bytes.fromhex(
-      "0123456789abcdeffedcba987654321000112233445566778899aabbccddeeff"
-    )
+    key = bytes.fromhex("0123456789abcdeffedcba987654321000112233445566778899aabbccddeeff")
     plaintext = bytes.fromhex("0123456789abcdeffedcba9876543210")
 
     cipher = Camellia(key)

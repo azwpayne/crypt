@@ -71,10 +71,7 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
 def xtea_ecb_encrypt(data: bytes, key: bytes) -> bytes:
   """ECB mode encryption with PKCS#7 padding."""
   padded = _pkcs7_pad(data)
-  return b"".join(
-    encrypt_block(padded[i : i + BLOCK_SIZE], key)
-    for i in range(0, len(padded), BLOCK_SIZE)
-  )
+  return b"".join(encrypt_block(padded[i : i + BLOCK_SIZE], key) for i in range(0, len(padded), BLOCK_SIZE))
 
 
 def xtea_ecb_decrypt(data: bytes, key: bytes) -> bytes:
@@ -82,10 +79,7 @@ def xtea_ecb_decrypt(data: bytes, key: bytes) -> bytes:
   if len(data) % BLOCK_SIZE != 0:
     msg = "Ciphertext length must be a multiple of block size"
     raise ValueError(msg)
-  raw = b"".join(
-    decrypt_block(data[i : i + BLOCK_SIZE], key)
-    for i in range(0, len(data), BLOCK_SIZE)
-  )
+  raw = b"".join(decrypt_block(data[i : i + BLOCK_SIZE], key) for i in range(0, len(data), BLOCK_SIZE))
   return _pkcs7_unpad(raw)
 
 

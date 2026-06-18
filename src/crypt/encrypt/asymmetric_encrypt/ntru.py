@@ -155,18 +155,12 @@ def _poly_egcd(
     old_r, r = r, rem
     qs = _poly_mul_plain(q_poly, s, mod)
     new_s = _poly_trim(
-      [
-        (old_s[i] if i < len(old_s) else 0) - (qs[i] if i < len(qs) else 0)
-        for i in range(max(len(old_s), len(qs)))
-      ]
+      [(old_s[i] if i < len(old_s) else 0) - (qs[i] if i < len(qs) else 0) for i in range(max(len(old_s), len(qs)))]
     )
     old_s, s = s, [c % mod for c in new_s]
     qt = _poly_mul_plain(q_poly, t, mod)
     new_t = _poly_trim(
-      [
-        (old_t[i] if i < len(old_t) else 0) - (qt[i] if i < len(qt) else 0)
-        for i in range(max(len(old_t), len(qt)))
-      ]
+      [(old_t[i] if i < len(old_t) else 0) - (qt[i] if i < len(qt) else 0) for i in range(max(len(old_t), len(qt)))]
     )
     old_t, t = t, [c % mod for c in new_t]
 
@@ -385,7 +379,7 @@ def ntru_encrypt(plaintext: bytes, public_key: dict) -> bytes:
       Encrypted ciphertext as bytes.
   """
   n = public_key["n"]
-  p = public_key["p"]
+  public_key["p"]
   q = public_key["q"]
   h = public_key["h"]
 

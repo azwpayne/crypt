@@ -172,7 +172,6 @@ class SHAKE128:
     Returns:
         A new SHAKE128 instance with the same state.
     """
-
     new_shake = SHAKE128.__new__(SHAKE128)
     object.__setattr__(new_shake, "_state", self._state.copy())
     object.__setattr__(new_shake, "_buffer", self._buffer)

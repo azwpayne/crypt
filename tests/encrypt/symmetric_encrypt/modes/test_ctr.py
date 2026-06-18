@@ -43,9 +43,7 @@ class TestCTR:
     assert our_ciphertext == pycryptodome_ciphertext
 
     # Also test decryption
-    cipher_decrypt = CRYPTO_AES.new(
-      key, CRYPTO_AES.MODE_CTR, nonce=nonce[:12], initial_value=0
-    )
+    cipher_decrypt = CRYPTO_AES.new(key, CRYPTO_AES.MODE_CTR, nonce=nonce[:12], initial_value=0)
     pycryptodome_decrypted = cipher_decrypt.decrypt(our_ciphertext)
     assert pycryptodome_decrypted == plaintext
 

@@ -45,10 +45,7 @@ def generate_parameters(key_size: int = 2048) -> tuple[int, int, int]:
 
     # Check if p is prime using Fermat's test and trial division
     if pow(2, p_candidate - 1, p_candidate) == 1:
-      is_prime = all(
-        p_candidate % small_prime != 0
-        for small_prime in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
-      )
+      is_prime = all(p_candidate % small_prime != 0 for small_prime in [3, 5, 7, 11, 13, 17, 19, 23, 29, 31])
       if is_prime:
         break
 

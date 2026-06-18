@@ -55,9 +55,7 @@ class TestCRC8:
   def test_crc8_known_vectors(self, func, expected):
     """Test CRC8 variants against known test vectors."""
     result = func(STANDARD_TEST_STRING)
-    assert result == expected, (
-      f"{func.__name__} failed: expected 0x{expected:02X}, got 0x{result:02X}"
-    )
+    assert result == expected, f"{func.__name__} failed: expected 0x{expected:02X}, got 0x{result:02X}"
 
   def test_crc8_empty_data(self):
     """Test CRC8 with empty data."""
@@ -103,15 +101,9 @@ class TestCRC8:
     ]
 
     for poly, init, ref_in, ref_out, xor_out in variants:
-      table_result = crc8(
-        test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out
-      )
-      manual_result = crc8_manual_calculation(
-        test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out
-      )
-      assert table_result == manual_result, (
-        f"Cross-validation failed for poly=0x{poly:02X}"
-      )
+      table_result = crc8(test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out)
+      manual_result = crc8_manual_calculation(test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out)
+      assert table_result == manual_result, f"Cross-validation failed for poly=0x{poly:02X}"
 
   def test_crc8_unicode_data(self):
     """Test CRC8 with UTF-8 encoded data."""
@@ -193,9 +185,7 @@ class TestCRC32:
     # Standard CRC32 of "123456789" should be 0xCBF43926
     result = calculate_crc32(STANDARD_TEST_STRING)
     expected = 0xCBF43926
-    assert result == expected, (
-      f"CRC32 mismatch: expected 0x{expected:08X}, got 0x{result:08X}"
-    )
+    assert result == expected, f"CRC32 mismatch: expected 0x{expected:08X}, got 0x{result:08X}"
 
   def test_crc32_empty_data(self):
     """Test CRC32 with empty data."""
@@ -244,8 +234,7 @@ class TestCRC32:
       # zlib.crc32 returns signed 32-bit, convert to unsigned
       zlib_result = zlib.crc32(data) & 0xFFFFFFFF
       assert our_result == zlib_result, (
-        f"CRC32 mismatch for data {data!r}: "
-        f"ours=0x{our_result:08X}, zlib=0x{zlib_result:08X}"
+        f"CRC32 mismatch for data {data!r}: ours=0x{our_result:08X}, zlib=0x{zlib_result:08X}"
       )
 
   def test_crc32_deterministic(self):
@@ -380,9 +369,7 @@ class TestCRCustomParameters:
     results = []
 
     for init in inits:
-      result = crc8(
-        data, poly=0x07, init=init, ref_in=False, ref_out=False, xor_out=0x00
-      )
+      result = crc8(data, poly=0x07, init=init, ref_in=False, ref_out=False, xor_out=0x00)
       results.append(result)
 
     # Different init values should produce different results

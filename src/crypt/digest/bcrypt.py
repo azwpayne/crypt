@@ -37,12 +37,8 @@ BCRYPT_MAX_COST: Final[int] = 31
 BCRYPT_DEFAULT_COST: Final[int] = 10
 
 # Base64 encoding alphabet for BCrypt (non-standard)
-BCRYPT_BASE64_ALPHABET: Final[bytes] = (
-  b"./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-)
-BCRYPT_BASE64_REVERSE: Final[dict[int, int]] = {
-  c: i for i, c in enumerate(BCRYPT_BASE64_ALPHABET)
-}
+BCRYPT_BASE64_ALPHABET: Final[bytes] = b"./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+BCRYPT_BASE64_REVERSE: Final[dict[int, int]] = {c: i for i, c in enumerate(BCRYPT_BASE64_ALPHABET)}
 
 # Blowfish P-array (hex digits of pi, after the decimal point)
 BLOWFISH_P_INIT: Final[tuple[int, ...]] = (

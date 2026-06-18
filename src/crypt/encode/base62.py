@@ -83,9 +83,7 @@ if __name__ == "__main__":
   for test_num in test_numbers:
     encoded = encode(test_num)
     decoded = decode(encoded)
-    print(
-      f"数字: {test_num:12d} -> 编码: {encoded:8s} -> 解码: {decoded:12d} {'✓' if test_num == decoded else '✗'}"
-    )
+    print(f"数字: {test_num:12d} -> 编码: {encoded:8s} -> 解码: {decoded:12d} {'✓' if test_num == decoded else '✗'}")
 
   # 测试边界情况
   print("\n特殊测试:")
@@ -110,9 +108,7 @@ if __name__ == "__main__":
   large_num = 10**18
   encoded = encode(large_num)
   decoded = decode(encoded)
-  print(
-    f"\n大数测试: {large_num} -> 编码: {encoded} -> 解码: {decoded} {'✓' if large_num == decoded else '✗'}"
-  )
+  print(f"\n大数测试: {large_num} -> 编码: {encoded} -> 解码: {decoded} {'✓' if large_num == decoded else '✗'}")
 
 
 def base62_encode(data: bytes) -> str:

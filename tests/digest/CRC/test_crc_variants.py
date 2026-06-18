@@ -1,20 +1,7 @@
 """Tests for CRC variants (CRC12, CRC16, CRC16-CCITT, CRC32C)."""
 
-from crypt.digest.CRC.crc12 import (
-  crc12,
-  crc12_cdma2000,
-  crc12_dect,
-  crc12_gsm,
-  crc12_umts,
-)
-from crypt.digest.CRC.crc16 import (
-  crc16,
-  crc16_dnp,
-  crc16_ibm,
-  crc16_modbus,
-  crc16_usb,
-  crc16_xmodem,
-)
+from crypt.digest.CRC.crc12 import crc12, crc12_cdma2000, crc12_dect, crc12_gsm, crc12_umts
+from crypt.digest.CRC.crc16 import crc16, crc16_dnp, crc16_ibm, crc16_modbus, crc16_usb, crc16_xmodem
 from crypt.digest.CRC.crc16_ccitt import (
   crc16_ccitt,
   crc16_ccitt_false,

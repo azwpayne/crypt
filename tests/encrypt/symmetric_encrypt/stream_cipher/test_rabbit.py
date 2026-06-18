@@ -1,10 +1,6 @@
 """Tests for Rabbit stream cipher."""
 
-from crypt.encrypt.symmetric_encrypt.stream_cipher.rabbit import (
-  rabbit_decrypt,
-  rabbit_encrypt,
-  rabbit_keystream,
-)
+from crypt.encrypt.symmetric_encrypt.stream_cipher.rabbit import rabbit_decrypt, rabbit_encrypt, rabbit_keystream
 
 import pytest
 

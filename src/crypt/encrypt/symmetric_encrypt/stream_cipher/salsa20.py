@@ -106,9 +106,7 @@ def salsa20_decrypt(k, n, c, ciph):
 
 
 if __name__ == "__main__":
-  key = bytes.fromhex(
-    "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-  )
+  key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
   nonce = bytes.fromhex("9565542946c322be")
   counter = 0
   plaintext = bytes.fromhex("0000000001000200cdb87f280000000001000200cdb87f28")

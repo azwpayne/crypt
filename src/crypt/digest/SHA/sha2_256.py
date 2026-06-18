@@ -196,10 +196,7 @@ def sha256(data: bytes) -> str:
       a = (temp1 + temp2) & 0xFFFFFFFF
 
     # Add compressed chunk to current hash value
-    hash_pieces = [
-      (x + y) & 0xFFFFFFFF
-      for x, y in zip(hash_pieces, [a, b, c, d, e, f, g, h], strict=False)
-    ]
+    hash_pieces = [(x + y) & 0xFFFFFFFF for x, y in zip(hash_pieces, [a, b, c, d, e, f, g, h], strict=False)]
 
   # Step 5: Produce final hash value (big-endian)
   return "".join(f"{piece:08x}" for piece in hash_pieces)

@@ -72,7 +72,7 @@ class TestChaCha20Poly1305RFC8439:
     ("key_hex", "nonce_hex", "aad_hex", "pt_hex", "ct_hex", "tag_hex"),
     RFC8439_TEST_VECTORS,
   )
-  def test_encrypt(  # noqa: PLR0913
+  def test_encrypt(
     self,
     key_hex: str,
     nonce_hex: str,
@@ -100,7 +100,7 @@ class TestChaCha20Poly1305RFC8439:
     ("key_hex", "nonce_hex", "aad_hex", "pt_hex", "ct_hex", "tag_hex"),
     RFC8439_TEST_VECTORS,
   )
-  def test_decrypt(  # noqa: PLR0913
+  def test_decrypt(
     self,
     key_hex: str,
     nonce_hex: str,
@@ -126,7 +126,7 @@ class TestChaCha20Poly1305RFC8439:
     ("key_hex", "nonce_hex", "aad_hex", "pt_hex", "_ct_hex", "_tag_hex"),
     RFC8439_TEST_VECTORS,
   )
-  def test_roundtrip(  # noqa: PLR0913
+  def test_roundtrip(
     self,
     key_hex: str,
     nonce_hex: str,

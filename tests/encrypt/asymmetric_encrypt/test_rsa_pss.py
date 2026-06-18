@@ -28,7 +28,7 @@ class TestRSAPSS:
 
   def test_verify_wrong_key(self):
     """Test verification fails with wrong public key."""
-    public_key1, private_key1 = generate_keypair(1024)
+    _public_key1, private_key1 = generate_keypair(1024)
     public_key2, _ = generate_keypair(1024)
     message = b"Test message"
 
@@ -126,9 +126,9 @@ class TestRSAPSS:
   def test_verify_signature_value_too_large(self):
     public_key, private_key = generate_keypair(1024)
     message = b"test"
-    signature = sign(message, private_key)
+    sign(message, private_key)
     # Make s >= n
-    e, n = public_key
+    _e, n = public_key
     bad_sig = n.to_bytes((n.bit_length() + 7) // 8, "big")
     assert verify(bad_sig, message, public_key) is False
 
@@ -174,15 +174,15 @@ class TestRSAPSS:
     from crypt.encrypt.asymmetric_encrypt.rsa_pss import _emsa_pss_encode
 
     # Generate a 512-bit key (minimum allowed)
-    public_key, private_key = generate_keypair(512)
+    _public_key, private_key = generate_keypair(512)
     message = b"test"
-    d, n = private_key
+    _d, n = private_key
     em_bits = n.bit_length() - 1
 
     # Manually create an EM that will be >= n by using a large salt
     # But emsa_pss_encode will raise EncodingError for small em_bits with sha256
     # So we test the m >= n branch directly by mocking
-    em = (n + 1).to_bytes((n.bit_length() + 7) // 8, "big")
+    (n + 1).to_bytes((n.bit_length() + 7) // 8, "big")
 
     # Actually, the m >= n check in sign() is hard to hit with emsa_pss_encode
     # because emsa_pss_encode already checks em_bits. Let's test it by

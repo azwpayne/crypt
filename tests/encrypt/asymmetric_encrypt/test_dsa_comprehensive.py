@@ -27,7 +27,7 @@ class TestDSAKeyGeneration:
 
   def test_generate_parameters_p_relation(self) -> None:
     """Test that p = k*q + 1 for some k."""
-    p, q, g = dsa.generate_parameters()
+    p, q, _g = dsa.generate_parameters()
 
     # p-1 should be divisible by q
     assert (p - 1) % q == 0
@@ -42,7 +42,7 @@ class TestDSAKeyGeneration:
   def test_generate_keypair_private_key_range(self) -> None:
     """Test that private key is in valid range [1, q-1]."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     assert 0 < x < q
 
@@ -71,7 +71,7 @@ class TestDSASigning:
   def test_sign_returns_tuple(self) -> None:
     """Test that sign returns a tuple of (r, s)."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b"test message"
     signature = dsa.sign(message, p, q, g, x)
@@ -85,7 +85,7 @@ class TestDSASigning:
   def test_sign_signature_components_in_range(self) -> None:
     """Test that r and s are in valid range [1, q-1]."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b"test message"
     r, s = dsa.sign(message, p, q, g, x)
@@ -96,7 +96,7 @@ class TestDSASigning:
   def test_sign_different_signatures_for_same_message(self) -> None:
     """Test that signing the same message twice produces different signatures."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b"test message"
     sig1 = dsa.sign(message, p, q, g, x)
@@ -114,7 +114,7 @@ class TestDSASigning:
     message_bytes = message_str.encode()
 
     sig_str = dsa.sign(message_str, p, q, g, x)
-    sig_bytes = dsa.sign(message_bytes, p, q, g, x)
+    dsa.sign(message_bytes, p, q, g, x)
 
     # Both should verify successfully
     assert dsa.verify(message_str, sig_str, p, q, g, y, y=y)
@@ -123,7 +123,7 @@ class TestDSASigning:
   def test_sign_empty_message(self) -> None:
     """Test signing empty message."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b""
     signature = dsa.sign(message, p, q, g, x)
@@ -240,7 +240,7 @@ class TestDSAVerification:
   def test_verify_with_wrong_public_key(self) -> None:
     """Test verification fails with wrong public key."""
     p, q, g = dsa.generate_parameters()
-    x1, y1 = dsa.generate_keypair(p, q, g)
+    x1, _y1 = dsa.generate_keypair(p, q, g)
     _, y2 = dsa.generate_keypair(p, q, g)
 
     message = b"test message"
@@ -326,7 +326,7 @@ class TestDSASecurity:
   def test_private_key_cannot_be_derived_from_signature(self) -> None:
     """Test that private key cannot be derived from signature."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b"test message"
     r, s = dsa.sign(message, p, q, g, x)
@@ -406,7 +406,7 @@ class TestDSAEdgeCases:
     r, s = dsa.sign(message, p, q, g, x)
 
     # Test boundary values
-    boundary_tests = [
+    [
       (0, s),  # r = 0 (invalid)
       (1, s),  # r = 1 (valid)
       (q - 1, s),  # r = q-1 (valid)

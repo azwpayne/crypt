@@ -19,7 +19,6 @@ def calculate_crc32(data):
   return crc ^ 0xFFFFFFFF  # 取反
 
 
-
 if __name__ == "__main__":
   # 示例数据
   data = b"azwpayne"
@@ -46,9 +45,7 @@ def get_crc32(bytes_arr):
   if bytes_arr is not None:
     crc = 0xFFFFFFFF
     for i in range(length):
-      crc = (crc << 8) ^ origin_crc32_table[
-        (get_reverse(bytes_arr[i], 8) ^ (crc >> 24)) & 0xFF
-      ]
+      crc = (crc << 8) ^ origin_crc32_table[(get_reverse(bytes_arr[i], 8) ^ (crc >> 24)) & 0xFF]
   else:
     crc = 0xFFFFFFFF
   return get_reverse(crc ^ 0xFFFFFFFF, 32)

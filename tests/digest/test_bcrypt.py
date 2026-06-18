@@ -171,13 +171,11 @@ class TestBCryptHashing:
 
   def test_hash_empty_password(self):
     """Test hashing with empty password."""
-    hashed = self._extracted_from_test_hash_binary_password_3("")
+    self._extracted_from_test_hash_binary_password_3("")
 
   def test_hash_binary_password(self):
     """Test hashing with binary/non-ASCII password."""
-    hashed = self._extracted_from_test_hash_binary_password_3(
-      b"\x00\x01\x02\x03\xff\xfe\xfd\xfc"
-    )
+    self._extracted_from_test_hash_binary_password_3(b"\x00\x01\x02\x03\xff\xfe\xfd\xfc")
 
   # NOTE: Rename this here and in `test_hash_bytes_password`, `test_hash_unicode_password`, `test_hash_empty_password` and `test_hash_binary_password`
   def _extracted_from_test_hash_binary_password_3(self, arg0):

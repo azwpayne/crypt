@@ -49,9 +49,7 @@ caesar_encrypt = encrypt
 caesar_decrypt = decrypt
 
 
-def encrypt_with_custom_alphabet(
-  text: str, shift: int, alphabet: str = ascii_lowercase
-) -> str:
+def encrypt_with_custom_alphabet(text: str, shift: int, alphabet: str = ascii_lowercase) -> str:
   """
   使用自定义字母表进行凯撒密码加密
 
@@ -76,9 +74,7 @@ def encrypt_with_custom_alphabet(
   return result
 
 
-def decrypt_with_custom_alphabet(
-  text: str, shift: int, alphabet: str = ascii_lowercase
-) -> str:
+def decrypt_with_custom_alphabet(text: str, shift: int, alphabet: str = ascii_lowercase) -> str:
   """
   使用自定义字母表进行凯撒密码解密
 
@@ -110,10 +106,7 @@ def brute_force_decrypt(text: str, alphabet: str = ascii_lowercase) -> dict[int,
   #     # results.append(f"Shift {shift}: {decrypted}")
   #     results[shift] = decrypted
   # return results
-  return {
-    shift: decrypt_with_custom_alphabet(text, shift, alphabet)
-    for shift in range(len(alphabet))
-  }
+  return {shift: decrypt_with_custom_alphabet(text, shift, alphabet) for shift in range(len(alphabet))}
 
 
 if __name__ == "__main__":
@@ -127,12 +120,8 @@ if __name__ == "__main__":
   decrypt_text = decrypt(encrypt_text, source_shift)
   print(f"Encrypted Text: {encrypt_text}, Decrypted Text: {decrypt_text}")
   # =============
-  encrypt_with_custom_alphabet_tex = encrypt_with_custom_alphabet(
-    source_text, source_shift
-  )
-  decrypt_with_custom_alphabet_text = decrypt_with_custom_alphabet(
-    encrypt_with_custom_alphabet_tex, source_shift
-  )
+  encrypt_with_custom_alphabet_tex = encrypt_with_custom_alphabet(source_text, source_shift)
+  decrypt_with_custom_alphabet_text = decrypt_with_custom_alphabet(encrypt_with_custom_alphabet_tex, source_shift)
   print(
     f"Encrypted Text with Custom Alphabet: {encrypt_with_custom_alphabet_tex}, "
     f"Decrypted Text with Custom Alphabet: {decrypt_with_custom_alphabet_text}"

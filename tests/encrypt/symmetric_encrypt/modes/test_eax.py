@@ -538,11 +538,8 @@ class TestEAXWithExternalCipher:
     plaintext = b"Test with external cipher"
 
     # Create an external encrypt function using AES
-    _nk, nr = EAXMode.__init__.__defaults__[4] if False else (4, 10)
-    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-      _encrypt_block,
-      key_expansion,
-    )
+    _nk, _nr = EAXMode.__init__.__defaults__[4] if False else (4, 10)
+    from crypt.encrypt.symmetric_encrypt.block_cipher.aes import _encrypt_block, key_expansion
 
     expanded_key = key_expansion(key)
 

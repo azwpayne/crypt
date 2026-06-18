@@ -1944,7 +1944,6 @@ def key_schedule(key: bytes) -> tuple[list[int], list[list[int]]]:
 
   # Determine number of rounds based on key size
   # Keys <= 80 bits (10 bytes) use 12 rounds, otherwise 16
-  rounds = 12 if key_len <= 10 else 16
 
   # Pad key to 16 bytes
   padded_key = key + bytes(16 - key_len)
@@ -1961,10 +1960,7 @@ def key_schedule(key: bytes) -> tuple[list[int], list[list[int]]]:
   for _i in range(16):
     # Key schedule algorithm from RFC 2144
     # Use S5-S8 for key generation
-    t = (
-      S5[x[0] & 0xFF]
-      ^ S6[(x[0] >> 8) & 0xFF] - S7[x[1] & 0xFF] + S8[(x[1] >> 8) & 0xFF]
-    ) & 0xFFFFFFFF
+    t = (S5[x[0] & 0xFF] ^ S6[(x[0] >> 8) & 0xFF] - S7[x[1] & 0xFF] + S8[(x[1] >> 8) & 0xFF]) & 0xFFFFFFFF
     round_keys.append(t)
 
     # Update x values

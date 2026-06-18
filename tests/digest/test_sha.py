@@ -7,18 +7,7 @@
 import hashlib
 
 import pytest
-from Crypto.Hash import (
-  SHA1,
-  SHA3_224,
-  SHA3_256,
-  SHA3_384,
-  SHA3_512,
-  SHA224,
-  SHA256,
-  SHA384,
-  SHAKE128,
-  SHAKE256,
-)
+from Crypto.Hash import SHA1, SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHA224, SHA256, SHA384, SHAKE128, SHAKE256
 
 from tests import BYTE_TEST_CASES
 
@@ -49,9 +38,7 @@ class TestSha:
     result_hashlib = hashlib.sha1(msg).hexdigest()
     result_crypto = SHA1.new(msg).hexdigest()
 
-    assert result_custom == result_hashlib == result_crypto, (
-      f"Test case failed for msg: {msg}"
-    )
+    assert result_custom == result_hashlib == result_crypto, f"Test case failed for msg: {msg}"
 
   @pytest.mark.parametrize(
     "msg",
@@ -146,9 +133,7 @@ class TestSha:
 
     result = sha3_ke_128.shake128(msg, output_len)
     ref = SHAKE128.new(msg).read(output_len)
-    assert result == ref, (
-      f"SHAKE128 test failed for msg: {msg}, output_len: {output_len}"
-    )
+    assert result == ref, f"SHAKE128 test failed for msg: {msg}, output_len: {output_len}"
 
   @pytest.mark.parametrize(
     ("msg", "output_len"),
@@ -166,9 +151,7 @@ class TestSha:
 
     result = sha3_ke_256.shake256(msg, output_len)
     ref = SHAKE256.new(msg).read(output_len)
-    assert result == ref, (
-      f"SHAKE256 test failed for msg: {msg}, output_len: {output_len}"
-    )
+    assert result == ref, f"SHAKE256 test failed for msg: {msg}, output_len: {output_len}"
 
   # SHAKE224, SHAKE384, SHAKE512 are non-standard extensions
   # They follow the same pattern but use different capacity/rate parameters

@@ -18,10 +18,7 @@ Reference: RFC 8439 - ChaCha20 and Poly1305 for IETF Protocols, Section 2.8
 
 import struct
 from crypt.digest.poly1305 import poly1305_mac
-from crypt.encrypt.symmetric_encrypt.stream_cipher.chacha20 import (
-  chacha20_block,
-  chacha20_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.stream_cipher.chacha20 import chacha20_block, chacha20_encrypt
 
 
 def _pad16(data: bytes) -> bytes:
@@ -39,12 +36,7 @@ def _construct_mac_data(aad: bytes, ciphertext: bytes) -> bytes:
   Format: pad(AAD) || pad(CT) || len(AAD) || len(CT)
   where lengths are 64-bit little-endian integers.
   """
-  return (
-    _pad16(aad)
-    + _pad16(ciphertext)
-    + struct.pack("<Q", len(aad))
-    + struct.pack("<Q", len(ciphertext))
-  )
+  return _pad16(aad) + _pad16(ciphertext) + struct.pack("<Q", len(aad)) + struct.pack("<Q", len(ciphertext))
 
 
 def chacha20_poly1305_encrypt(

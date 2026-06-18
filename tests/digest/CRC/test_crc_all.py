@@ -17,24 +17,8 @@ from crypt.digest.CRC.crc8 import (
   crc8_smbus,
   reverse_bits,
 )
-from crypt.digest.CRC.crc12 import (
-  _reflect8,
-  _reflect12,
-  crc12,
-  crc12_cdma2000,
-  crc12_dect,
-  crc12_gsm,
-  crc12_umts,
-)
-from crypt.digest.CRC.crc16 import (
-  crc16,
-  crc16_ansi,
-  crc16_dnp,
-  crc16_ibm,
-  crc16_modbus,
-  crc16_usb,
-  crc16_xmodem,
-)
+from crypt.digest.CRC.crc12 import _reflect8, _reflect12, crc12, crc12_cdma2000, crc12_dect, crc12_gsm, crc12_umts
+from crypt.digest.CRC.crc16 import crc16, crc16_ansi, crc16_dnp, crc16_ibm, crc16_modbus, crc16_usb, crc16_xmodem
 from crypt.digest.CRC.crc16_ccitt import (
   crc16_ccitt,
   crc16_ccitt_1d0f,
@@ -125,12 +109,8 @@ class TestCRC8AllVariants:
       (0x9B, 0x00, False, False, 0x00),
     ]
     for poly, init, ref_in, ref_out, xor_out in variants:
-      table_result = crc8(
-        test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out
-      )
-      manual_result = crc8_manual_calculation(
-        test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out
-      )
+      table_result = crc8(test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out)
+      manual_result = crc8_manual_calculation(test_data, poly, init, ref_in=ref_in, ref_out=ref_out, xor_out=xor_out)
       assert table_result == manual_result
 
 
@@ -213,9 +193,7 @@ class TestCRC12AllVariants:
 
   def test_crc12_with_all_params(self):
     """Test CRC-12 with all parameters returns valid result."""
-    result = crc12(
-      b"test", poly=0xF13, init=0xFFF, ref_in=True, ref_out=True, xor_out=0xFFF
-    )
+    result = crc12(b"test", poly=0xF13, init=0xFFF, ref_in=True, ref_out=True, xor_out=0xFFF)
     assert 0 <= result <= 0xFFF
 
   def test_reflect8_known_values(self):
@@ -471,7 +449,7 @@ class TestCRC64:
     crc_incremental = crc64(data2, init=crc)
 
     # This should not equal full calculation (CRC-64 is not additive)
-    full_crc = crc64(full_data)
+    crc64(full_data)
     # Note: incremental CRC doesn't work simply, just verify it's valid
     assert isinstance(crc_incremental, int)
 

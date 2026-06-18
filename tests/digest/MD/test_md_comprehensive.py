@@ -68,7 +68,7 @@ class TestMD2:
   def test_vs_pycryptodome(self, msg):
     """Test MD2 against PyCryptodome reference."""
     result = md2(msg)
-    expected = MD2.new(msg).hexdigest()  # noqa: S303
+    expected = MD2.new(msg).hexdigest()
     assert result == expected
 
   def test_output_length(self):
@@ -117,7 +117,7 @@ class TestMD4:
   def test_vs_pycryptodome(self, msg):
     """Test MD4 against PyCryptodome reference."""
     result = md4(msg)
-    expected = MD4.new(msg).hexdigest()  # noqa: S303
+    expected = MD4.new(msg).hexdigest()
     assert result == expected
 
   def test_output_length(self):
@@ -176,7 +176,7 @@ class TestMD5:
   def test_vs_pycryptodome(self, msg):
     """Test MD5 against PyCryptodome reference."""
     result = md5(msg)
-    expected = MD5.new(msg).hexdigest()  # noqa: S303
+    expected = MD5.new(msg).hexdigest()
     assert result == expected
 
   def test_output_length(self):
@@ -294,18 +294,10 @@ class TestMD5Internal:
   def test_uppercase_aliases(self):
     """Test uppercase function aliases."""
     a, b, c, d, x = 0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0
-    assert FF(a, b, c, d, x, s=7, ac=0xD76AA478) == ff(
-      a, b, c, d, x, s=7, ac=0xD76AA478
-    )
-    assert GG(a, b, c, d, x, s=5, ac=0xF61E2562) == gg(
-      a, b, c, d, x, s=5, ac=0xF61E2562
-    )
-    assert HH(a, b, c, d, x, s=4, ac=0xFFFA3942) == hh(
-      a, b, c, d, x, s=4, ac=0xFFFA3942
-    )
-    assert II(a, b, c, d, x, s=6, ac=0xF4292244) == ii(
-      a, b, c, d, x, s=6, ac=0xF4292244
-    )
+    assert FF(a, b, c, d, x, s=7, ac=0xD76AA478) == ff(a, b, c, d, x, s=7, ac=0xD76AA478)
+    assert GG(a, b, c, d, x, s=5, ac=0xF61E2562) == gg(a, b, c, d, x, s=5, ac=0xF61E2562)
+    assert HH(a, b, c, d, x, s=4, ac=0xFFFA3942) == hh(a, b, c, d, x, s=4, ac=0xFFFA3942)
+    assert II(a, b, c, d, x, s=6, ac=0xF4292244) == ii(a, b, c, d, x, s=6, ac=0xF4292244)
 
 
 class TestMD6:

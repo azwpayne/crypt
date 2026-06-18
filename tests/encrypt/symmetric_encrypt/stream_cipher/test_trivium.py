@@ -1,10 +1,6 @@
 """Tests for Trivium stream cipher."""
 
-from crypt.encrypt.symmetric_encrypt.stream_cipher.trivium import (
-  Trivium,
-  trivium_decrypt,
-  trivium_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.stream_cipher.trivium import Trivium, trivium_decrypt, trivium_encrypt
 
 KEY = b"\x00" * 10
 IV = b"\x00" * 10

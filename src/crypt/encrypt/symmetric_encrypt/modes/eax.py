@@ -48,11 +48,7 @@ WARNING: Never reuse a (key, nonce) pair - this will compromise security.
 """
 
 from collections.abc import Callable
-from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-  _encrypt_block,
-  _get_key_params,
-  key_expansion,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import _encrypt_block, _get_key_params, key_expansion
 from typing import cast
 
 
@@ -151,9 +147,7 @@ class EAXMode:
     if key is not None:
       self.key = key
       _nk, self.nr = _get_key_params(key)
-      self.expanded_key = (
-        expanded_key if expanded_key is not None else key_expansion(key)
-      )
+      self.expanded_key = expanded_key if expanded_key is not None else key_expansion(key)
     elif expanded_key is not None and nr is not None:
       self.key = None
       self.expanded_key = expanded_key
@@ -315,7 +309,7 @@ class EAXMode:
     Raises:
         ValueError: If nonce length is not equal to block_size.
 
-    WARNING:
+    Warning:
         Never reuse a nonce with the same key. Nonce reuse completely
         breaks the security of EAX mode.
 
@@ -391,7 +385,7 @@ class EAXMode:
     Raises:
         ValueError: If nonce length is invalid or authentication fails.
 
-    WARNING:
+    Warning:
         Never reuse a nonce with the same key. Nonce reuse completely
         breaks the security of EAX mode.
 
@@ -443,9 +437,7 @@ class EAXMode:
 
     # Compute expected tag: CMAC(nonce) XOR header_cmac XOR msg_cmac
     nonce_cmac = self._cmac(auth_nonce)
-    expected_full_tag = self._xor_bytes(
-      self._xor_bytes(nonce_cmac, header_cmac), msg_cmac
-    )
+    expected_full_tag = self._xor_bytes(self._xor_bytes(nonce_cmac, header_cmac), msg_cmac)
     expected_tag = expected_full_tag[: self.tag_length]
 
     # Verify tag (constant-time comparison)
@@ -456,9 +448,7 @@ class EAXMode:
     # Decrypt ciphertext using CTR mode
     return self._ctr_crypt(ciphertext, enc_nonce)
 
-  def verify(
-    self, ciphertext: bytes, nonce: bytes, tag: bytes, associated_data: bytes = b""
-  ) -> bool:
+  def verify(self, ciphertext: bytes, nonce: bytes, tag: bytes, associated_data: bytes = b"") -> bool:
     """Verify the authentication tag without decrypting.
 
     Args:

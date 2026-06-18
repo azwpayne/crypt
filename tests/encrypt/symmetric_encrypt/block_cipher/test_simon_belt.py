@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 from crypt.encrypt.symmetric_encrypt.block_cipher.belt import belt_decrypt, belt_encrypt
-from crypt.encrypt.symmetric_encrypt.block_cipher.simon import (
-  simon_decrypt,
-  simon_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.simon import simon_decrypt, simon_encrypt
 
 import pytest
 
@@ -20,9 +17,7 @@ class TestSimon:
   def test_simon128_encrypt_decrypt_roundtrip(self):
     self._extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(16, 32, 128)
 
-  def _extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(
-    self, arg0, arg1, block_size
-  ):
+  def _extracted_from_test_simon128_encrypt_decrypt_roundtrip_2(self, arg0, arg1, block_size):
     block = bytes(range(arg0))
     key = bytes(range(arg1))
     self._extracted_from_test_simon_zero_key_zero_block_4(block, key, block_size)

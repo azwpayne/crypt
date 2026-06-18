@@ -1,10 +1,6 @@
 """Tests for PKCS#7 padding implementation."""
 
-from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import (
-  _constant_time_compare,
-  pad,
-  unpad,
-)
+from crypt.encrypt.symmetric_encrypt.padding.pkcs7 import _constant_time_compare, pad, unpad
 
 import pytest
 

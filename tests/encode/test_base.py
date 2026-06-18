@@ -17,6 +17,4 @@ class TestBase:
     from crypt.encode import base16
 
     result = binascii.hexlify(msg).decode("ascii")
-    assert base16.base16_encode(msg) == result.upper(), (
-      f"Test case failed for msg: {msg}"
-    )
+    assert base16.base16_encode(msg) == result.upper(), f"Test case failed for msg: {msg}"

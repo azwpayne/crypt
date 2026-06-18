@@ -1,8 +1,4 @@
-from crypt.digest.SHA.utils import (
-  generate_n_sieve,
-  rotate_left_64,
-  sieve_of_eratosthenes,
-)
+from crypt.digest.SHA.utils import generate_n_sieve, rotate_left_64, sieve_of_eratosthenes
 
 import pytest
 

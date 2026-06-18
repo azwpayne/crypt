@@ -103,9 +103,7 @@ def _compress_block(x: _Argon2Block, y: _Argon2Block) -> _Argon2Block:
 
   # Column rounds
   for i in range(0, 8, 2):
-    q[i], q[i + 4], q[i + 8], q[i + 12] = _g_function(
-      q[i], q[i + 4], q[i + 8], q[i + 12]
-    )
+    q[i], q[i + 4], q[i + 8], q[i + 12] = _g_function(q[i], q[i + 4], q[i + 8], q[i + 12])
 
   # Row rounds
   for i in range(4):
@@ -154,10 +152,7 @@ def _init_memory(
   """Initialize Argon2 memory matrix."""
   key = kwargs.get("key", b"")
   associated_data = kwargs.get("associated_data", b"")
-  lanes = [
-    [_Argon2Block() for _ in range(memory_blocks // parallelism)]
-    for __ in range(parallelism)
-  ]
+  lanes = [[_Argon2Block() for _ in range(memory_blocks // parallelism)] for __ in range(parallelism)]
 
   # Compute H0
   h0_input = struct.pack(
@@ -198,9 +193,7 @@ def _fill_memory(
   """Fill memory matrix with Argon2i pattern."""
   columns = memory_blocks // parallelism
 
-  for pass_num, slice_num, lane_index in itertools.product(
-    range(iterations), range(4), range(parallelism)
-  ):
+  for pass_num, slice_num, lane_index in itertools.product(range(iterations), range(4), range(parallelism)):
     prev_index = slice_num * columns // 4
 
     for i in range(columns // 4):

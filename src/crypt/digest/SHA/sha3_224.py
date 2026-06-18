@@ -109,9 +109,7 @@ def _keccak_f_1600(state: list[list[int]]) -> list[list[int]]:
 
     for x in range(5):
       for y in range(5):
-        b[y][(2 * x + 3 * y) % 5] = _rotate_left(
-          state[x][y], ROTATION_CONSTANTS[x][y], w
-        )
+        b[y][(2 * x + 3 * y) % 5] = _rotate_left(state[x][y], ROTATION_CONSTANTS[x][y], w)
 
     # Chi step: non-linear mixing
     for x in range(5):

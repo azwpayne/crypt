@@ -457,10 +457,7 @@ def _w_round(state: list[int], round_key: tuple[int, ...]) -> None:
   # Extract bytes from state words and apply S-box
   # State is 8 64-bit words, each word is a column
   # matrix[col][row] = byte at (col, row)
-  matrix = [
-    [_SBOX[(state[col] >> (56 - row * 8)) & 0xFF] for row in range(8)]
-    for col in range(8)
-  ]
+  matrix = [[_SBOX[(state[col] >> (56 - row * 8)) & 0xFF] for row in range(8)] for col in range(8)]
 
   # Shift columns (rotate column i down by i positions)
   for col in range(8):

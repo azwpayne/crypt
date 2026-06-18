@@ -115,12 +115,7 @@ def encrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
   c = (c + s_array[2 * rounds + 3]) & MASK32
 
   # Combine result (little endian)
-  return (
-    a.to_bytes(4, "little")
-    + b.to_bytes(4, "little")
-    + c.to_bytes(4, "little")
-    + d.to_bytes(4, "little")
-  )
+  return a.to_bytes(4, "little") + b.to_bytes(4, "little") + c.to_bytes(4, "little") + d.to_bytes(4, "little")
 
 
 def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
@@ -163,12 +158,7 @@ def decrypt_block(block: bytes, key: bytes, rounds: int = ROUNDS) -> bytes:
   b = (b - s_array[0]) & MASK32
 
   # Combine result (little endian)
-  return (
-    a.to_bytes(4, "little")
-    + b.to_bytes(4, "little")
-    + c.to_bytes(4, "little")
-    + d.to_bytes(4, "little")
-  )
+  return a.to_bytes(4, "little") + b.to_bytes(4, "little") + c.to_bytes(4, "little") + d.to_bytes(4, "little")
 
 
 # PKCS7 padding helpers

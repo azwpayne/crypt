@@ -117,9 +117,7 @@ class TestRC4:
     # Key: 0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20
     # Plaintext: 00000000000000000000000000000000
     # Expected output from our implementation
-    key = bytes.fromhex(
-      "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"
-    )
+    key = bytes.fromhex("0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20")
     plaintext = bytes.fromhex("00000000000000000000000000000000")
     expected = bytes.fromhex("eaa6bd25880bf93d3f5d1e4ca2611d91")
 
@@ -265,25 +263,17 @@ class TestSalsa20:
       reference_cipher = Salsa20.new(key=key, nonce=nonce)
       reference_ciphertext = reference_cipher.encrypt(plaintext)
 
-      assert custom_ciphertext == reference_ciphertext, (
-        f"Failed for key: {key!r}, nonce: {nonce!r}"
-      )
+      assert custom_ciphertext == reference_ciphertext, f"Failed for key: {key!r}, nonce: {nonce!r}"
 
   def test_known_vector_1(self):
     """Test with known test vector - verifies implementation consistency."""
     # This test verifies our implementation produces consistent output
-    key = bytes.fromhex(
-      "0053a6f94c9ff24598eb3e91e4378add3083d6297ccf2275c81b6ec11467ba0d"
-    )
+    key = bytes.fromhex("0053a6f94c9ff24598eb3e91e4378add3083d6297ccf2275c81b6ec11467ba0d")
     nonce = bytes.fromhex("0d74db42c23f9d92")
     counter = 0
-    plaintext = bytes.fromhex(
-      "0000000000000000000000000000000000000000000000000000000000000000"
-    )
+    plaintext = bytes.fromhex("0000000000000000000000000000000000000000000000000000000000000000")
     # Expected output from our implementation
-    expected = bytes.fromhex(
-      "b0284a581639b6e102d2df6524be735e8c4579ac1e0003ee500847d81948594f"
-    )
+    expected = bytes.fromhex("b0284a581639b6e102d2df6524be735e8c4579ac1e0003ee500847d81948594f")
 
     result = salsa20_encrypt(key, nonce, counter, plaintext)
     assert result == expected
@@ -291,15 +281,11 @@ class TestSalsa20:
   def test_known_vector_2(self):
     """Test with another known test vector."""
     # From Salsa20 test vectors
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = bytes.fromhex("0000000001000200cdb87f280000000001000200cdb87f28")
-    expected = bytes.fromhex(
-      "f3b8c83f3a6a4d76b8e4a7b2c9d5e1f4a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c"
-    )
+    bytes.fromhex("f3b8c83f3a6a4d76b8e4a7b2c9d5e1f4a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c")
 
     result = salsa20_encrypt(key, nonce, counter, plaintext)
     # Note: This is a placeholder expected value - the actual expected value

@@ -23,9 +23,7 @@ class TestChaCha20RFCTestVectors:
     Counter: 1
     Plaintext: "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it."
     """
-    key = bytes.fromhex(
-      "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
-    )
+    key = bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
     nonce = bytes.fromhex("000000000000004a00000000")
     counter = 1
     plaintext = (
@@ -35,7 +33,7 @@ class TestChaCha20RFCTestVectors:
     )
 
     # Expected ciphertext from RFC 7539
-    expected_ciphertext = bytes.fromhex(
+    bytes.fromhex(
       "6e2e359c7c8b3e5d8c5e3e0e5b1e7e8d"
       "6e2e359c7c8b3e5d8c5e3e0e5b1e7e8d"
       "6e2e359c7c8b3e5d8c5e3e0e5b1e7e8d"

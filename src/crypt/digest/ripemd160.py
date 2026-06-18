@@ -560,8 +560,7 @@ def ripemd160(data: bytes | str) -> str:
   # Produce final hash value
   # The state words are in little-endian format; reverse bytes for standard output
   return "".join(
-    f"{(word & 0xFF):02x}{((word >> 8) & 0xFF):02x}{((word >> 16) & 0xFF):02x}{((word >> 24) & 0xFF):02x}"
-    for word in h
+    f"{(word & 0xFF):02x}{((word >> 8) & 0xFF):02x}{((word >> 16) & 0xFF):02x}{((word >> 24) & 0xFF):02x}" for word in h
   )
 
 

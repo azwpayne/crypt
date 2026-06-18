@@ -138,9 +138,7 @@ def _compress(input_words: tuple[int, ...]) -> tuple[int, ...]:
   return tuple(state[-_C:])
 
 
-def _prepare_block(
-  data: bytes, block_num: int, hash_size: int, *, is_last: bool
-) -> tuple[int, ...]:
+def _prepare_block(data: bytes, block_num: int, hash_size: int, *, is_last: bool) -> tuple[int, ...]:
   """Prepare a data block for compression."""
   # Pad data to multiple of 64 bytes
   padded = data.ljust(64, b"\x00")

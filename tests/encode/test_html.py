@@ -7,13 +7,7 @@ standard library html module and testing various entity formats.
 from __future__ import annotations
 
 import html
-from crypt.encode.html import (
-  decode_numeric_entities,
-  encode_all_entities,
-  html_decode,
-  html_encode,
-  strip_tags,
-)
+from crypt.encode.html import decode_numeric_entities, encode_all_entities, html_decode, html_encode, strip_tags
 
 import pytest
 
@@ -64,9 +58,7 @@ class TestHtmlQuoteEncoding:
 
   def test_xss_payload_encoding(self):
     """Test encoding of typical XSS payloads."""
-    assert html_encode("<script>alert('xss')</script>") == (
-      "&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;"
-    )
+    assert html_encode("<script>alert('xss')</script>") == ("&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;")
 
 
 class TestHtmlDecoding:
@@ -130,9 +122,7 @@ class TestHtmlRoundtrip:
 
   def test_complex_html_roundtrip(self):
     """Test complex HTML roundtrip."""
-    self._extracted_from_test_complex_html_roundtrip_3(
-      '<div class="test">Hello & <b>World</b></div>'
-    )
+    self._extracted_from_test_complex_html_roundtrip_3('<div class="test">Hello & <b>World</b></div>')
 
   @staticmethod
   def _extracted_from_test_complex_html_roundtrip_3(arg0):
@@ -214,9 +204,7 @@ class TestDecodeNumericEntities:
     # Very large hex value that causes OverflowError in chr()
     assert decode_numeric_entities("&#xFFFFFFFFFFFF;") == "&#xFFFFFFFFFFFF;"
     # Very large decimal value that causes OverflowError in chr()
-    assert (
-      decode_numeric_entities("&#99999999999999999999;") == "&#99999999999999999999;"
-    )
+    assert decode_numeric_entities("&#99999999999999999999;") == "&#99999999999999999999;"
 
 
 class TestStripTags:

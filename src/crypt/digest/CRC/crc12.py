@@ -86,9 +86,7 @@ def crc12_cdma2000(data: bytes) -> int:
   poly=0xF13 init=0xFFF refin=false refout=false xorout=0x000
   Used in CDMA2000 telecommunications.
   """
-  return crc12(
-    data=data, poly=0xF13, init=0xFFF, ref_in=False, ref_out=False, xor_out=0x000
-  )
+  return crc12(data=data, poly=0xF13, init=0xFFF, ref_in=False, ref_out=False, xor_out=0x000)
 
 
 def crc12_dect(data: bytes) -> int:
@@ -97,9 +95,7 @@ def crc12_dect(data: bytes) -> int:
   poly=0x80F init=0x000 refin=false refout=false xorout=0x000
   Used in DECT cordless phones.
   """
-  return crc12(
-    data=data, poly=0x80F, init=0x000, ref_in=False, ref_out=False, xor_out=0x000
-  )
+  return crc12(data=data, poly=0x80F, init=0x000, ref_in=False, ref_out=False, xor_out=0x000)
 
 
 def crc12_gsm(data: bytes) -> int:
@@ -108,6 +104,4 @@ def crc12_gsm(data: bytes) -> int:
   poly=0xD31 init=0x000 refin=false refout=false xorout=0xFFF
   Used in GSM telecommunications.
   """
-  return crc12(
-    data=data, poly=0xD31, init=0x000, ref_in=False, ref_out=False, xor_out=0xFFF
-  )
+  return crc12(data=data, poly=0xD31, init=0x000, ref_in=False, ref_out=False, xor_out=0xFFF)

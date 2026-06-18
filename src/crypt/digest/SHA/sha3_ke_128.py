@@ -189,10 +189,10 @@ def pad_message(message):
     # 特殊情况: 需要额外一个块
     padding = bytes([0x9F])  # 0x1F | 0x80
   else:
-    padding = bytearray([0x1F])  # SHAKE domain separator
-    padding.extend([0] * (padding_len - 2))
-    padding.append(0x80)
-    padding = bytes(padding)
+    buf = bytearray([0x1F])  # SHAKE domain separator
+    buf.extend([0] * (padding_len - 2))
+    buf.append(0x80)
+    padding = bytes(buf)
 
   return message + padding
 

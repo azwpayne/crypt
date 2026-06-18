@@ -102,6 +102,4 @@ class TestBase62Validation:
   def test_is_valid_base62_edge_cases(self):
     """Test edge cases for validation."""
     assert not base62.is_valid_base62("")  # Empty string
-    assert base62.is_valid_base62(
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    )
+    assert base62.is_valid_base62("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")

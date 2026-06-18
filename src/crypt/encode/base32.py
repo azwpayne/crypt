@@ -32,9 +32,7 @@ def base32_encode(data: bytes) -> str:
   padding_len = (5 - len(binary_str) % 5) % 5
   binary_str += "0" * padding_len
 
-  encoded = [
-    BASE32_ALPHABET[int(binary_str[i : i + 5], 2)] for i in range(0, len(binary_str), 5)
-  ]
+  encoded = [BASE32_ALPHABET[int(binary_str[i : i + 5], 2)] for i in range(0, len(binary_str), 5)]
   # 添加填充字符
   padding = (8 - len(encoded) % 8) % 8
   encoded.extend(PADDING_CHAR for _ in range(padding))

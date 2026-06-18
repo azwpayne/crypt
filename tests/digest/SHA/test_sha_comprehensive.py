@@ -8,19 +8,7 @@ from __future__ import annotations
 import hashlib
 
 import pytest
-from Crypto.Hash import (
-  SHA1,
-  SHA3_224,
-  SHA3_256,
-  SHA3_384,
-  SHA3_512,
-  SHA224,
-  SHA256,
-  SHA384,
-  SHA512,
-  SHAKE128,
-  SHAKE256,
-)
+from Crypto.Hash import SHA1, SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHA224, SHA256, SHA384, SHA512, SHAKE128, SHAKE256
 
 from tests import BYTE_TEST_CASES
 
@@ -152,10 +140,7 @@ class TestSha2256:
     """Test SHA-256 against NIST test vectors."""
     from crypt.digest.SHA import sha2_256
 
-    assert (
-      sha2_256.sha256(b"abc")
-      == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
-    )
+    assert sha2_256.sha256(b"abc") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
 
   def test_sha256_output_length(self):
     """Test SHA-256 produces correct output length."""

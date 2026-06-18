@@ -150,7 +150,7 @@ class TestGCM:
     iv = b"\x01" * 12
     plaintext = b"Test message"
 
-    ciphertext, tag = gcm.gcm_encrypt(key, iv, plaintext)
+    _ciphertext, tag = gcm.gcm_encrypt(key, iv, plaintext)
     assert len(tag) == 16
 
   def test_gcm_wrong_tag_fails(self):
@@ -159,7 +159,7 @@ class TestGCM:
     iv = b"\x01" * 12
     plaintext = b"Secret message"
 
-    ciphertext, tag = gcm.gcm_encrypt(key, iv, plaintext)
+    ciphertext, _tag = gcm.gcm_encrypt(key, iv, plaintext)
     wrong_tag = b"\xff" * 16
 
     decrypted = gcm.gcm_decrypt(key, iv, ciphertext, wrong_tag)

@@ -15,9 +15,7 @@ import pytest
 # Register custom markers
 def pytest_configure(config):
   """Register custom markers."""
-  config.addinivalue_line(
-    "markers", "unit: marks tests as unit tests (deselect with '-m \"not unit\"')"
-  )
+  config.addinivalue_line("markers", "unit: marks tests as unit tests (deselect with '-m \"not unit\"')")
   config.addinivalue_line("markers", "integration: marks tests as integration tests")
   config.addinivalue_line("markers", "benchmark: marks tests as performance benchmarks")
   config.addinivalue_line("markers", "load: marks tests as load/stress tests")

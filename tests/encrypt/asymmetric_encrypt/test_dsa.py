@@ -69,7 +69,7 @@ class TestDSA:
   def test_dsa_signature_format(self) -> None:
     """Test DSA signature format."""
     p, q, g = dsa.generate_parameters()
-    x, y = dsa.generate_keypair(p, q, g)
+    x, _y = dsa.generate_keypair(p, q, g)
 
     message = b"Test message"
     r, s = dsa.sign(message, p, q, g, x)

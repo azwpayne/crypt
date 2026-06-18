@@ -1,10 +1,6 @@
 """Tests for X25519 ECDH key exchange."""
 
-from crypt.encrypt.asymmetric_encrypt.x25519 import (
-  compute_shared_secret,
-  generate_private_key,
-  generate_public_key,
-)
+from crypt.encrypt.asymmetric_encrypt.x25519 import compute_shared_secret, generate_private_key, generate_public_key
 
 import pytest
 
@@ -44,7 +40,7 @@ class TestX25519:
   def test_different_keys_different_secrets(self):
     """Test that different keys produce different secrets."""
     private1 = generate_private_key()
-    public1 = generate_public_key(private1)
+    generate_public_key(private1)
 
     private2 = generate_private_key()
     public2 = generate_public_key(private2)

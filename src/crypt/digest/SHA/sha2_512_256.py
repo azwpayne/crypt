@@ -168,9 +168,7 @@ def process_chunk(chunk: bytes, h: list[int]) -> list[int]:
 
   # 扩展消息调度
   for i in range(16, 80):
-    w[i] = (
-      gamma1(w[i - 2]) + w[i - 7] + gamma0(w[i - 15]) + w[i - 16]
-    ) & 0xFFFFFFFFFFFFFFFF
+    w[i] = (gamma1(w[i - 2]) + w[i - 7] + gamma0(w[i - 15]) + w[i - 16]) & 0xFFFFFFFFFFFFFFFF
 
   # 初始化工作变量
   a, b, c, d, e, f, g, h_val = h

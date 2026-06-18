@@ -94,13 +94,13 @@ def html_decode(encoded: object) -> str:
       Converts HTML entities (named, decimal, or hexadecimal) back to
   their corresponding characters.
 
-      Args:
+  Args:
           encoded: The HTML-encoded string to decode.
 
-      Returns:
+  Returns:
           The decoded string with entities converted to characters.
 
-      Examples:
+  Examples:
           >>> html_decode("&lt;script&gt;alert(&apos;xss&apos;)&lt;/script&gt;")
           "<script>alert('xss')</script>"
           >>> html_decode("Hello &amp; goodbye")

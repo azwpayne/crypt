@@ -44,10 +44,7 @@ _S0: Final[tuple[int, ...]] = tuple(
     0x13726121572FE2FF,
     0x01A488C6F917D2C5,
   ]
-  + [
-    (0xAAAAAAAAAAAAAAAA + (i * 0x1111111111111111)) & 0xFFFFFFFFFFFFFFFF
-    for i in range(240)
-  ]
+  + [(0xAAAAAAAAAAAAAAAA + (i * 0x1111111111111111)) & 0xFFFFFFFFFFFFFFFF for i in range(240)]
 )
 
 # S-box 1: 256 64-bit values

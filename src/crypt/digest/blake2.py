@@ -353,9 +353,7 @@ def blake2s(
   return result[:digest_size].hex()
 
 
-def _xor_param_into_state_32(
-  param: bytes, h: list[int], idx_lo: int, idx_hi: int
-) -> None:
+def _xor_param_into_state_32(param: bytes, h: list[int], idx_lo: int, idx_hi: int) -> None:
   """XOR a parameter (salt or personalization) into the BLAKE2s state vector.
 
   Pads the parameter to 8 bytes and XORs as two little-endian 32-bit words.

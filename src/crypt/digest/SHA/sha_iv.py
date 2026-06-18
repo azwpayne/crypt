@@ -47,9 +47,7 @@ def generate_sha2_initialization_vector(algorithm="SHA-256"):
     raise TypeError(msg)
 
   if algorithm not in _SUPPORTED_ALGORITHMS:
-    msg = (
-      f"不支持的算法: '{algorithm}'。仅支持: {', '.join(_SUPPORTED_ALGORITHMS.keys())}"
-    )
+    msg = f"不支持的算法: '{algorithm}'。仅支持: {', '.join(_SUPPORTED_ALGORITHMS.keys())}"
     raise ValueError(msg)
 
   config = _SUPPORTED_ALGORITHMS[algorithm]
@@ -68,10 +66,7 @@ def generate_sha2_initialization_vector(algorithm="SHA-256"):
   #   initial_hash_values.append(h)
   #
   # return initial_hash_values
-  return [
-    (math.isqrt(p << (2 * bits)) - (math.isqrt(p) << bits)) & mask
-    for p in _SHA_INITIAL_HASH_PRIMES
-  ]
+  return [(math.isqrt(p << (2 * bits)) - (math.isqrt(p) << bits)) & mask for p in _SHA_INITIAL_HASH_PRIMES]
 
 
 if __name__ == "__main__":

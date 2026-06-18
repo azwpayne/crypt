@@ -1,12 +1,6 @@
 """Tests for Paillier homomorphic encryption."""
 
-from crypt.encrypt.asymmetric_encrypt.paillier import (
-  add_constant,
-  add_encrypted,
-  decrypt,
-  encrypt,
-  generate_keypair,
-)
+from crypt.encrypt.asymmetric_encrypt.paillier import add_constant, add_encrypted, decrypt, encrypt, generate_keypair
 
 
 class TestPaillier:
@@ -52,7 +46,7 @@ class TestPaillier:
   def test_encrypt_out_of_range_negative(self):
     import pytest
 
-    n, _g = self.pub
+    _n, _g = self.pub
     with pytest.raises(ValueError, match="Plaintext must satisfy"):
       encrypt(self.pub, -1)
 
@@ -79,8 +73,8 @@ class TestPaillier:
 
     with patch("crypt.encrypt.asymmetric_encrypt.paillier._generate_prime") as mock_gen:
       mock_gen.side_effect = [7, 7, 5, 7]  # First two equal, second pair different
-      pub, priv = generate_keypair(bits=8)
-      n, g = pub
+      pub, _priv = generate_keypair(bits=8)
+      n, _g = pub
       assert n == 35  # 5 * 7
 
   def test_encrypt_r_loop(self):
@@ -88,7 +82,7 @@ class TestPaillier:
     from crypt.encrypt.asymmetric_encrypt.paillier import encrypt
     from unittest.mock import patch
 
-    n, g = self.pub
+    n, _g = self.pub
     with patch("secrets.randbelow") as mock_rand:
       mock_rand.side_effect = [0, n - 1]  # First r=0 (gcd(0,n)=n), second r=n-1 (gcd=1)
       ct = encrypt(self.pub, 1)

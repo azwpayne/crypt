@@ -156,8 +156,7 @@ def parse_message(padded: bytes) -> list[list[int]]:
   每个块是包含16个整数的列表
   """
   return [
-    [struct.unpack(">I", padded[i + j : i + j + 4])[0] for j in range(0, 64, 4)]
-    for i in range(0, len(padded), 64)
+    [struct.unpack(">I", padded[i + j : i + j + 4])[0] for j in range(0, 64, 4)] for i in range(0, len(padded), 64)
   ]
 
 
@@ -178,9 +177,7 @@ def schedule(block: list[int]) -> list[int]:
   return extend(block[:16], 16)
 
 
-def compress_block(
-  state: list[int], block: list[int], k_values: list[int]
-) -> list[int]:
+def compress_block(state: list[int], block: list[int], k_values: list[int]) -> list[int]:
   """
   压缩单个512位块
   纯函数实现，不修改原始状态
@@ -215,9 +212,7 @@ def compress_block(
     new_b = a
     new_a = (t1 + t2) & 0xFFFFFFFF
 
-    return round_iter(
-      ws_rest, ks_rest, (new_a, new_b, new_c, new_d, new_e, new_f, new_g, new_h)
-    )
+    return round_iter(ws_rest, ks_rest, (new_a, new_b, new_c, new_d, new_e, new_f, new_g, new_h))
 
   # 生成消息调度
   w_schedule = schedule(block)
@@ -258,7 +253,6 @@ def sha224(message: bytes) -> bytes:
   blocks = parse_message(padded)
 
   # 3. 处理每个块
-  final_state = [H0_SHA224] * 1  # 初始状态包装
 
   def process_blocks(state: list[int], blocks: list[list[int]]) -> list[int]:
     """递归处理所有块"""

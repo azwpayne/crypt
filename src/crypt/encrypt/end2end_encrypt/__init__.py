@@ -5,7 +5,7 @@ such as Signal Protocol, Double Ratchet, or similar secure messaging protocols.
 
 Current Status: STUB - No implementations yet.
 
-TODO:
+Todo:
 - Double Ratchet Algorithm
 - Signal Protocol primitives
 - X3DH key agreement

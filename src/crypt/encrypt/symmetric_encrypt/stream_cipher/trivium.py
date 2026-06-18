@@ -33,7 +33,7 @@ class Trivium:
     t1 = s[65] ^ s[92]
     t2 = s[161] ^ s[176]
     t3 = s[242] ^ s[287]
-    bit = (t1 ^ t2 ^ t3) if output else 0
+    (t1 ^ t2 ^ t3) if output else 0
     t1 ^= (s[90] & s[91]) ^ s[170]
     t2 ^= (s[174] & s[175]) ^ s[263]
     t3 ^= (s[285] & s[286]) ^ s[68]

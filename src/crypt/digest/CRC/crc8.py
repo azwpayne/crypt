@@ -86,9 +86,7 @@ def crc8_autosar(data: bytes) -> int:
   poly=0x2F init=0xFF refin=false refout=false xorout=0xFF
   汽车电子标准
   """
-  return crc8(
-    data=data, poly=0x2F, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF
-  )
+  return crc8(data=data, poly=0x2F, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF)
 
 
 def crc8_lte(data: bytes) -> int:
@@ -97,9 +95,7 @@ def crc8_lte(data: bytes) -> int:
   poly=0x9B init=0x00 refin=false refout=false xorout=0x00
   移动通信标准
   """
-  return crc8(
-    data=data, poly=0x9B, init=0x00, ref_in=False, ref_out=False, xor_out=0x00
-  )
+  return crc8(data=data, poly=0x9B, init=0x00, ref_in=False, ref_out=False, xor_out=0x00)
 
 
 def crc8_smbus(data: bytes) -> int:
@@ -108,9 +104,7 @@ def crc8_smbus(data: bytes) -> int:
   poly=0x07 init=0x00 refin=false refout=false xorout=0x00
   系统管理总线
   """
-  return crc8(
-    data=data, poly=0x07, init=0x00, ref_in=False, ref_out=False, xor_out=0x00
-  )
+  return crc8(data=data, poly=0x07, init=0x00, ref_in=False, ref_out=False, xor_out=0x00)
 
 
 def crc8_bluetooth(data: bytes) -> int:
@@ -128,9 +122,7 @@ def crc8_j1850(data: bytes) -> int:
   poly=0x1D init=0xFF refin=false refout=false xorout=0xFF
   汽车总线标准
   """
-  return crc8(
-    data=data, poly=0x1D, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF
-  )
+  return crc8(data=data, poly=0x1D, init=0xFF, ref_in=False, ref_out=False, xor_out=0xFF)
 
 
 # ============= 验证测试 =============

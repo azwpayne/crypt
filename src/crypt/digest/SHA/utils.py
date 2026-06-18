@@ -126,9 +126,7 @@ def keccak_f_1600(state: list[int]) -> list[int]:
     # Rho and Pi steps
     for x in range(5):
       for y in range(5):
-        b[y][(2 * x + 3 * y) % 5] = rotate_left_64(
-          a[x][y], KECCAK_ROTATION_OFFSETS[x][y]
-        )
+        b[y][(2 * x + 3 * y) % 5] = rotate_left_64(a[x][y], KECCAK_ROTATION_OFFSETS[x][y])
 
     # Chi step
     for x in range(5):
@@ -184,9 +182,7 @@ def sieve_of_eratosthenes(sieve_upper_bound: int) -> list[int]:
       # for j in range(i * i, limit + 1, i):
       #   is_prime[j] = False
       # 使用切片赋值优化：标记 i 的所有倍数
-      is_prime[x * x : sieve_upper_bound + 1 : x] = [False] * len(
-        is_prime[x * x : sieve_upper_bound + 1 : x]
-      )
+      is_prime[x * x : sieve_upper_bound + 1 : x] = [False] * len(is_prime[x * x : sieve_upper_bound + 1 : x])
 
   # return [i for i, prime in enumerate(is_prime) if prime]
   from itertools import compress
@@ -196,7 +192,6 @@ def sieve_of_eratosthenes(sieve_upper_bound: int) -> list[int]:
 
 def generate_n_sieve(n) -> list[int]:
   """生成前 n 个质数"""
-
   if n <= 0:
     return []
 

@@ -4,9 +4,7 @@
 # @desc    : URL percent-encoding (RFC 3986)
 
 # RFC 3986 unreserved characters that never need encoding
-UNRESERVED_CHARS = frozenset(
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
-)
+UNRESERVED_CHARS = frozenset("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~")
 
 # Hex digits for percent encoding
 HEX_DIGITS = "0123456789ABCDEF"

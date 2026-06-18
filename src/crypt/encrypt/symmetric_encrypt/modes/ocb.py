@@ -24,11 +24,7 @@ Reference:
   https://tools.ietf.org/html/rfc7253
 """
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-  _encrypt_block,
-  _get_key_params,
-  key_expansion,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import _encrypt_block, _get_key_params, key_expansion
 
 BLOCK_SIZE = 16  # AES block size in bytes
 
@@ -124,7 +120,7 @@ def _derive_offset(
   return offset_0_int.to_bytes(16, "big")
 
 
-def _ocb_encrypt(  # noqa: PLR0913
+def _ocb_encrypt(
   expanded_key: list[int],
   nr: int,
   l_star: bytes,
@@ -142,9 +138,7 @@ def _ocb_encrypt(  # noqa: PLR0913
   hash_result = _hash_ocb(expanded_key, nr, l_star, l_table, aad)
 
   # --- Process plaintext blocks ---
-  pt_blocks = [
-    plaintext[i : i + BLOCK_SIZE] for i in range(0, len(plaintext), BLOCK_SIZE)
-  ]
+  pt_blocks = [plaintext[i : i + BLOCK_SIZE] for i in range(0, len(plaintext), BLOCK_SIZE)]
   checksum = bytes(BLOCK_SIZE)
   ciphertext = bytearray()
 
@@ -170,7 +164,7 @@ def _ocb_encrypt(  # noqa: PLR0913
   return bytes(ciphertext) + tag
 
 
-def _ocb_decrypt(  # noqa: PLR0913
+def _ocb_decrypt(
   expanded_key: list[int],
   nr: int,
   l_star: bytes,
@@ -188,9 +182,7 @@ def _ocb_decrypt(  # noqa: PLR0913
   hash_result = _hash_ocb(expanded_key, nr, l_star, l_table, aad)
 
   # --- Process ciphertext blocks ---
-  ct_blocks = [
-    ciphertext[i : i + BLOCK_SIZE] for i in range(0, len(ciphertext), BLOCK_SIZE)
-  ]
+  ct_blocks = [ciphertext[i : i + BLOCK_SIZE] for i in range(0, len(ciphertext), BLOCK_SIZE)]
   plaintext = bytearray()
   checksum = bytes(BLOCK_SIZE)
 

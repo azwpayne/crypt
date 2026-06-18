@@ -2231,9 +2231,7 @@ def key_schedule(key: bytes) -> tuple[list, list, list, list]:
   return kr_f, kr_b, tm_f, tm_b
 
 
-def _forward_quad_round(
-  words: tuple[int, int, int, int], kr: list[int], tm: int
-) -> tuple[int, int, int, int]:
+def _forward_quad_round(words: tuple[int, int, int, int], kr: list[int], tm: int) -> tuple[int, int, int, int]:
   """Perform one forward quad-round.
 
   Args:
@@ -2254,9 +2252,7 @@ def _forward_quad_round(
   return x0, x1, x2, x3
 
 
-def _backward_quad_round(
-  words: tuple[int, int, int, int], kr: list[int], tm: int
-) -> tuple[int, int, int, int]:
+def _backward_quad_round(words: tuple[int, int, int, int], kr: list[int], tm: int) -> tuple[int, int, int, int]:
   """Perform one backward quad-round (inverse of forward).
 
   Args:
@@ -2307,9 +2303,7 @@ def encrypt_block(block: bytes, key: bytes) -> bytes:
     x0, x1, x2, x3 = _forward_quad_round((x0, x1, x2, x3), kr_f[qr], tm_f[qr])
 
   # Store result (big-endian)
-  return (
-    _word_to_bytes(x0) + _word_to_bytes(x1) + _word_to_bytes(x2) + _word_to_bytes(x3)
-  )
+  return _word_to_bytes(x0) + _word_to_bytes(x1) + _word_to_bytes(x2) + _word_to_bytes(x3)
 
 
 def decrypt_block(block: bytes, key: bytes) -> bytes:
@@ -2343,9 +2337,7 @@ def decrypt_block(block: bytes, key: bytes) -> bytes:
     x0, x1, x2, x3 = _backward_quad_round((x0, x1, x2, x3), kr_f[qr], tm_f[qr])
 
   # Store result (big-endian)
-  return (
-    _word_to_bytes(x0) + _word_to_bytes(x1) + _word_to_bytes(x2) + _word_to_bytes(x3)
-  )
+  return _word_to_bytes(x0) + _word_to_bytes(x1) + _word_to_bytes(x2) + _word_to_bytes(x3)
 
 
 def cast6_ecb_encrypt(data: bytes, key: bytes) -> bytes:

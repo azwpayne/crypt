@@ -1,10 +1,6 @@
 """Tests for ROT13 cipher implementation."""
 
-from crypt.encrypt.symmetric_encrypt.stream_cipher.rot13 import (
-  _create_rot13_table,
-  decrypt,
-  encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.stream_cipher.rot13 import _create_rot13_table, decrypt, encrypt
 
 
 class TestCreateRot13Table:

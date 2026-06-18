@@ -9,11 +9,7 @@ Reference: RFC 4493 — The AES-CMAC Algorithm
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.aes import (
-  _encrypt_block,
-  _get_key_params,
-  key_expansion,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.aes import _encrypt_block, _get_key_params, key_expansion
 from typing import Final
 
 _BLOCK_SIZE: Final = 16

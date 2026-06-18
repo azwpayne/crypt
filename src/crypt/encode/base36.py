@@ -33,7 +33,7 @@ def base36_decode(encoded: str) -> int:
     return 0
 
   # Handle leading zeros
-  n_leading = len(encoded) - len(encoded.lstrip("0"))
+  len(encoded) - len(encoded.lstrip("0"))
   remaining = encoded.lstrip("0")
 
   if not remaining:

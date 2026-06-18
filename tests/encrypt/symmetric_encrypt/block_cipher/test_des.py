@@ -18,16 +18,8 @@ Tests include:
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-  DES,
-  des_decrypt,
-  des_encrypt,
-)
-from crypt.encrypt.symmetric_encrypt.block_cipher.des3 import (
-  DES3,
-  des3_decrypt,
-  des3_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.des import DES, des_decrypt, des_encrypt
+from crypt.encrypt.symmetric_encrypt.block_cipher.des3 import DES3, des3_decrypt, des3_encrypt
 
 import pytest
 from Crypto.Cipher import DES3 as CRYPTO_DES3
@@ -124,11 +116,7 @@ class TestDES:
     des = DES(key)
     # Note: These vectors are for raw block encryption, not with padding
     # We'll test single block encryption
-    from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-      _bytes_to_int,
-      _des_block_encrypt,
-      _int_to_bytes,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.des import _bytes_to_int, _des_block_encrypt, _int_to_bytes
 
     block_int = _bytes_to_int(plaintext)
     encrypted_int = _des_block_encrypt(block_int, des.subkeys)
@@ -138,10 +126,7 @@ class TestDES:
 
   def test_des_pkcs7_padding(self):
     """Test PKCS7 padding and unpadding."""
-    from crypt.encrypt.symmetric_encrypt.block_cipher.des import (
-      _pkcs7_pad,
-      _pkcs7_unpad,
-    )
+    from crypt.encrypt.symmetric_encrypt.block_cipher.des import _pkcs7_pad, _pkcs7_unpad
 
     # Test various lengths
     for length in range(1, 17):

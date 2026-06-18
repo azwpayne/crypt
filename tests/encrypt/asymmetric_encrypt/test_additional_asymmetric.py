@@ -43,10 +43,7 @@ class TestECC:
 
   def test_ecdh_key_exchange(self):
     """Test ECDH shared secret generation."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      ecdh_shared_secret,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import ecdh_shared_secret, generate_keypair
 
     # Alice generates keypair
     alice_private, alice_public = generate_keypair()
@@ -64,11 +61,7 @@ class TestECC:
 
   def test_ecdsa_sign_verify(self):
     """Test ECDSA sign and verify roundtrip."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      ecdsa_sign,
-      ecdsa_verify,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import ecdsa_sign, ecdsa_verify, generate_keypair
 
     private_key, public_key = generate_keypair()
     message = b"Hello, ECC!"
@@ -81,11 +74,7 @@ class TestECC:
 
   def test_ecdsa_verify_wrong_message(self):
     """Test ECDSA verification fails with wrong message."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      ecdsa_sign,
-      ecdsa_verify,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import ecdsa_sign, ecdsa_verify, generate_keypair
 
     private_key, public_key = generate_keypair()
     message = b"Hello, ECC!"
@@ -98,13 +87,9 @@ class TestECC:
 
   def test_ecdsa_verify_wrong_key(self):
     """Test ECDSA verification fails with wrong public key."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      ecdsa_sign,
-      ecdsa_verify,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import ecdsa_sign, ecdsa_verify, generate_keypair
 
-    private_key1, public_key1 = generate_keypair()
+    private_key1, _public_key1 = generate_keypair()
     _, public_key2 = generate_keypair()
 
     message = b"Hello, ECC!"
@@ -115,11 +100,7 @@ class TestECC:
 
   def test_ecdsa_sign_verify_string_message(self):
     """Test ECDSA with string message (auto-encoded)."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      ecdsa_sign,
-      ecdsa_verify,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import ecdsa_sign, ecdsa_verify, generate_keypair
 
     private_key, public_key = generate_keypair()
     message = "Hello, ECC with string!"
@@ -132,11 +113,7 @@ class TestECC:
 
   def test_ecdsa_signature_components(self):
     """Test that ECDSA signature has valid components."""
-    from crypt.encrypt.asymmetric_encrypt.ecc import (
-      N,
-      ecdsa_sign,
-      generate_keypair,
-    )
+    from crypt.encrypt.asymmetric_encrypt.ecc import N, ecdsa_sign, generate_keypair
 
     private_key, _ = generate_keypair()
     message = b"Test message"
@@ -153,10 +130,7 @@ class TestDSA:
 
   def test_key_generation(self):
     """Test DSA key pair generation."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters
 
     p, q, g = generate_parameters()
     private_key, public_key = generate_keypair(p, q, g)
@@ -170,10 +144,7 @@ class TestDSA:
 
   def test_key_generation_consistency(self):
     """Test that DSA keys follow the mathematical relationship."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters
 
     p, q, g = generate_parameters()
     private_key, public_key = generate_keypair(p, q, g)
@@ -184,12 +155,7 @@ class TestDSA:
 
   def test_sign_verify_roundtrip(self):
     """Test DSA sign and verify roundtrip."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      sign,
-      verify,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, sign, verify
 
     p, q, g = generate_parameters()
     private_key, public_key = generate_keypair(p, q, g)
@@ -202,12 +168,7 @@ class TestDSA:
 
   def test_sign_verify_wrong_message(self):
     """Test DSA verification fails with wrong message."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      sign,
-      verify,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, sign, verify
 
     p, q, g = generate_parameters()
     private_key, public_key = generate_keypair(p, q, g)
@@ -221,12 +182,7 @@ class TestDSA:
 
   def test_sign_verify_wrong_key(self):
     """Test DSA verification fails with wrong public key."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      sign,
-      verify,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, sign, verify
 
     p, q, g = generate_parameters()
     private_key1, _ = generate_keypair(p, q, g)
@@ -240,12 +196,7 @@ class TestDSA:
 
   def test_sign_verify_string_message(self):
     """Test DSA with string message (auto-encoded)."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      sign,
-      verify,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, sign, verify
 
     p, q, g = generate_parameters()
     private_key, public_key = generate_keypair(p, q, g)
@@ -258,11 +209,7 @@ class TestDSA:
 
   def test_signature_components(self):
     """Test that DSA signature has valid components."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      sign,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, sign
 
     p, q, g = generate_parameters()
     private_key, _ = generate_keypair(p, q, g)
@@ -276,11 +223,7 @@ class TestDSA:
 
   def test_verify_invalid_signature_values(self):
     """Test DSA verification fails with invalid signature values."""
-    from crypt.encrypt.asymmetric_encrypt.dsa import (
-      generate_keypair,
-      generate_parameters,
-      verify,
-    )
+    from crypt.encrypt.asymmetric_encrypt.dsa import generate_keypair, generate_parameters, verify
 
     p, q, g = generate_parameters()
     _, public_key = generate_keypair(p, q, g)
@@ -328,10 +271,7 @@ class TestDiffieHellman:
 
   def test_key_exchange_different_private_keys(self):
     """Test that different private keys produce different public keys."""
-    from crypt.encrypt.asymmetric_encrypt.diffie_hellman import (
-      generate_private_key,
-      generate_public_key,
-    )
+    from crypt.encrypt.asymmetric_encrypt.diffie_hellman import generate_private_key, generate_public_key
 
     private_key1 = generate_private_key()
     private_key2 = generate_private_key()
@@ -345,9 +285,7 @@ class TestDiffieHellman:
 
   def test_key_exchange_consistency(self):
     """Test DH consistency - same inputs produce same output."""
-    from crypt.encrypt.asymmetric_encrypt.diffie_hellman import (
-      compute_shared_secret,
-    )
+    from crypt.encrypt.asymmetric_encrypt.diffie_hellman import compute_shared_secret
 
     # Use fixed values for consistency test
     private_key_a = 123456789
@@ -429,14 +367,14 @@ class TestDiffieHellman:
     # First exchange
     alice_private1 = generate_private_key()
     bob_private1 = generate_private_key()
-    alice_public1 = generate_public_key(alice_private1)
+    generate_public_key(alice_private1)
     bob_public1 = generate_public_key(bob_private1)
     shared1 = compute_shared_secret(alice_private1, bob_public1)
 
     # Second exchange
     alice_private2 = generate_private_key()
     bob_private2 = generate_private_key()
-    alice_public2 = generate_public_key(alice_private2)
+    generate_public_key(alice_private2)
     bob_public2 = generate_public_key(bob_private2)
     shared2 = compute_shared_secret(alice_private2, bob_public2)
 

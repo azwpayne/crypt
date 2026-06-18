@@ -141,9 +141,7 @@ class SEALState:
         reg_d = (reg_d ^ self.T[q0]) & 0xFFFFFFFF
         reg_a = (reg_a >> 16) | ((reg_d ^ self.T[q1]) << 16)
 
-      output.extend(
-        (reg_b & 0xFFFFFFFF, reg_c & 0xFFFFFFFF, reg_d & 0xFFFFFFFF, reg_a & 0xFFFFFFFF)
-      )
+      output.extend((reg_b & 0xFFFFFFFF, reg_c & 0xFFFFFFFF, reg_d & 0xFFFFFFFF, reg_a & 0xFFFFFFFF))
       # Update n for next iteration
       n = (n + 1) & 0xFFFFFFFF
       self._initialize_register(n)

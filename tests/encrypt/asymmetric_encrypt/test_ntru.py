@@ -293,7 +293,7 @@ class TestKeyGeneration:
 
   def test_custom_parameters(self):
     """Test key generation with custom parameters."""
-    pub, priv = ntru_generate_keypair(n=107, p=3, q=349, df=15, dg=12)
+    pub, _priv = ntru_generate_keypair(n=107, p=3, q=349, df=15, dg=12)
 
     assert pub["n"] == 107
     assert pub["p"] == 3
@@ -379,7 +379,7 @@ class TestEncryptionDecryption:
     ciphertext = ntru_encrypt(message, self.pub)
 
     # Generate a different key pair
-    other_pub, other_priv = ntru_generate_keypair()
+    _other_pub, other_priv = ntru_generate_keypair()
     decrypted = ntru_decrypt(ciphertext, other_priv)
 
     # Decryption with wrong key should not produce the original message

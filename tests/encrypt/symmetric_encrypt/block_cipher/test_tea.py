@@ -18,11 +18,7 @@ Tests include:
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.tea import (
-  TEA,
-  tea_decrypt,
-  tea_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.tea import TEA, tea_decrypt, tea_encrypt
 
 import pytest
 

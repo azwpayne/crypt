@@ -124,7 +124,7 @@ class TestEd25519PointEncoding:
     y = 2
     y2 = (y * y) % (2**255 - 19)
     d = (-121665 * pow(121666, -1, 2**255 - 19)) % (2**255 - 19)
-    x2 = ((y2 - 1) * pow(d * y2 + 1, -1, 2**255 - 19)) % (2**255 - 19)
+    ((y2 - 1) * pow(d * y2 + 1, -1, 2**255 - 19)) % (2**255 - 19)
     # Find a y where x2 is not a quadratic residue
     # Instead, construct a point that fails is_valid
     data = y.to_bytes(32, "little")
@@ -146,12 +146,12 @@ class TestEd25519PointEncoding:
       sign(b"test", b"\x00" * 31)
 
   def test_verify_wrong_signature_length(self):
-    private_key, public_key = generate_keypair()
+    _private_key, public_key = generate_keypair()
     assert verify(b"\x00" * 63, b"test", public_key) is False
     assert verify(b"\x00" * 65, b"test", public_key) is False
 
   def test_verify_wrong_public_key_length(self):
-    private_key, public_key = generate_keypair()
+    private_key, _public_key = generate_keypair()
     sig = sign(b"test", private_key)
     assert verify(sig, b"test", b"\x00" * 31) is False
     assert verify(sig, b"test", b"\x00" * 33) is False
@@ -160,9 +160,7 @@ class TestEd25519PointEncoding:
     private_key, public_key = generate_keypair()
     sig = sign(b"test", private_key)
     # Set s to L (order of base point)
-    bad_sig = sig[:32] + (2**252 + 27742317777372353535851937790883648493).to_bytes(
-      32, "little"
-    )
+    bad_sig = sig[:32] + (2**252 + 27742317777372353535851937790883648493).to_bytes(32, "little")
     assert verify(bad_sig, b"test", public_key) is False
 
   def test_verify_none_points(self):

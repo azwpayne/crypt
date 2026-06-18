@@ -90,7 +90,7 @@ class TestSiphash24Int:
     self,
     length: int,
     message: bytes,
-    expected: str,  # noqa: ARG002
+    expected: str,
   ) -> None:
     """Integer output must match the bytes output."""
     _ = length, expected  # used via parametrize

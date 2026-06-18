@@ -93,10 +93,7 @@ def message_expand(block: bytes) -> tuple[list[int], list[int]]:
   """
   w = [int.from_bytes(block[i : i + 4], "big") for i in range(0, 64, 4)]
   w.extend(
-    p1(w[j - 16] ^ w[j - 9] ^ left_rotate(w[j - 3], 15))
-    ^ left_rotate(w[j - 13], 7)
-    ^ w[j - 6]
-    for j in range(16, 68)
+    p1(w[j - 16] ^ w[j - 9] ^ left_rotate(w[j - 3], 15)) ^ left_rotate(w[j - 13], 7) ^ w[j - 6] for j in range(16, 68)
   )
   w_prime = [w[j] ^ w[j + 4] for j in range(64)]
   return w, w_prime
@@ -116,9 +113,7 @@ def cf(v: list[int], block: bytes) -> list[int]:
   w, w_prime = message_expand(block)
 
   for j in range(64):
-    ss1 = left_rotate(
-      (left_rotate(a, 12) + e + left_rotate(T[j], j % 32)) & 0xFFFFFFFF, 7
-    )
+    ss1 = left_rotate((left_rotate(a, 12) + e + left_rotate(T[j], j % 32)) & 0xFFFFFFFF, 7)
     ss2 = ss1 ^ left_rotate(a, 12)
 
     tt1 = (ff(a, b, c, j) + d + ss2 + w_prime[j]) & 0xFFFFFFFF

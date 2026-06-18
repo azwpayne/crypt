@@ -80,7 +80,7 @@ class TestECC:
 
   def test_signature_format(self) -> None:
     """Test signature format."""
-    private_key, public_key = ecc.generate_keypair()
+    private_key, _public_key = ecc.generate_keypair()
 
     message = b"Test message"
     r, s = ecc.ecdsa_sign(message, private_key)

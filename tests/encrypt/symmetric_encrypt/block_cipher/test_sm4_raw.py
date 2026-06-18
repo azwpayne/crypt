@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.block_cipher.sm4 import (
-  sm4_decrypt,
-  sm4_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.block_cipher.sm4 import sm4_decrypt, sm4_encrypt
 
 KEY = bytes.fromhex("0123456789abcdeffedcba9876543210")
 PLAINTEXT = bytes.fromhex("0123456789abcdeffedcba9876543210")

@@ -96,9 +96,7 @@ def _emsa_pss_encode(
 
   # Clear leading bits
   bits_to_clear = 8 * em_len - em_bits
-  masked_db = (masked_db[0] & ((1 << (8 - bits_to_clear)) - 1)).to_bytes(
-    1, "big"
-  ) + masked_db[1:]
+  masked_db = (masked_db[0] & ((1 << (8 - bits_to_clear)) - 1)).to_bytes(1, "big") + masked_db[1:]
 
   # EM = masked_db || h || 0xbc
   return masked_db + h + b"\xbc"

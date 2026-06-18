@@ -122,10 +122,8 @@ def morse_encode(text: object, *, sep: str = " ", word_sep: str = " / ") -> str:
   encoded_words = []
 
   for word in words:
-    if encoded_chars := [
-      MORSE_CODE_DICT[char] for char in word if char in MORSE_CODE_DICT
-    ]:
-      encoded_words.append(sep.join(encoded_chars))  # noqa: PERF401
+    if encoded_chars := [MORSE_CODE_DICT[char] for char in word if char in MORSE_CODE_DICT]:
+      encoded_words.append(sep.join(encoded_chars))
 
   return word_sep.join(encoded_words)
 
@@ -304,6 +302,7 @@ def morse_decode_binary(
       dash: Binary representation of a dash (default: "111").
       symbol_gap: Gap between symbols in a character (default: "0").
       char_gap: Gap between characters (default: "000").
+
   Returns:
       The decoded text in uppercase.
 
@@ -337,9 +336,7 @@ def morse_decode_binary(
 
     # Split characters by char_gap and decode each
     chars = word_stripped.split(char_gap)
-    decoded_chars = [
-      _decode_binary_char(c, dot, dash, symbol_gap) for c in chars if c.strip()
-    ]
+    decoded_chars = [_decode_binary_char(c, dot, dash, symbol_gap) for c in chars if c.strip()]
     if decoded_chars := [ch for ch in decoded_chars if ch]:
       decoded_words.append("".join(decoded_chars))
 

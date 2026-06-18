@@ -1,12 +1,6 @@
 """Tests for ECDH key exchange with NIST curves."""
 
-from crypt.encrypt.asymmetric_encrypt.ecdh import (
-  CURVES,
-  Point,
-  compute_shared_secret,
-  generate_keypair,
-  scalar_mult,
-)
+from crypt.encrypt.asymmetric_encrypt.ecdh import CURVES, Point, compute_shared_secret, generate_keypair, scalar_mult
 
 import pytest
 
@@ -49,9 +43,9 @@ class TestECDH:
   @pytest.mark.parametrize("curve_name", ["P-256", "P-384", "P-521"])
   def test_different_keys_different_secrets(self, curve_name):
     """Test that different keys produce different secrets."""
-    private1, public1 = generate_keypair(curve_name)
-    private2, public2 = generate_keypair(curve_name)
-    private3, public3 = generate_keypair(curve_name)
+    private1, _public1 = generate_keypair(curve_name)
+    _private2, public2 = generate_keypair(curve_name)
+    _private3, public3 = generate_keypair(curve_name)
 
     shared1 = compute_shared_secret(private1, public2)
     shared2 = compute_shared_secret(private1, public3)
@@ -60,7 +54,7 @@ class TestECDH:
 
   def test_invalid_curve_name(self):
     """Test that invalid curve name raises error."""
-    with pytest.raises(ValueError, match="Unsupported curve|Unknown curve|invalid"):
+    with pytest.raises(ValueError, match=r"Unsupported curve|Unknown curve|invalid"):
       generate_keypair("invalid-curve")
 
   def test_point_equality(self):
@@ -75,7 +69,7 @@ class TestECDH:
 
   def test_scalar_mult_identity(self):
     """Test scalar multiplication with identity."""
-    private, public = generate_keypair("P-256")
+    _private, public = generate_keypair("P-256")
 
     # Multiply by 1 should give same point
     result = scalar_mult(1, public)
@@ -84,8 +78,8 @@ class TestECDH:
   @pytest.mark.parametrize("curve_name", ["P-256", "P-384", "P-521"])
   def test_shared_secret_length(self, curve_name):
     """Test that shared secret has correct length."""
-    private1, public1 = generate_keypair(curve_name)
-    private2, public2 = generate_keypair(curve_name)
+    private1, _public1 = generate_keypair(curve_name)
+    _private2, public2 = generate_keypair(curve_name)
 
     shared = compute_shared_secret(private1, public2)
     curve = CURVES[curve_name]

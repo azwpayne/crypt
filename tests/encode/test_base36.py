@@ -1,11 +1,6 @@
 """Tests for Base36 encoding."""
 
-from crypt.encode.base36 import (
-  base36_decode,
-  base36_encode,
-  decode_base36,
-  encode_base36,
-)
+from crypt.encode.base36 import base36_decode, base36_encode, decode_base36, encode_base36
 
 import pytest
 

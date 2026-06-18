@@ -5,13 +5,7 @@ Test vectors from RFC 4493 Section 4 and additional edge cases.
 
 from __future__ import annotations
 
-from crypt.digest.HMAC.cmac import (
-  _constant_time_compare,
-  _generate_subkeys,
-  _left_shift_block,
-  cmac,
-  cmac_verify,
-)
+from crypt.digest.HMAC.cmac import _constant_time_compare, _generate_subkeys, _left_shift_block, cmac, cmac_verify
 
 import pytest
 
@@ -40,9 +34,7 @@ RFC4493_TEST_VECTORS: list[tuple[bytes, bytes, str]] = [
   # Example 3: len = 40 (two full blocks + partial)
   (
     RFC4493_KEY,
-    bytes.fromhex(
-      "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411"
-    ),
+    bytes.fromhex("6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411"),
     "dfa66747de9ae63030ca32611497c827",
   ),
   # Example 4: len = 64 (four full blocks)
@@ -123,9 +115,7 @@ class TestCmacVerify:
   """Tests for cmac_verify function."""
 
   @pytest.mark.parametrize(("key", "message", "expected_hex"), RFC4493_TEST_VECTORS)
-  def test_verify_valid_tag(
-    self, key: bytes, message: bytes, expected_hex: str
-  ) -> None:
+  def test_verify_valid_tag(self, key: bytes, message: bytes, expected_hex: str) -> None:
     """Test that valid tags are accepted."""
     tag = bytes.fromhex(expected_hex)
     assert cmac_verify(key, message, tag) is True

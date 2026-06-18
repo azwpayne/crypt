@@ -158,22 +158,16 @@ def pbkdf2(
 # Convenience aliases for common configurations
 
 
-def pbkdf2_sha1(
-  password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None
-) -> bytes:
+def pbkdf2_sha1(password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None) -> bytes:
   """PBKDF2 with SHA1."""
   return pbkdf2(password, salt, iterations, dklen, hash_name="sha1")
 
 
-def pbkdf2_sha256(
-  password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None
-) -> bytes:
+def pbkdf2_sha256(password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None) -> bytes:
   """PBKDF2 with SHA256."""
   return pbkdf2(password, salt, iterations, dklen, hash_name="sha256")
 
 
-def pbkdf2_sha512(
-  password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None
-) -> bytes:
+def pbkdf2_sha512(password: str | bytes, salt: str | bytes, iterations: int, dklen: int | None = None) -> bytes:
   """PBKDF2 with SHA512."""
   return pbkdf2(password, salt, iterations, dklen, hash_name="sha512")

@@ -53,9 +53,7 @@ class TestUrlEdgeCases:
     assert url_encode("a@b.com", safe="@.") == "a@b.com"
 
     # Compare with urllib
-    assert url_encode("hello world", safe=" ") == urllib.parse.quote(
-      "hello world", safe=" "
-    )
+    assert url_encode("hello world", safe=" ") == urllib.parse.quote("hello world", safe=" ")
 
   def test_url_space_encoding(self):
     """Test that spaces are encoded as %20, not +."""

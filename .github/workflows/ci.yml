@@ -62,11 +62,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
+      # Dependabot covers dependency vulnerabilities on GitHub; `safety` was
+      # removed because it requires interactive login and hangs in CI.
       - name: Run bandit
-        run: uv run bandit -r src/
-
-      - name: Run safety check
-        run: uv run safety scan
+        run: uv run bandit -r src/ -c pyproject.toml
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
@@ -76,7 +75,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.14t" ]
+        # 3.14t (free-threaded) excluded — not reliably available on hosted runners.
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
         exclude:
           # Python 3.14 not yet available on macOS runners
           - os: macos-latest
@@ -99,14 +99,14 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run tests
-        run: |
-          uv run --group test pytest
+        run: uv run --group test pytest
 
-      - name: Upload coverage
+      - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: coverage-*.xml
+          path: .coverage*
+          if-no-files-found: warn
           retention-days: 7
 
   coverage:
@@ -125,7 +125,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: Download coverage reports
+      - name: Download coverage data
         uses: actions/download-artifact@v4
         with:
           pattern: coverage-*
@@ -135,20 +135,13 @@ jobs:
       - name: Combine coverage
         run: uv run coverage combine coverage-reports/
 
-      - name: Upload combined coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: combined-coverage
-          path: coverage-reports/
-          retention-days: 14
-
       - name: Generate coverage report
         run: |
           uv run coverage report --fail-under=80
           uv run coverage html -d reports/coverage
           uv run coverage xml -o reports/coverage.xml
 
-      - name: Upload HTML coverage report
+      - name: Upload combined coverage
         uses: actions/upload-artifact@v4
         with:
           name: html-coverage-report

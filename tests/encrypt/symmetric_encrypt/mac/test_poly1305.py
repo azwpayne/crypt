@@ -5,10 +5,7 @@
 # @mail    : paynewu0719@gmail.com
 # @desc    : Unit tests for Poly1305 implementation
 
-from crypt.digest.poly1305 import (
-  poly1305_mac,
-  poly1305_verify,
-)
+from crypt.digest.poly1305 import poly1305_mac, poly1305_verify
 
 import pytest
 

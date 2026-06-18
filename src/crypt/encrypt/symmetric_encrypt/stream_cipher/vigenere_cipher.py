@@ -217,11 +217,7 @@ def kasiski_examination(text: str, min_length: int = 3) -> dict:
   result = {}
   for pattern, positions in repeats.items():
     if len(positions) > 1:
-      distances = [
-        positions[j] - positions[i]
-        for i in range(len(positions))
-        for j in range(i + 1, len(positions))
-      ]
+      distances = [positions[j] - positions[i] for i in range(len(positions)) for j in range(i + 1, len(positions))]
       result[pattern] = distances
 
   return result
@@ -239,7 +235,6 @@ def friedman_test(text: str) -> float:
   返回:
       估计的密钥长度
   """
-
   # 清理文本
   cleaned = "".join(c.upper() for c in text if c.isalpha())
   n = len(cleaned)

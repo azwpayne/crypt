@@ -18,12 +18,7 @@ Tests include:
 
 from __future__ import annotations
 
-from crypt.encrypt.symmetric_encrypt.stream_cipher.salsa20 import (
-  quarter_round,
-  rotl,
-  salsa20_block,
-  salsa20_encrypt,
-)
+from crypt.encrypt.symmetric_encrypt.stream_cipher.salsa20 import quarter_round, rotl, salsa20_block, salsa20_encrypt
 
 
 class TestSalsa20:
@@ -57,9 +52,7 @@ class TestSalsa20:
 
   def test_salsa20_block_output_length(self):
     """Test that salsa20_block produces 64-byte output."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
 
@@ -69,9 +62,7 @@ class TestSalsa20:
 
   def test_salsa20_block_deterministic(self):
     """Test that salsa20_block is deterministic."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
 
@@ -82,9 +73,7 @@ class TestSalsa20:
 
   def test_salsa20_block_different_counters(self):
     """Test that different counters produce different blocks."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
 
     block1 = salsa20_block(key, 0, nonce)
@@ -94,9 +83,7 @@ class TestSalsa20:
 
   def test_salsa20_basic_encrypt_decrypt(self):
     """Test basic encryption and decryption."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b"Hello, Salsa20!"
@@ -110,9 +97,7 @@ class TestSalsa20:
 
   def test_salsa20_large_data(self):
     """Test Salsa20 with data larger than one block (64 bytes)."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b"A" * 1000  # Much larger than 64 bytes
@@ -125,9 +110,7 @@ class TestSalsa20:
 
   def test_salsa20_exact_block_size(self):
     """Test Salsa20 with exactly 64 bytes (one block)."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b"X" * 64
@@ -139,9 +122,7 @@ class TestSalsa20:
 
   def test_salsa20_empty_plaintext(self):
     """Test Salsa20 with empty plaintext."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b""
@@ -166,9 +147,7 @@ class TestSalsa20:
 
   def test_salsa20_different_nonces(self):
     """Test that different nonces produce different ciphertexts."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce1 = bytes.fromhex("9565542946c322be")
     nonce2 = bytes.fromhex("0000000000000001")
     counter = 0
@@ -181,12 +160,8 @@ class TestSalsa20:
 
   def test_salsa20_different_keys(self):
     """Test that different keys produce different ciphertexts."""
-    key1 = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
-    key2 = bytes.fromhex(
-      "1ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key1 = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
+    key2 = bytes.fromhex("1ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b"Test message for key"
@@ -198,9 +173,7 @@ class TestSalsa20:
 
   def test_salsa20_ciphertext_length(self):
     """Test that ciphertext length equals plaintext length."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
 
@@ -211,9 +184,7 @@ class TestSalsa20:
 
   def test_salsa20_counter_increment(self):
     """Test that counter properly increments across multiple blocks."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
 
     # Encrypt 3 blocks worth of data with counter=0
@@ -228,9 +199,7 @@ class TestSalsa20:
 
   def test_salsa20_xor_property(self):
     """Test that plaintext XOR ciphertext = keystream."""
-    key = bytes.fromhex(
-      "0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22"
-    )
+    key = bytes.fromhex("0ead0c2e54a978e8b303ed242e6d313f253ea446bcbfc6f86d9809c09d191e22")
     nonce = bytes.fromhex("9565542946c322be")
     counter = 0
     plaintext = b"Test message!!"

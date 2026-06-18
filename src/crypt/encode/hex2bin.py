@@ -70,9 +70,7 @@ def hex_to_bin_grouped(hex_str: str, bits_per_group: int = 8) -> str:
     binary = binary.zfill(len(binary) + (bits_per_group - remainder))
 
   # 分组并连接
-  groups = [
-    binary[j : j + bits_per_group] for j in range(0, len(binary), bits_per_group)
-  ]
+  groups = [binary[j : j + bits_per_group] for j in range(0, len(binary), bits_per_group)]
 
   return " ".join(groups)
 
@@ -196,9 +194,7 @@ def bin_to_hex(bin_str: str, min_digits: int = 0) -> str:
   return hex_str
 
 
-def bin_to_hex_grouped(
-  bin_str: str, bytes_per_group: int = 1, separator: str = " "
-) -> str:
+def bin_to_hex_grouped(bin_str: str, bytes_per_group: int = 1, separator: str = " ") -> str:
   """
   分组格式化输出：每N个字节用分隔符连接
 
@@ -248,9 +244,7 @@ def bin_byte_to_hex(bin_byte: str) -> str:
   return bin_to_hex(clean, min_digits=2)
 
 
-def bin_to_hex_with_prefix(
-  bin_str: str, prefix: str = "0x", min_digits: int = 0
-) -> str:
+def bin_to_hex_with_prefix(bin_str: str, prefix: str = "0x", min_digits: int = 0) -> str:
   """
   带前缀的转换输出
 

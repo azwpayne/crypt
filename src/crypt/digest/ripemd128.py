@@ -302,18 +302,10 @@ def _compress(state: list, block: bytes) -> list:
 
   for j in range(64):
     round_idx = j // 16
-    tmp = (
-      _rol32((a1 + _f(j, b1, c1, d1) + words[_RL[j]] + _KL[round_idx]) & MASK, _SL[j])
-      & MASK
-    )
+    tmp = _rol32((a1 + _f(j, b1, c1, d1) + words[_RL[j]] + _KL[round_idx]) & MASK, _SL[j]) & MASK
     a1, b1, c1, d1 = d1, tmp, b1, c1
 
-    tmp = (
-      _rol32(
-        (a2 + _f(63 - j, b2, c2, d2) + words[_RR[j]] + _KR[round_idx]) & MASK, _SR[j]
-      )
-      & MASK
-    )
+    tmp = _rol32((a2 + _f(63 - j, b2, c2, d2) + words[_RR[j]] + _KR[round_idx]) & MASK, _SR[j]) & MASK
     a2, b2, c2, d2 = d2, tmp, b2, c2
 
   tmp = (state[1] + c1 + d2) & MASK

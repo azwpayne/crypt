@@ -165,7 +165,7 @@ class TestRC4:
     plaintext2 = b"Second message"
 
     # First encryption
-    ciphertext1 = rc4_encrypt_decrypt(plaintext1, key)
+    rc4_encrypt_decrypt(plaintext1, key)
 
     # Second encryption should produce same result as if we encrypted plaintext2 fresh
     ciphertext2 = rc4_encrypt_decrypt(plaintext2, key)

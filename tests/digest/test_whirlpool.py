@@ -97,9 +97,7 @@ class TestWhirlpool:
     result2 = whirlpool(b"input2")
     assert result1 != result2
 
-  @pytest.mark.skipif(
-    not hasattr(hashlib, "whirlpool"), reason="hashlib.whirlpool not available"
-  )
+  @pytest.mark.skipif(not hasattr(hashlib, "whirlpool"), reason="hashlib.whirlpool not available")
   def test_whirlpool_vs_hashlib(self) -> None:
     """Compare against hashlib implementation if available."""
     test_cases = [b"", b"abc", b"hello", b"message digest"]

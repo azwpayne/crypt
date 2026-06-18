@@ -794,9 +794,7 @@ class Twofish:
       raise ValueError(msg)
 
     # Input whitening
-    r = [
-      _bytes_to_word(block[i : i + 4]) ^ self.key_words[i // 4] for i in range(0, 16, 4)
-    ]
+    r = [_bytes_to_word(block[i : i + 4]) ^ self.key_words[i // 4] for i in range(0, 16, 4)]
 
     # 16 rounds
     for round_num in range(16):
@@ -841,10 +839,7 @@ class Twofish:
       raise ValueError(msg)
 
     # Input whitening (reverse of output whitening)
-    r = [
-      _bytes_to_word(block[i : i + 4]) ^ self.key_words[4 + i // 4]
-      for i in range(0, 16, 4)
-    ]
+    r = [_bytes_to_word(block[i : i + 4]) ^ self.key_words[4 + i // 4] for i in range(0, 16, 4)]
 
     # 16 rounds (in reverse)
     for round_num in range(15, -1, -1):

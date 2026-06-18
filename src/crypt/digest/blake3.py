@@ -27,14 +27,10 @@ except ImportError:
 
 
 # Error messages
-_BLAKE3_NOT_INSTALLED_MSG = (
-  "The 'blake3' library is required. Install it with: uv add blake3"
-)
+_BLAKE3_NOT_INSTALLED_MSG = "The 'blake3' library is required. Install it with: uv add blake3"
 
 
-def blake3(
-  data: bytes, *, key: bytes | None = None, derive_key_context: bytes | None = None
-) -> str:
+def blake3(data: bytes, *, key: bytes | None = None, derive_key_context: bytes | None = None) -> str:
   """Compute the BLAKE3 hash of input data.
 
   Args:

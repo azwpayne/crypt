@@ -73,9 +73,7 @@ class ECBMode:
     if key is not None:
       self.key = key
       _nk, self.nr = _get_key_params(key)
-      self.expanded_key = (
-        expanded_key if expanded_key is not None else key_expansion(key)
-      )
+      self.expanded_key = expanded_key if expanded_key is not None else key_expansion(key)
     elif expanded_key is not None and nr is not None:
       self.key = None
       self.expanded_key = expanded_key

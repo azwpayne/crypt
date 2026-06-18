@@ -106,12 +106,21 @@ jobs:
           # when a parametrize source iterates a set/dict).
           PYTHONHASHSEED: "0"
 
+      - name: Combine per-cell coverage
+        # pytest-cov usually leaves a single combined `.coverage`; if parallel
+        # fragments exist, combine them. `|| true` tolerates "no data to
+        # combine" (exit 1) when pytest-cov already merged. Then rename so
+        # cross-matrix downloads don't collide on the `.coverage` filename.
+        run: |
+          uv run coverage combine || true
+          mv .coverage ".coverage.${{ matrix.os }}-py${{ matrix.python-version }}"
+
       - name: Upload coverage data
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: .coverage*
-          if-no-files-found: warn
+          path: .coverage.*
+          if-no-files-found: error
           retention-days: 7
 
   coverage:

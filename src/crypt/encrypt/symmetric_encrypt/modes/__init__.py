@@ -16,17 +16,21 @@ Note: GCM and CCM are in the parent directory as stub implementations.
 from .cbc import CBCMode
 from .cfb import CFBMode
 from .ctr import CTRMode, ModeError
+from .eax import EAXMode
 from .ecb import ECBMode
 from .ocb import ocb_decrypt, ocb_encrypt
 from .ofb import OFBMode
+from .xts import XTSMode
 
 __all__ = [
   "CBCMode",
   "CFBMode",
   "CTRMode",
+  "EAXMode",
   "ECBMode",
   "ModeError",
   "OFBMode",
+  "XTSMode",
   "ocb_decrypt",
   "ocb_encrypt",
 ]

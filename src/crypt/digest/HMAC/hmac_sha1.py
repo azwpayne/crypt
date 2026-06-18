@@ -30,7 +30,7 @@ def hmac_sha1(key: bytes, data: bytes) -> bytes:
       >>> hmac_sha1(b"key", b"data").hex()
       '4f4ca3d5d68ba7cc0dbabdd9df0c2c9e3c2f4d9d'
   """
-  return _compute_hmac(key, data, sha1, _BLOCK_SIZE, 20)
+  return _compute_hmac(key, data, sha1, _BLOCK_SIZE)
 
 
 def hmac_sha1_hex(key: bytes, data: bytes) -> str:

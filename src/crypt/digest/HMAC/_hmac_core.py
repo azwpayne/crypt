@@ -20,7 +20,6 @@ def _compute_hmac(
   data: bytes,
   hash_func: Callable[[bytes], str],
   block_size: int,
-  _hash_len: int,
 ) -> bytes:
   """Compute HMAC using the specified hash function.
 
@@ -29,7 +28,6 @@ def _compute_hmac(
       data: Message data to authenticate
       hash_func: Hash function that returns hex string
       block_size: Block size of the hash function in bytes
-      _hash_len: Length of the hash output in bytes
 
   Returns:
       HMAC result as bytes

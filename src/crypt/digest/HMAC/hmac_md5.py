@@ -30,7 +30,7 @@ def hmac_md5(key: bytes, data: bytes) -> bytes:
       >>> hmac_md5(b"key", b"data").hex()
       '1f3870be274f6c49b3e31a0c6728957f'
   """
-  return _compute_hmac(key, data, md5, _BLOCK_SIZE, 16)
+  return _compute_hmac(key, data, md5, _BLOCK_SIZE)
 
 
 def hmac_md5_hex(key: bytes, data: bytes) -> str:

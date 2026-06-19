@@ -62,10 +62,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      # Dependabot covers dependency vulnerabilities on GitHub; `safety` was
-      # removed because it requires interactive login and hangs in CI.
-      - name: Run bandit
+      - name: Run bandit (code-level static security scan)
         run: uv run bandit -r src/ -c pyproject.toml
+
+      # pip-audit: dependency-level vulnerability scan. Replaces `safety`,
+      # which requires interactive login and hangs in CI. Audits the fully
+      # resolved environment against the PyPI Advisory Database; fails the job
+      # if a known vulnerability with an available fix is present. Dependabot
+      # still surfaces advisories on GitHub; this enforces them in CI.
+      - name: Run pip-audit (dependency vulnerability scan)
+        run: uv run pip-audit
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})

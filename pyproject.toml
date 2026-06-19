@@ -73,7 +73,9 @@ test = [
     "pytest-asyncio",
     # Security & quality (run as dedicated CI jobs, not inside pytest)
     "pytest-bandit",
-    "safety",
+    # pip-audit replaces `safety` — safety requires interactive login and hangs
+    # in CI; pip-audit is free, needs no login, and audits the resolved env.
+    "pip-audit",
     "pytest-mypy",
     "pytest-ruff",
     # Removed (verified 0 imports in tests/ and not referenced by addopts):

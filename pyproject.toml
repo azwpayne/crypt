@@ -35,7 +35,9 @@ classifiers = [
 ]
 dependencies = [
     "blake3>=0.4",
-    "cryptography>=42.0",
+    # pycryptodome: used by rc4's __main__ self-check and by tests as a reference
+    # oracle. NOTE: `cryptography>=42.0` was removed — it was never imported in
+    # src/ or tests/ (verified), so it was dead supply-chain weight.
     "pycryptodome>=3.20",
 ]
 
@@ -46,59 +48,40 @@ dev = [
 ]
 test = [
     "pytest",
+    # Parallel & ordering (referenced by addopts: -n, --randomly-seed)
     "pytest-xdist[psutil]",
-    "pytest-parallel",
     "pytest-randomly",
     "pytest-order",
     "pytest-repeat",
     "pytest-rerunfailures",
     "pytest-timeout",
-    # Mocking & simulation
+    # Mocking
     "pytest-mock",
-    "responses",
-    "moto[all]",
-    "vcrpy",
-    "time-machine",
-    "pytest-socket",
-    "testcontainers",
-    # Data generation
+    # Property-based testing
     "hypothesis",
-    "faker",
-    "factory-boy",
-    "pytest-factoryboy",
-    "polyfactory",
     # Coverage & mutation testing
     "pytest-cov",
     "coverage[toml]",
     "diff-cover",
     "mutmut",
-    "cosmic-ray",
     "pytest-deadfixtures",
-    # Visualization & reporting
-    "syrupy",
+    # Reporting (referenced by addopts: --html, --instafail, --profile*)
     "pytest-html",
-    "allure-pytest",
-    "pytest-sugar",
     "pytest-instafail",
-    "pytest-pretty",
-    "pytest-watcher",
-    # Performance & resources
-    # "pytest-benchmark",
-    "pytest-memray",
-    "pytest-leaks",
     "pytest-profiling",
-    # Async
+    # Async (asyncio_mode=auto)
     "pytest-asyncio",
-    "pytest-anyio",
-    # Security & quality
+    # Security & quality (run as dedicated CI jobs, not inside pytest)
     "pytest-bandit",
     "safety",
     "pytest-mypy",
     "pytest-ruff",
-    # Advanced assertions
-    "pytest-check",
-    "pytest-subtests",
-    "pytest-describe",
+    # Removed (verified 0 imports in tests/ and not referenced by addopts):
+    # pytest-parallel, responses, moto[all], vcrpy, time-machine, pytest-socket,
+    # testcontainers, faker, factory-boy, pytest-factoryboy, polyfactory, syrupy,
+    # allure-pytest, pytest-sugar, pytest-pretty, pytest-watcher, pytest-memray,
+    # pytest-leaks, pytest-anyio, cosmic-ray, pytest-check, pytest-subtests,
+    # pytest-describe. (moto[all] was also the transitive source of `cryptography`.)
 ]
 
 [tool.poe]
@@ -286,10 +269,13 @@ exclude_dirs = ["tests"]
 skips = [
   "B101", # assert — pytest uses many asserts
   "B304", # DES/ARC4/Blowfish/blacklisted ciphers — implemented intentionally
-  "B311", # `random` module — non-crypto classical ciphers use it by design
   "B324", # hashlib MD5/SHA1 — weak hashes are the educational subject
   "B413", # pycryptodome flagged as pycrypto — false positive (maintained fork)
 ]
+# B311 (`random` module) is intentionally NOT skipped globally. It is suppressed
+# per-file via inline `# nosec B311` only in classical ciphers that use `random`
+# by design (e.g. alphabet shuffling). Keeping it on globally lets bandit catch
+# real CSPRNG mistakes — e.g. a DH private key generated with `random`.
 
 [tool.mypy]
 warn_return_any = false

@@ -52,13 +52,13 @@ Run specific test patterns:
 
 ```bash
 # All tests
-uv run pytest
+uv run --group test python -m pytest
 
 # Specific module
-uv run pytest tests/digest/test_sha.py
+uv run --group test python -m pytest tests/hash/sha/
 
 # No parallelization (for debugging)
-uv run pytest -n0
+uv run --group test python -m pytest -n0
 
 # Fast tests only (skip slow algorithms)
 uv run pytest -k "not slow"

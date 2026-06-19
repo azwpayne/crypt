@@ -7,24 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ⚠️ Changed (breaking — import paths)
+- **Package restructured into 9 purpose-based top-level packages.** `digest/`
+  and `encrypt/` were split/regrouped; all deep import paths changed:
+  - `crypt.digest.{MD,SHA,SHAKE}` → `crypt.hash.{md,sha,shake}`; loose hashes
+    (`blake2/3`, `ripemd128/160`, `sm3`, `tiger`, `whirlpool`) moved under
+    `crypt.hash/`.
+  - `crypt.digest.CRC` + `adler32`/`fnv` → `crypt.checksum/` (+ `crc/`).
+  - `crypt.digest.HMAC` + `cmac`/`poly1305`/`siphash` → `crypt.mac/` (+ `hmac/`).
+  - `crypt.digest.KDF` + `bcrypt` → `crypt.kdf/`.
+  - `crypt.encrypt.symmetric_encrypt` → `crypt.symmetric/`
+    (`block_cipher/`, `stream_cipher/`, `modes/`, `padding/`, `aead/`).
+  - `crypt.encrypt.asymmetric_encrypt` → `crypt.asymmetric/`.
+  - Classical ciphers extracted from `stream_cipher/`+`block_cipher/` into a
+    top-level `crypt.classical/`.
+  - AEAD (GCM, CCM, ChaCha20-Poly1305) grouped under `crypt.symmetric.aead/`.
+  - All CamelCase directories (CRC/HMAC/KDF/MD/SHA/SHAKE) → snake_case (PEP 8).
+  - Top-level `__init__.py` files use relative imports (removes fragility from
+    the `crypt` package name colliding with the stdlib `crypt` module).
+- Algorithm implementations are **unchanged** (only relocated); bit-for-bit
+  behavior preserved — 3231 tests pass, 96% coverage.
+
 ### Added
-- Comprehensive documentation for all modules
-- Proper `__all__` exports in all `__init__.py` files
-- English docstrings for base64, chacha20, sm3, zuc modules
+- `crypt.classical/` now holds 9 historical ciphers (was 2): Caesar, ROT13,
+  Atbash, Affine, Vigenère, Simple Substitution, Polybius, Playfair, Rail Fence.
+- Multi-dimensional test verification (`tests/property/`): stdlib oracle
+  cross-checks (`hashlib`/`hmac`/`zlib`/`base64`) + Hypothesis property tests
+  (round-trip, determinism, involution).
+- `pip-audit` dependency-vulnerability gate in the CI `security` job (replaces
+  `safety`, which needs interactive login).
+- `SECURITY` notices on dangerous primitives (textbook RSA, RC4, ECB, …).
+- README rewritten around the new 9-category structure (project tree,
+  re-categorized algorithm tables, runnable Quick Start).
 
-### Changed
-- Updated README.md to accurately reflect implemented algorithms
-- Updated pyproject.toml with proper metadata, authors, license, and keywords
-- Translated Chinese comments to English in source files
-
-### Deprecated
-- GCM mode (marked as stub implementation)
-- CCM mode (marked as stub implementation)
-- ZUC cipher (marked as stub/placeholder)
+### Security
+- **DH private key now uses a CSPRNG** (`secrets.randbits`) — previously
+  `random.getrandbits` (Mersenne Twister, state recoverable). Critical fix.
+- `bandit` B311 moved from a global skip to per-file `# nosec` (only classical
+  ciphers suppress it), so real CSPRNG mistakes are detectable again.
+- RC4's top-level `Crypto` import moved into `__main__` — the module is now
+  importable without `pycryptodome` (restores the pure-Python claim at import).
 
 ### Fixed
-- Documentation now correctly lists BLAKE2b and BLAKE2s as separate algorithms
-- Removed unimplemented algorithms from README (Grain, HC-128, SIV, IDEA, TEA, XXTEA)
+- README Quick Start examples had stale/wrong API names (`sha256().hex()`,
+  `base58_*`, `rsa_*`/`key_size`) — all examples now run and match their output.
+- Dead runtime dependency `cryptography` removed (never imported in `src/`).
+
+### Removed
+- ~20 unused test dependencies (`moto[all]`, `allure-pytest`, `cosmic-ray`,
+  `factory-boy`, `polyfactory`, `syrupy`, `testcontainers`, `pytest-parallel`,
+  `time-machine`, `pytest-socket`, …).
 
 ## [0.1.0] - 2026-01-06
 

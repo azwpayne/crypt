@@ -22,6 +22,8 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "latest"
+          enable-cache: true
+          save-cache: false
 
       - name: Run ruff linter
         run: uv run ruff check .
@@ -40,6 +42,15 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "latest"
+          enable-cache: true
+          cache-dependency-glob: |
+            **/*requirements*.txt
+            **/*requirements*.in
+            **/*constraints*.txt
+            **/*constraints*.in
+            **/pyproject.toml
+            **/uv.lock
+            **/*.py.lock
 
       - name: Install dependencies
         run: uv sync --all-groups
@@ -58,6 +69,8 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "latest"
+          enable-cache: true
+          save-cache: false
 
       - name: Install dependencies
         run: uv sync --all-groups
@@ -95,6 +108,15 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "latest"
+          enable-cache: true
+          cache-dependency-glob: |
+            **/*requirements*.txt
+            **/*requirements*.in
+            **/*constraints*.txt
+            **/*constraints*.in
+            **/pyproject.toml
+            **/uv.lock
+            **/*.py.lock
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5

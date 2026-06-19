@@ -28,10 +28,10 @@ __all__ = [
   "url",
 ]
 
-from crypt.encode import (
+from . import (
   ascii as ascii_module,
 )
-from crypt.encode import (
+from . import (
   base16,
   base32,
   base36,

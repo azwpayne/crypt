@@ -142,7 +142,7 @@ def test_base32():
   # 测试随机数据
   import random
 
-  random_data = bytes(random.getrandbits(8) for _ in range(100))
+  random_data = bytes(random.getrandbits(8) for _ in range(100))  # nosec B311 — demo test data, non-crypto
   encoded = base32_encode(random_data)
   decoded = base32_decode(encoded)
   # sourcery skip: no-conditionals-in-tests

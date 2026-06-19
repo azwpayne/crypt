@@ -1,10 +1,22 @@
-"""
-RSA asymmetric encryption implementation.
+"""RSA asymmetric encryption — educational textbook implementation.
 
-This module provides basic RSA functionality for educational purposes:
-- Key pair generation
-- Encryption/decryption
-- Signing/verification
+.. warning::
+    **SECURITY: textbook RSA — do NOT use for any real security.**
+
+    This module implements *raw* RSA with **no padding scheme**:
+
+    - ``encrypt`` / ``decrypt`` compute ``c = m**e mod n`` directly.
+    - ``sign`` / ``verify`` sign the **raw message integer** (no hashing, no PSS).
+
+    Raw RSA is deterministic, malleable, and vulnerable to e-th-root and
+    chosen-ciphertext attacks. It exists **only** to show the textbook math.
+    For safe signing use :mod:`crypt.asymmetric.rsa_pss`
+    (RSA-PSS); for safe encryption use an OAEP-based scheme.
+
+Educational functionality provided:
+- Key pair generation (Miller-Rabin with CSPRNG)
+- Encryption / decryption
+- Signing / verification
 """
 
 import secrets

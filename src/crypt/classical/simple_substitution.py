@@ -98,7 +98,7 @@ def generate_random_key() -> str:
       26个字母的随机排列
   """
   letters = list(ascii_uppercase)
-  random.shuffle(letters)
+  random.shuffle(letters)  # nosec B311 — classical cipher alphabet shuffle, non-crypto
   return "".join(letters)
 
 

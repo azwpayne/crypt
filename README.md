@@ -92,8 +92,8 @@ print(sha256(b"Hello, World!"))
 ```python
 from crypt.symmetric.block_cipher.aes import aes_encrypt, aes_decrypt
 
-key = b"0123456789abcdef"          # 16 bytes → AES-128
-plaintext = b"Hello, World!!!!"    # must be a whole block (16 bytes)
+key = b"0123456789abcdef"  # 16 bytes → AES-128
+plaintext = b"Hello, World!!!!"  # must be a whole block (16 bytes)
 
 ciphertext = aes_encrypt(plaintext, key)
 print(f"Encrypted: {ciphertext.hex()}")
@@ -107,10 +107,10 @@ from crypt.encode.base64 import base64_encode, base64_decode
 from crypt.encode.base58 import encode_base58, decode_base58
 
 data = b"Hello, World!"
-print(base64_encode(data))         # SGVsbG8sIFdvcmxkIQ==
+print(base64_encode(data))  # SGVsbG8sIFdvcmxkIQ==
 print(base64_decode(base64_encode(data)))  # b"Hello, World!"
 
-print(encode_base58(data))         # 72k1xXWG59fYdzSNoA
+print(encode_base58(data))  # 72k1xXWG59fYdzSNoA
 print(decode_base58(encode_base58(data)))  # b"Hello, World!"
 ```
 
@@ -133,141 +133,141 @@ print(decrypt(ciphertext, private_key).decode())  # Hello, RSA!
 
 ### Hash (`crypt.hash`)
 
-| Algorithm | Description | Security |
-|-----------|-------------|----------|
-| **MD family** (`md/`) | MD2, MD4, MD5 (128-bit), MD6 | MD4/MD5 broken, legacy |
-| **SHA-0 / SHA-1** (`sha/`) | 160-bit | Broken / deprecated |
-| **SHA-2** (`sha/`) | SHA-224/256/384/512, SHA-512/224, SHA-512/256 | Secure |
-| **SHA-3 / Keccak** (`sha/`) | SHA3-224/256/384/512, SHA3-KE-* | Secure |
-| **SHAKE** (`shake/`) | SHAKE128, SHAKE256 (XOFs) | Secure |
-| **BLAKE** (`blake/`) | BLAKE2, BLAKE3 | Secure |
-| **RIPEMD** (`ripemd/`) | RIPEMD-128, RIPEMD-160 | Legacy |
-| SM3 | Chinese national standard hash | Secure |
-| Tiger | 192-bit hash | Legacy |
-| Whirlpool | 512-bit hash | Legacy |
+| Algorithm                   | Description                                   | Security               |
+|-----------------------------|-----------------------------------------------|------------------------|
+| **MD family** (`md/`)       | MD2, MD4, MD5 (128-bit), MD6                  | MD4/MD5 broken, legacy |
+| **SHA-0 / SHA-1** (`sha/`)  | 160-bit                                       | Broken / deprecated    |
+| **SHA-2** (`sha/`)          | SHA-224/256/384/512, SHA-512/224, SHA-512/256 | Secure                 |
+| **SHA-3 / Keccak** (`sha/`) | SHA3-224/256/384/512, SHA3-KE-*               | Secure                 |
+| **SHAKE** (`shake/`)        | SHAKE128, SHAKE256 (XOFs)                     | Secure                 |
+| **BLAKE** (`blake/`)        | BLAKE2, BLAKE3                                | Secure                 |
+| **RIPEMD** (`ripemd/`)      | RIPEMD-128, RIPEMD-160                        | Legacy                 |
+| SM3                         | Chinese national standard hash                | Secure                 |
+| Tiger                       | 192-bit hash                                  | Legacy                 |
+| Whirlpool                   | 512-bit hash                                  | Legacy                 |
 
 ### Checksum (`crypt.checksum`) — non-cryptographic
 
-| Algorithm | Description |
-|-----------|-------------|
+| Algorithm        | Description                                           |
+|------------------|-------------------------------------------------------|
 | **CRC** (`crc/`) | CRC8, CRC12, CRC16, CRC16-CCITT, CRC32, CRC32C, CRC64 |
-| Adler32 | Checksum |
-| FNV | Non-cryptographic hash |
+| Adler32          | Checksum                                              |
+| FNV              | Non-cryptographic hash                                |
 
 ### MAC (`crypt.mac`) — message authentication
 
-| Algorithm | Description |
-|-----------|-------------|
-| **HMAC** (`hmac/`) | HMAC-MD5, HMAC-SHA1, HMAC-SHA256 |
-| CMAC | AES-based MAC (NIST SP 800-38B, RFC 4493) |
-| Poly1305 | One-time MAC (paired with a stream cipher for AEAD) |
-| SipHash | Fast keyed hash for hash-table DoS protection |
+| Algorithm          | Description                                         |
+|--------------------|-----------------------------------------------------|
+| **HMAC** (`hmac/`) | HMAC-MD5, HMAC-SHA1, HMAC-SHA256                    |
+| CMAC               | AES-based MAC (NIST SP 800-38B, RFC 4493)           |
+| Poly1305           | One-time MAC (paired with a stream cipher for AEAD) |
+| SipHash            | Fast keyed hash for hash-table DoS protection       |
 
 ### KDF (`crypt.kdf`) — key derivation & password hashing
 
-| Algorithm | Description |
-|-----------|-------------|
-| PBKDF2 | Password-Based Key Derivation Function 2 (RFC 2898) |
-| scrypt | Memory-hard password hashing |
-| Argon2 | Modern memory-hard KDF (PHC winner) |
-| bcrypt | Password hashing |
+| Algorithm | Description                                         |
+|-----------|-----------------------------------------------------|
+| PBKDF2    | Password-Based Key Derivation Function 2 (RFC 2898) |
+| scrypt    | Memory-hard password hashing                        |
+| Argon2    | Modern memory-hard KDF (PHC winner)                 |
+| bcrypt    | Password hashing                                    |
 
 ### Classical Ciphers (`crypt.classical`) — educational only
 
-| Cipher | Type |
-|--------|------|
-| Caesar | Shift substitution |
-| ROT13 | Caesar with shift 13 (self-inverse) |
-| Atbash | Reverse-alphabet substitution |
-| Affine | Affine substitution |
-| Vigenère | Poly-alphabetic substitution |
-| Simple Substitution | Arbitrary alphabet permutation |
-| Polybius | Coordinate substitution |
-| Playfair | Digraph substitution |
-| Rail Fence | Transposition |
+| Cipher              | Type                                |
+|---------------------|-------------------------------------|
+| Caesar              | Shift substitution                  |
+| ROT13               | Caesar with shift 13 (self-inverse) |
+| Atbash              | Reverse-alphabet substitution       |
+| Affine              | Affine substitution                 |
+| Vigenère            | Poly-alphabetic substitution        |
+| Simple Substitution | Arbitrary alphabet permutation      |
+| Polybius            | Coordinate substitution             |
+| Playfair            | Digraph substitution                |
+| Rail Fence          | Transposition                       |
 
 ### Symmetric (`crypt.symmetric`)
 
 **Block ciphers** (`block_cipher/`)
 
-| Algorithm | Block | Key sizes | Security |
-|-----------|-------|-----------|----------|
-| AES | 128-bit | 128/192/256-bit | Secure |
-| DES | 64-bit | 56-bit | Broken, legacy |
-| 3DES | 64-bit | 112/168-bit | Deprecated |
-| Blowfish | 64-bit | 32–448-bit | Legacy |
-| Twofish | 128-bit | 128/192/256-bit | Secure |
-| Camellia | 128-bit | 128/192/256-bit | Secure |
-| CAST5 / CAST6 | 64/128-bit | 40–256-bit | Legacy / AES candidate |
-| RC5 / RC6 | 64/128-bit | Variable | Legacy / AES finalist |
-| SM4 | 128-bit | 128-bit | Secure |
-| TEA / XTEA / XXTEA | 64/128-bit | 128-bit | Legacy |
-| Simon | Various | Various | NSA lightweight |
-| PRESENT | 64-bit | 80/128-bit | Lightweight |
-| Belt | 128-bit | 256-bit | Belarusian standard |
+| Algorithm          | Block      | Key sizes       | Security               |
+|--------------------|------------|-----------------|------------------------|
+| AES                | 128-bit    | 128/192/256-bit | Secure                 |
+| DES                | 64-bit     | 56-bit          | Broken, legacy         |
+| 3DES               | 64-bit     | 112/168-bit     | Deprecated             |
+| Blowfish           | 64-bit     | 32–448-bit      | Legacy                 |
+| Twofish            | 128-bit    | 128/192/256-bit | Secure                 |
+| Camellia           | 128-bit    | 128/192/256-bit | Secure                 |
+| CAST5 / CAST6      | 64/128-bit | 40–256-bit      | Legacy / AES candidate |
+| RC5 / RC6          | 64/128-bit | Variable        | Legacy / AES finalist  |
+| SM4                | 128-bit    | 128-bit         | Secure                 |
+| TEA / XTEA / XXTEA | 64/128-bit | 128-bit         | Legacy                 |
+| Simon              | Various    | Various         | NSA lightweight        |
+| PRESENT            | 64-bit     | 80/128-bit      | Lightweight            |
+| Belt               | 128-bit    | 256-bit         | Belarusian standard    |
 
 **Modes** (`modes/`)
 
-| Mode | Description | Authenticated |
-|------|-------------|---------------|
-| ECB | Electronic Codebook (educational only) | No |
-| CBC | Cipher Block Chaining | No |
-| CFB | Cipher Feedback | No |
-| OFB | Output Feedback | No |
-| CTR | Counter | No |
-| XTS | XEX-based tweaked-codebook (disk encryption) | No |
-| EAX | AEAD with associated data | Yes |
-| OCB | Offset Codebook v3 (RFC 7253) | Yes |
+| Mode | Description                                  | Authenticated |
+|------|----------------------------------------------|---------------|
+| ECB  | Electronic Codebook (educational only)       | No            |
+| CBC  | Cipher Block Chaining                        | No            |
+| CFB  | Cipher Feedback                              | No            |
+| OFB  | Output Feedback                              | No            |
+| CTR  | Counter                                      | No            |
+| XTS  | XEX-based tweaked-codebook (disk encryption) | No            |
+| EAX  | AEAD with associated data                    | Yes           |
+| OCB  | Offset Codebook v3 (RFC 7253)                | Yes           |
 
 **AEAD** (`aead/`)
 
-| Algorithm | Note |
-|-----------|------|
-| ChaCha20-Poly1305 | AEAD (RFC 8439, TLS 1.3) |
-| GCM | **Stub** — uses SHA-256 keystream, not real CTR. Dev only. |
-| CCM | **Stub** — same caveat as GCM. |
+| Algorithm         | Note                                                       |
+|-------------------|------------------------------------------------------------|
+| ChaCha20-Poly1305 | AEAD (RFC 8439, TLS 1.3)                                   |
+| GCM               | **Stub** — uses SHA-256 keystream, not real CTR. Dev only. |
+| CCM               | **Stub** — same caveat as GCM.                             |
 
 **Stream ciphers** (`stream_cipher/`)
 
-| Algorithm | Description | Security |
-|-----------|-------------|----------|
-| ChaCha20 | Modern stream cipher | Secure |
-| Salsa20 | Predecessor to ChaCha20 | Secure |
-| RC4 | Legacy stream cipher | Broken |
-| Rabbit | High-performance stream cipher | Secure |
-| Trivium | Hardware-oriented stream cipher | Secure |
-| SEAL | Software-optimized encryption | Legacy |
-| ZUC | **Stub** (placeholder) | — |
+| Algorithm | Description                     | Security |
+|-----------|---------------------------------|----------|
+| ChaCha20  | Modern stream cipher            | Secure   |
+| Salsa20   | Predecessor to ChaCha20         | Secure   |
+| RC4       | Legacy stream cipher            | Broken   |
+| Rabbit    | High-performance stream cipher  | Secure   |
+| Trivium   | Hardware-oriented stream cipher | Secure   |
+| SEAL      | Software-optimized encryption   | Legacy   |
+| ZUC       | **Stub** (placeholder)          | —        |
 
 **Padding** (`padding/`): PKCS7, ANSI X.923
 
 ### Asymmetric (`crypt.asymmetric`)
 
-| Algorithm | Description |
-|-----------|-------------|
-| RSA | Textbook RSA (no padding — see SECURITY notice) |
-| RSA-PSS | Probabilistic Signature Scheme (safe signing) |
-| DSA | Digital Signature Algorithm |
-| ECC | Elliptic Curve Cryptography |
-| ECDH | Elliptic Curve Diffie-Hellman |
-| X25519 | ECDH on Curve25519 |
-| Ed25519 | Edwards-curve signatures |
+| Algorithm      | Description                                         |
+|----------------|-----------------------------------------------------|
+| RSA            | Textbook RSA (no padding — see SECURITY notice)     |
+| RSA-PSS        | Probabilistic Signature Scheme (safe signing)       |
+| DSA            | Digital Signature Algorithm                         |
+| ECC            | Elliptic Curve Cryptography                         |
+| ECDH           | Elliptic Curve Diffie-Hellman                       |
+| X25519         | ECDH on Curve25519                                  |
+| Ed25519        | Edwards-curve signatures                            |
 | Diffie-Hellman | Key exchange (uses CSPRNG for the private exponent) |
-| ElGamal | Discrete-log encryption |
-| Paillier | Additive homomorphic encryption |
-| NTRU | Lattice-based post-quantum encryption |
+| ElGamal        | Discrete-log encryption                             |
+| Paillier       | Additive homomorphic encryption                     |
+| NTRU           | Lattice-based post-quantum encryption               |
 
 ### Encoding (`crypt.encode`)
 
-| Encoding | Description |
-|----------|-------------|
-| Base16 (Hex), Hex2Bin | Hexadecimal |
-| Base32 | RFC 4648 |
-| Base36 / Base58 / Base62 | Alphanumeric / Bitcoin-style / alphanumeric |
-| Base64 | RFC 4648 |
-| Base85 / Base91 / Base92 | High-density binary-to-text |
-| URL / HTML / Quoted-Printable | Percent / entity / MIME-safe |
-| Morse Code / ROT47 / ASCII | Telegraph / ASCII-shift / ASCII utilities |
+| Encoding                      | Description                                 |
+|-------------------------------|---------------------------------------------|
+| Base16 (Hex), Hex2Bin         | Hexadecimal                                 |
+| Base32                        | RFC 4648                                    |
+| Base36 / Base58 / Base62      | Alphanumeric / Bitcoin-style / alphanumeric |
+| Base64                        | RFC 4648                                    |
+| Base85 / Base91 / Base92      | High-density binary-to-text                 |
+| URL / HTML / Quoted-Printable | Percent / entity / MIME-safe                |
+| Morse Code / ROT47 / ASCII    | Telegraph / ASCII-shift / ASCII utilities   |
 
 ## Security Notice
 
@@ -279,7 +279,8 @@ print(decrypt(ciphertext, private_key).decode())  # Hello, RSA!
    broken/insecure-by-design primitive (textbook RSA, RC4, ECB, MD5/SHA-1, DES)
    carries a `SECURITY`/warning notice in its docstring. Read it before use.
 4. **Stubs** — GCM, CCM, and ZUC are stubs; do not use them for real crypto.
-5. **Use established libraries for production**: [cryptography](https://cryptography.io/),
+5. **Use established libraries for production
+   **: [cryptography](https://cryptography.io/),
    [pycryptodome](https://www.pycryptodome.org/), or Python's built-in `hashlib`
    / `hmac` / `secrets`.
 

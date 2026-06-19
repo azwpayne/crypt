@@ -45,9 +45,9 @@ uv sync --group test
 ```python
 from crypt.digest.SHA.sha2_256 import sha256
 
-# SHA-256 hash
+# SHA-256 hash — sha256() returns the hex digest as a string
 result = sha256(b"Hello, World!")
-print(result.hex())  # dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f
+print(result)  # dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f
 ```
 
 ### Symmetric Encryption
@@ -71,7 +71,7 @@ print(f"Decrypted: {decrypted.decode()}")
 
 ```python
 from crypt.encode.base64 import base64_encode, base64_decode
-from crypt.encode.base58 import base58_encode, base58_decode
+from crypt.encode.base58 import encode_base58, decode_base58
 
 # Base64 encoding
 data = b"Hello, World!"
@@ -82,26 +82,26 @@ decoded = base64_decode(encoded)
 print(decoded)  # b"Hello, World!"
 
 # Base58 encoding (commonly used in Bitcoin)
-encoded = base58_encode(data)
+encoded = encode_base58(data)
 print(encoded)  # 72k1xXWG59fYdzSNoA
-decoded = base58_decode(encoded)
+decoded = decode_base58(encoded)
 print(decoded)  # b"Hello, World!"
 ```
 
 ### Asymmetric Encryption
 
 ```python
-from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, rsa_encrypt, rsa_decrypt
+from crypt.encrypt.asymmetric_encrypt.rsa import generate_keypair, encrypt, decrypt
 
 # Generate RSA key pair
-public_key, private_key = generate_keypair(key_size=2048)
+public_key, private_key = generate_keypair(bits=2048)
 
 # Encrypt
 message = b"Hello, RSA!"
-ciphertext = rsa_encrypt(message, public_key)
+ciphertext = encrypt(message, public_key)
 
 # Decrypt
-decrypted = rsa_decrypt(ciphertext, private_key)
+decrypted = decrypt(ciphertext, private_key)
 print(decrypted.decode())  # Hello, RSA!
 ```
 
